@@ -1,14 +1,22 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { Injectable, inject, signal, computed, Inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { catchError, finalize, tap, switchMap, Observable, of, throwError } from 'rxjs';
+import { catchError, finalize, tap, Observable, of, throwError } from 'rxjs';
 import { AuthApiService } from '../api/auth-api.service';
 import { CustomerSummary, PortalAuthResponse } from '../../models/interfaces/auth.interface';
+
+const ACCESS_TOKEN_KEY = 'accessToken';
+const REFRESH_TOKEN_KEY = 'refreshToken';
+const CUSTOMER_KEY = 'customer';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly authApi = inject(AuthApiService);
   private readonly router = inject(Router);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly isBrowser = isPlatformBrowser(this.platformId);
 
   private readonly currentCustomerSignal = signal<CustomerSummary | null>(null);
   private readonly accessTokenSignal = signal<string | null>(null);
@@ -75,29 +83,37 @@ export class AuthService {
   }
 
   private setSession(response: PortalAuthResponse): void {
-    localStorage.setItem('accessToken', response.accessToken);
-    localStorage.setItem('refreshToken', response.refreshToken);
-    localStorage.setItem('customer', JSON.stringify(response.customer));
-
     this.accessTokenSignal.set(response.accessToken);
     this.refreshTokenSignal.set(response.refreshToken);
     this.currentCustomerSignal.set(response.customer);
+
+    if (this.isBrowser) {
+      localStorage.setItem(ACCESS_TOKEN_KEY, response.accessToken);
+      localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
+      localStorage.setItem(CUSTOMER_KEY, JSON.stringify(response.customer));
+    }
   }
 
   private clearSession(): void {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('customer');
-
     this.accessTokenSignal.set(null);
     this.refreshTokenSignal.set(null);
     this.currentCustomerSignal.set(null);
+
+    if (this.isBrowser) {
+      localStorage.removeItem(ACCESS_TOKEN_KEY);
+      localStorage.removeItem(REFRESH_TOKEN_KEY);
+      localStorage.removeItem(CUSTOMER_KEY);
+    }
   }
 
   private loadAuthFromStorage(): void {
-    const accessToken = localStorage.getItem('accessToken');
-    const refreshToken = localStorage.getItem('refreshToken');
-    const customer = localStorage.getItem('customer');
+    if (!this.isBrowser) {
+      return;
+    }
+
+    const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
+    const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+    const customer = localStorage.getItem(CUSTOMER_KEY);
 
     if (accessToken && refreshToken && customer) {
       try {
