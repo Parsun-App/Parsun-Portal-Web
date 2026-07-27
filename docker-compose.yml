@@ -40,6 +40,21 @@ services:
       - prod
     restart: unless-stopped
 
+  parsun-portal-web-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: parsun-portal-web-test
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=test
+    profiles:
+      - test
+    command: bun test:run
+    restart: "no"
+
 networks:
   parsun-network:
     external: true
