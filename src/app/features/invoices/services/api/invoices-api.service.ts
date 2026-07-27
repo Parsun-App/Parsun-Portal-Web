@@ -1,0 +1,23 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '@env/environment';
+import { PortalInvoiceList, PortalInvoiceDetail } from '@shared/models';
+
+@Injectable({ providedIn: 'root' })
+export class InvoicesApiService {
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = `${environment.apiUrl}/portal/invoices`;
+
+  list(params?: { dateFrom?: string; dateTo?: string; status?: string }): Observable<PortalInvoiceList[]> {
+    let httpParams = new HttpParams();
+    if (params?.dateFrom) httpParams = httpParams.set('dateFrom', params.dateFrom);
+    if (params?.dateTo) httpParams = httpParams.set('dateTo', params.dateTo);
+    if (params?.status) httpParams = httpParams.set('status', params.status);
+    return this.http.get<PortalInvoiceList[]>(this.baseUrl, { params: httpParams });
+  }
+
+  getById(id: string): Observable<PortalInvoiceDetail> {
+    return this.http.get<PortalInvoiceDetail>(`${this.baseUrl}/${id}`);
+  }
+}

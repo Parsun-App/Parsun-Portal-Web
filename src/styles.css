@@ -1,0 +1,22 @@
+@import "tailwindcss";
+@import "tailwindcss-primeui";
+
+@variant dark (.my-app-dark &);
+
+:root {
+  --app-bg-primary: var(--p-surface-50);
+  --app-bg-primary-via: var(--p-surface-100);
+  --app-bg-primary-to: var(--p-surface-200);
+}
+
+.my-app-dark {
+  --app-bg-primary: var(--p-surface-950);
+  --app-bg-primary-via: var(--p-surface-900);
+  --app-bg-primary-to: var(--p-surface-800);
+}
+
+@theme inline {
+  --color-app-bg-primary: var(--app-bg-primary);
+  --color-app-bg-primary-via: var(--app-bg-primary-via);
+  --color-app-bg-primary-to: var(--app-bg-primary-to);
+}

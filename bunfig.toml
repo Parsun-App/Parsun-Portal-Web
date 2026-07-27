@@ -1,0 +1,12 @@
+[install]
+registry = "https://registry.npmjs.org"
+
+[test]
+preload = ["./src/test-setup.ts"]
+
+[test.coverage]
+enabled = true
+reporter = ["text", "json", "html", "lcov"]
+
+[test.mock]
+enabled = true
