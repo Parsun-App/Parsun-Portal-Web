@@ -25,18 +25,18 @@ interface StatCard {
   template: `
     <div class="flex flex-col gap-8 animate-fade-in">
       <!-- Welcome Hero -->
-      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-700 p-8 md:p-10 text-white">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
-        <div class="absolute bottom-0 left-1/2 w-48 h-48 bg-white/5 rounded-full translate-y-1/3"></div>
-        <div class="relative z-10">
-          <p class="text-zinc-400 text-sm font-medium mb-1">Panel de Control</p>
-          <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-2">
-            ¡Bienvenido, {{ customerName() }}!
-          </h1>
-          <p class="text-zinc-400 max-w-lg text-base">
-            Aquí tienes un resumen de tu actividad comercial. Gestiona tus cotizaciones, órdenes y pagos desde un solo lugar.
-          </p>
-          <div class="flex gap-3 mt-6">
+      <div class="rounded-2xl bg-zinc-950 p-8 md:p-10 text-white">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <p class="text-zinc-400 text-sm font-medium mb-1">Panel de Control</p>
+            <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-2">
+              ¡Bienvenido, {{ customerName() }}!
+            </h1>
+            <p class="text-zinc-400 max-w-lg text-base">
+              Aquí tienes un resumen de tu actividad comercial. Gestiona tus presupuestos, órdenes y pagos desde un solo lugar.
+            </p>
+          </div>
+          <div class="flex gap-3 shrink-0">
             <a routerLink="/quotes">
               <p-button label="Nuevo Presupuesto" icon="pi pi-plus" styleClass="bg-white text-zinc-900 border-white hover:bg-zinc-100 font-medium px-5" />
             </a>
