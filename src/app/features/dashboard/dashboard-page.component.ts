@@ -25,8 +25,10 @@ interface StatCard {
   template: `
     <div class="flex flex-col gap-8 animate-fade-in">
       <!-- Welcome Hero -->
-      <div class="rounded-2xl bg-zinc-950 p-8 md:p-10 text-white">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="relative overflow-hidden rounded-2xl bg-zinc-900 dark:bg-zinc-950 p-8 md:p-10 text-white">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
+        <div class="absolute bottom-0 left-1/2 w-48 h-48 bg-white/5 rounded-full translate-y-1/3"></div>
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <p class="text-zinc-400 text-sm font-medium mb-1">Panel de Control</p>
             <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-2">
