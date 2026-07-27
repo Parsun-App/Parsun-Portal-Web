@@ -10,6 +10,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { MessageService } from 'primeng/api';
 import { InvoicesApiService } from './services/api/invoices-api.service';
 import { PortalInvoiceList, PortalInvoiceDetail } from '@shared/models';
+import { getStatusLabel } from '@shared/utils/status-labels';
 
 type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'contrast';
 
@@ -64,7 +65,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
             >
               <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">{{ invoice.invoiceNumber }}</td>
               <td class="px-4 py-3">
-                <p-tag [value]="invoice.statusLabel || invoice.status" [severity]="statusSeverity(invoice.status)" />
+                <p-tag [value]="getStatusLabel(invoice.status)" [severity]="statusSeverity(invoice.status)" />
               </td>
               <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ invoice.paymentType }}</td>
               <td class="px-4 py-3 text-right font-medium tabular-nums">{{ invoice.total | currency:'USD':'symbol' }}</td>
@@ -98,7 +99,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
             </div>
             <div>
               <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Estado</label>
-              <p class="text-sm mt-1"><p-tag [value]="d.status" [severity]="statusSeverity(d.status)" /></p>
+              <p class="text-sm mt-1"><p-tag [value]="getStatusLabel(d.status)" [severity]="statusSeverity(d.status)" /></p>
             </div>
             <div>
               <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Tipo de Pago</label>
@@ -166,6 +167,8 @@ export class InvoicesPageComponent {
   readonly invoices = signal<PortalInvoiceList[]>([]);
   readonly detail = signal<PortalInvoiceDetail | null>(null);
   readonly detailDialogVisible = signal(false);
+
+  readonly getStatusLabel = getStatusLabel;
 
   constructor() {
     this.loadInvoices();

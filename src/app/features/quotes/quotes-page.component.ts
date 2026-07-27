@@ -10,6 +10,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { MessageService } from 'primeng/api';
 import { QuotesApiService } from './services/api/quotes-api.service';
 import { PortalQuoteList, PortalQuoteDetail } from '@shared/models';
+import { getStatusLabel } from '@shared/utils/status-labels';
 
 type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'contrast';
 
@@ -65,7 +66,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
               <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">{{ quote.quoteNumber }}</td>
               <td class="px-4 py-3 text-sm text-surface-900 dark:text-surface-100">{{ quote.customerName }}</td>
               <td class="px-4 py-3">
-                <p-tag [value]="quote.status" [severity]="statusSeverity(quote.status)" />
+                <p-tag [value]="getStatusLabel(quote.status)" [severity]="statusSeverity(quote.status)" />
               </td>
               <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ quote.expiryDate | date:'dd/MM/yyyy' }}</td>
               <td class="px-4 py-3 text-right font-medium tabular-nums">{{ quote.subtotal | currency:'USD':'symbol' }}</td>
@@ -98,7 +99,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
             </div>
             <div>
               <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Estado</label>
-              <p class="text-sm mt-1"><p-tag [value]="d.status" [severity]="statusSeverity(d.status)" /></p>
+              <p class="text-sm mt-1"><p-tag [value]="getStatusLabel(d.status)" [severity]="statusSeverity(d.status)" /></p>
             </div>
             <div>
               <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Vence</label>
@@ -172,6 +173,8 @@ export class QuotesPageComponent {
   readonly quotes = signal<PortalQuoteList[]>([]);
   readonly detail = signal<PortalQuoteDetail | null>(null);
   readonly detailDialogVisible = signal(false);
+
+  readonly getStatusLabel = getStatusLabel;
 
   constructor() {
     this.loadQuotes();

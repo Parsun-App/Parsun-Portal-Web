@@ -6,6 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { AuthService } from '../auth/services/application/auth.service';
 import { PortalDashboard } from '@shared/models';
+import { getStatusLabel } from '@shared/utils/status-labels';
 
 type Severity = 'info' | 'success' | 'warn' | 'danger' | 'secondary' | 'contrast';
 
@@ -118,7 +119,7 @@ interface StatCard {
                       <td class="px-6 py-3 text-sm text-surface-900 dark:text-surface-100 font-mono">{{ item.reference || item.number }}</td>
                       <td class="px-6 py-3 text-sm text-surface-500 hidden sm:table-cell">{{ item.date | date:'dd/MM/yy' }}</td>
                       <td class="px-6 py-3">
-                        <p-tag [value]="item.status" [severity]="activityStatusSeverity(item.status)" [rounded]="true" styleClass="text-xs px-2 py-0.5" />
+                        <p-tag [value]="getStatusLabel(item.status)" [severity]="activityStatusSeverity(item.status)" [rounded]="true" styleClass="text-xs px-2 py-0.5" />
                       </td>
                       <td class="px-6 py-3 text-right text-sm font-semibold text-surface-900 dark:text-surface-100 tabular-nums whitespace-nowrap">{{ item.amount | currency:'USD':'symbol':'1.0-0' }}</td>
                     </tr>
@@ -166,6 +167,8 @@ export class DashboardPageComponent {
   readonly dashboard = signal<PortalDashboard | null>(null);
 
   readonly customerName = computed(() => this.authService.currentUser()?.legalName ?? 'Cliente');
+
+  readonly getStatusLabel = getStatusLabel;
 
   readonly quickActions = [
     { label: 'Nuevo Presupuesto', desc: 'Solicitar presupuesto', icon: 'pi pi-file-edit', route: '/quotes', bg: 'rgba(59,130,246,0.1)', color: '#3b82f6' },

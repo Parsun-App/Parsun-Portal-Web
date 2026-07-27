@@ -13,6 +13,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { OrdersApiService } from './services/api/orders-api.service';
 import { PortalOrderList, PortalOrderDetail } from '@shared/models';
+import { getStatusLabel } from '@shared/utils/status-labels';
 
 type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'contrast' | undefined;
 
@@ -68,7 +69,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
             <tr class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors">
               <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300 cursor-pointer" (click)="openDetail(order.id)">{{ order.orderNumber }}</td>
               <td class="px-4 py-3">
-                <p-tag [value]="order.status" [severity]="statusSeverity(order.status)" />
+                <p-tag [value]="getStatusLabel(order.status)" [severity]="statusSeverity(order.status)" />
               </td>
               <td class="px-4 py-3 text-right font-medium tabular-nums">{{ order.subtotal | currency:'USD':'symbol' }}</td>
               <td class="px-4 py-3 text-center text-sm text-surface-600 dark:text-surface-400">{{ order.lineCount }}</td>
@@ -141,7 +142,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
             </div>
             <div>
               <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Estado</label>
-              <p class="text-sm mt-1"><p-tag [value]="d.status" [severity]="statusSeverity(d.status)" /></p>
+              <p class="text-sm mt-1"><p-tag [value]="getStatusLabel(d.status)" [severity]="statusSeverity(d.status)" /></p>
             </div>
             <div>
               <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Creada</label>
@@ -209,6 +210,8 @@ export class OrdersPageComponent {
   readonly orders = signal<PortalOrderList[]>([]);
   readonly detail = signal<PortalOrderDetail | null>(null);
   readonly detailDialogVisible = signal(false);
+
+  readonly getStatusLabel = getStatusLabel;
 
   constructor() {
     this.loadOrders();
