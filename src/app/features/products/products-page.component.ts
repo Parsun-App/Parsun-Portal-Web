@@ -99,7 +99,7 @@ import { PortalProduct } from '@shared/models';
               <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">{{ product.code }}</td>
               <td class="px-4 py-3 font-medium text-surface-900 dark:text-surface-100">{{ product.name }}</td>
               <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ product.categoryName }}</td>
-              <td class="px-4 py-3 text-right font-medium tabular-nums">{{ product.price | currency:'USD ' }}</td>
+              <td class="px-4 py-3 text-right font-medium tabular-nums">{{ product.price | currency:'USD':'symbol' }}</td>
               <td class="px-4 py-3 text-center">
                 @if (product.availableStock > 0) {
                   <p-tag value="{{ product.availableStock }}" severity="success" />
@@ -138,7 +138,7 @@ import { PortalProduct } from '@shared/models';
             </div>
             <div>
               <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Precio</label>
-              <p class="text-sm font-medium mt-1 text-surface-900 dark:text-surface-100">{{ p.price | currency:'USD ' }}</p>
+              <p class="text-sm font-medium mt-1 text-surface-900 dark:text-surface-100">{{ p.price | currency:'USD':'symbol' }}</p>
             </div>
             <div>
               <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Stock Disponible</label>

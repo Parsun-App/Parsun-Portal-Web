@@ -70,7 +70,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
               <td class="px-4 py-3">
                 <p-tag [value]="order.status" [severity]="statusSeverity(order.status)" />
               </td>
-              <td class="px-4 py-3 text-right font-medium tabular-nums">{{ order.subtotal | currency:'USD ' }}</td>
+              <td class="px-4 py-3 text-right font-medium tabular-nums">{{ order.subtotal | currency:'USD':'symbol' }}</td>
               <td class="px-4 py-3 text-center text-sm text-surface-600 dark:text-surface-400">{{ order.lineCount }}</td>
               <td class="px-4 py-3 text-sm text-surface-500">{{ order.createdAt | date:'dd/MM/yyyy' }}</td>
               <td class="px-4 py-3 text-center">
@@ -180,13 +180,13 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
                     <span class="text-surface-400 ml-1 font-mono text-xs">({{ line.productCode }})</span>
                   </td>
                   <td class="px-3 py-2 text-right text-sm">{{ line.quantity }}</td>
-                  <td class="px-3 py-2 text-right text-sm tabular-nums">{{ line.unitPrice | currency:'USD ' }}</td>
-                  <td class="px-3 py-2 text-right text-sm font-medium tabular-nums">{{ line.lineTotal | currency:'USD ' }}</td>
+                  <td class="px-3 py-2 text-right text-sm tabular-nums">{{ line.unitPrice | currency:'USD':'symbol' }}</td>
+                  <td class="px-3 py-2 text-right text-sm font-medium tabular-nums">{{ line.lineTotal | currency:'USD':'symbol' }}</td>
                 </tr>
               </ng-template>
             </p-table>
             <div class="flex justify-end mt-3">
-              <span class="text-lg font-bold text-surface-900 dark:text-surface-100">{{ d.subtotal | currency:'USD ' }}</span>
+              <span class="text-lg font-bold text-surface-900 dark:text-surface-100">{{ d.subtotal | currency:'USD':'symbol' }}</span>
             </div>
           </div>
         </div>

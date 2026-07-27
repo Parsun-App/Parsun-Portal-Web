@@ -79,12 +79,12 @@ import { PortalProfile } from '@shared/models';
                 </div>
                 <div>
                   <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Límite de Crédito</label>
-                  <p class="text-sm mt-1 font-medium text-surface-900 dark:text-surface-100">{{ p.creditLimit | currency:'USD ' }}</p>
+                  <p class="text-sm mt-1 font-medium text-surface-900 dark:text-surface-100">{{ p.creditLimit | currency:'USD':'symbol' }}</p>
                 </div>
                 <div>
                   <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Saldo Actual</label>
                   <p class="text-sm mt-1 font-medium" [class.text-green-600]="p.currentBalance <= 0" [class.text-red-600]="p.currentBalance > 0">
-                    {{ p.currentBalance | currency:'USD ' }}
+                    {{ p.currentBalance | currency:'USD':'symbol' }}
                   </p>
                 </div>
               </div>

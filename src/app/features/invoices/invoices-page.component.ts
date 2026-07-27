@@ -67,8 +67,8 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
                 <p-tag [value]="invoice.statusLabel || invoice.status" [severity]="statusSeverity(invoice.status)" />
               </td>
               <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ invoice.paymentType }}</td>
-              <td class="px-4 py-3 text-right font-medium tabular-nums">{{ invoice.total | currency:'USD ' }}</td>
-              <td class="px-4 py-3 text-right text-sm tabular-nums">{{ invoice.paidAmount | currency:'USD ' }}</td>
+              <td class="px-4 py-3 text-right font-medium tabular-nums">{{ invoice.total | currency:'USD':'symbol' }}</td>
+              <td class="px-4 py-3 text-right text-sm tabular-nums">{{ invoice.paidAmount | currency:'USD':'symbol' }}</td>
               <td class="px-4 py-3 text-sm text-surface-500">{{ invoice.createdAt | date:'dd/MM/yyyy' }}</td>
             </tr>
           </ng-template>
@@ -106,7 +106,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
             </div>
             <div>
               <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Subtotal</label>
-              <p class="text-sm mt-1 font-medium text-surface-900 dark:text-surface-100">{{ d.subtotal | currency:'USD ' }}</p>
+              <p class="text-sm mt-1 font-medium text-surface-900 dark:text-surface-100">{{ d.subtotal | currency:'USD':'symbol' }}</p>
             </div>
             <div>
               <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Creada</label>
@@ -139,13 +139,13 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
                     <span class="text-surface-400 ml-1 font-mono text-xs">({{ line.productCode }})</span>
                   </td>
                   <td class="px-3 py-2 text-right text-sm">{{ line.quantity }}</td>
-                  <td class="px-3 py-2 text-right text-sm tabular-nums">{{ line.unitPrice | currency:'USD ' }}</td>
-                  <td class="px-3 py-2 text-right text-sm font-medium tabular-nums">{{ line.lineTotal | currency:'USD ' }}</td>
+                  <td class="px-3 py-2 text-right text-sm tabular-nums">{{ line.unitPrice | currency:'USD':'symbol' }}</td>
+                  <td class="px-3 py-2 text-right text-sm font-medium tabular-nums">{{ line.lineTotal | currency:'USD':'symbol' }}</td>
                 </tr>
               </ng-template>
             </p-table>
             <div class="flex justify-end mt-3">
-              <span class="text-lg font-bold text-surface-900 dark:text-surface-100">{{ d.subtotal | currency:'USD ' }}</span>
+              <span class="text-lg font-bold text-surface-900 dark:text-surface-100">{{ d.subtotal | currency:'USD':'symbol' }}</span>
             </div>
           </div>
         </div>

@@ -118,7 +118,7 @@ interface StatCard {
                       <td class="px-6 py-3">
                         <p-tag [value]="item.status" [severity]="activityStatusSeverity(item.status)" [rounded]="true" styleClass="text-xs px-2 py-0.5" />
                       </td>
-                      <td class="px-6 py-3 text-right text-sm font-semibold text-surface-900 dark:text-surface-100 tabular-nums whitespace-nowrap">{{ item.amount | currency:'USD ':'symbol':'1.0-0' }}</td>
+                      <td class="px-6 py-3 text-right text-sm font-semibold text-surface-900 dark:text-surface-100 tabular-nums whitespace-nowrap">{{ item.amount | currency:'USD':'symbol':'1.0-0' }}</td>
                     </tr>
                   }
                 </tbody>
