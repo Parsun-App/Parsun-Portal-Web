@@ -34,7 +34,7 @@ interface MenuItem {
       <!-- Logo -->
       <div class="flex items-center h-16 px-3 border-b border-surface-200 dark:border-surface-700" [class.justify-center]="collapsed()">
         @if (!collapsed()) {
-          <img src="/logo.png" alt="Parsun" class="h-10 w-auto" />
+          <img src="/Parsun.png" alt="Parsun" class="h-10 w-auto" />
         } @else {
           <span class="text-xl font-bold text-primary">P</span>
         }
@@ -75,7 +75,7 @@ interface MenuItem {
     <!-- Mobile drawer -->
     <p-drawer [(visible)]="mobileOpen" position="left" styleClass="w-72">
       <ng-template pTemplate="header">
-        <img src="/logo.png" alt="Parsun" class="h-9 w-auto" />
+        <img src="/Parsun.png" alt="Parsun" class="h-9 w-auto" />
       </ng-template>
       <nav class="flex flex-col gap-1 mt-2">
         @for (item of menuItems; track item.route) {
