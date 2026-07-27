@@ -118,7 +118,7 @@ interface StatCard {
                       <td class="px-6 py-3">
                         <p-tag [value]="item.status" [severity]="activityStatusSeverity(item.status)" [rounded]="true" styleClass="text-xs px-2 py-0.5" />
                       </td>
-                      <td class="px-6 py-3 text-right text-sm font-semibold text-surface-900 dark:text-surface-100 tabular-nums whitespace-nowrap">{{ item.amount | currency:'Bs. ':'symbol':'1.0-0' }}</td>
+                      <td class="px-6 py-3 text-right text-sm font-semibold text-surface-900 dark:text-surface-100 tabular-nums whitespace-nowrap">{{ item.amount | currency:'USD ':'symbol':'1.0-0' }}</td>
                     </tr>
                   }
                 </tbody>
@@ -202,7 +202,7 @@ export class DashboardPageComponent {
       { label: 'Presupuestos Activos', value: String(data.draftQuotes), icon: 'pi pi-file-edit', route: '/quotes', gradient: 'linear-gradient(135deg, #3b82f6, #2563eb)' },
       { label: 'Órdenes Confirmadas', value: String(data.confirmedOrders), icon: 'pi pi-shopping-cart', route: '/orders', gradient: 'linear-gradient(135deg, #22c55e, #16a34a)' },
       { label: 'Facturas Pendientes', value: String(data.pendingInvoices), icon: 'pi pi-file-invoice', route: '/invoices', gradient: 'linear-gradient(135deg, #f59e0b, #d97706)' },
-      { label: 'Monto Pendiente', value: 'Bs. ' + (data.pendingAmount / 1000).toFixed(0) + 'k', icon: 'pi pi-dollar', route: '/invoices', gradient: 'linear-gradient(135deg, #ef4444, #dc2626)' },
+      { label: 'Monto Pendiente', value: '$ ' + (data.pendingAmount / 1000).toFixed(0) + 'k', icon: 'pi pi-dollar', route: '/invoices', gradient: 'linear-gradient(135deg, #ef4444, #dc2626)' },
     ];
   }
 

@@ -62,13 +62,13 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
               (click)="openDetail(payment.id)"
             >
               <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">{{ payment.paymentNumber }}</td>
-              <td class="px-4 py-3 text-right font-medium tabular-nums">{{ payment.amount | currency:'Bs. ' }}</td>
+              <td class="px-4 py-3 text-right font-medium tabular-nums">{{ payment.amount | currency:'USD ' }}</td>
               <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ payment.referenceNumber || '-' }}</td>
               <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ payment.paymentDate | date:'dd/MM/yyyy' }}</td>
               <td class="px-4 py-3">
                 <p-tag [value]="payment.status" [severity]="statusSeverity(payment.status)" />
               </td>
-              <td class="px-4 py-3 text-right text-sm tabular-nums">{{ payment.appliedAmount | currency:'Bs. ' }}</td>
+              <td class="px-4 py-3 text-right text-sm tabular-nums">{{ payment.appliedAmount | currency:'USD ' }}</td>
             </tr>
           </ng-template>
         </p-table>
@@ -100,11 +100,11 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
             </div>
             <div>
               <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Monto</label>
-              <p class="text-sm font-medium mt-1 text-surface-900 dark:text-surface-100">{{ d.amount | currency:'Bs. ' }}</p>
+              <p class="text-sm font-medium mt-1 text-surface-900 dark:text-surface-100">{{ d.amount | currency:'USD ' }}</p>
             </div>
             <div>
               <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Monto Aplicado</label>
-              <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.appliedAmount | currency:'Bs. ' }}</p>
+              <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.appliedAmount | currency:'USD ' }}</p>
             </div>
             <div>
               <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Referencia</label>
