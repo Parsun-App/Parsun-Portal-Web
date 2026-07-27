@@ -15,6 +15,7 @@ interface MenuItem {
   standalone: true,
   imports: [RouterLink, RouterLinkActive, ButtonModule, DrawerModule, TooltipModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  styles: [`:host { display: flex; height: 100%; }`],
   template: `
     <!-- Mobile hamburger trigger -->
     <button
@@ -28,7 +29,7 @@ interface MenuItem {
     <aside
       [class.w-64]="!collapsed()"
       [class.w-16]="collapsed()"
-      class="hidden md:flex flex-col bg-surface-0 dark:bg-surface-900 border-r border-surface-200 dark:border-surface-700 transition-all duration-300"
+      class="hidden md:flex flex-col h-full bg-surface-0 dark:bg-surface-900 border-r border-surface-200 dark:border-surface-700 transition-all duration-300"
     >
       <!-- Logo -->
       <div class="flex items-center h-16 px-3 border-b border-surface-200 dark:border-surface-700" [class.justify-center]="collapsed()">
