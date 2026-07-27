@@ -28,6 +28,7 @@ export default defineConfig({
     alias: {
       "@app": "/src/app",
       "@shared": "/src/app/shared",
+      "@theme": "/src/app/theme",
       "@core": "/src/app/core",
       "@env": "/src/environments",
       "@environments": "/src/environments",

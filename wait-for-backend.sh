@@ -1,21 +1,34 @@
-#!/bin/sh
-# wait-for-backend.sh — waits for parsun-api to be ready before starting the dev server
+#!/bin/bash
+# ============================================================================
+# Wait for the backend API to be ready before starting the frontend
+# ============================================================================
 
-set -e
+BACKEND_URL="${BACKEND_URL:-http://parsun-api-app:8080}"
+MAX_RETRIES="${MAX_RETRIES:-60}"
+RETRY_INTERVAL="${RETRY_INTERVAL:-5}"
 
-BACKEND_HOST="${BACKEND_HOST:-parsun-api-app}"
-BACKEND_PORT="${BACKEND_PORT:-8080}"
-TIMEOUT="${TIMEOUT:-120}"
+echo "⏳ Waiting for backend at ${BACKEND_URL}..."
 
-echo "Waiting for backend at $BACKEND_HOST:$BACKEND_PORT..."
-
-for i in $(seq 1 $TIMEOUT); do
-  if wget --no-verbose --tries=1 --spider "http://$BACKEND_HOST:$BACKEND_PORT" 2>/dev/null; then
-    echo "Backend is ready!"
-    exec "$@"
+for i in $(seq 1 $MAX_RETRIES); do
+  HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "${BACKEND_URL}/actuator/health" 2>/dev/null || true)
+  
+  if [ "$HTTP_CODE" = "200" ]; then
+    RESPONSE=$(curl -s "${BACKEND_URL}/actuator/health" 2>/dev/null || echo "")
+    if echo "$RESPONSE" | grep -q '"status":"UP"'; then
+      echo "✅ Backend is UP after ${i} attempts (${BACKEND_URL})"
+      exec "$@"
+      exit 0
+    fi
   fi
-  sleep 2
+  
+  if [ $((i % 10)) -eq 0 ]; then
+    echo "⏳ Still waiting for backend... (attempt ${i}/${MAX_RETRIES}, HTTP ${HTTP_CODE})"
+  fi
+  
+  sleep $RETRY_INTERVAL
 done
 
-echo "Timeout reached — backend did not respond within ${TIMEOUT}s"
-exit 1
+echo "❌ Backend did not become ready after ${MAX_RETRIES} attempts"
+echo "   Last HTTP code: ${HTTP_CODE}"
+echo "   Starting frontend anyway..."
+exec "$@"
