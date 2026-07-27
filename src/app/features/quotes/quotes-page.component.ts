@@ -23,8 +23,8 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
     <div class="flex flex-col gap-6">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Cotizaciones</h1>
-          <p class="text-surface-500 mt-1">Gestiona tus cotizaciones y solicitudes de presupuesto.</p>
+          <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Presupuestos</h1>
+          <p class="text-surface-500 mt-1">Gestiona tus presupuestos y solicitudes.</p>
         </div>
       </div>
 
@@ -35,7 +35,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
       } @else if (quotes().length === 0) {
         <div class="flex flex-col items-center justify-center h-64 text-surface-400 gap-3">
           <i class="pi pi-file-edit text-4xl"></i>
-          <p class="text-sm">No se encontraron cotizaciones</p>
+          <p class="text-sm">No se encontraron presupuestos</p>
         </div>
       } @else {
         <p-table
@@ -49,7 +49,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
         >
           <ng-template pTemplate="header">
             <tr class="border-b border-surface-200 dark:border-surface-700">
-              <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">N° Cotización</th>
+              <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">N° Presupuesto</th>
               <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Cliente</th>
               <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Estado</th>
               <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Vence</th>
@@ -85,7 +85,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
       <ng-template pTemplate="header">
         <div class="flex items-center gap-3">
           <i class="pi pi-file-edit text-xl text-surface-500"></i>
-          <span class="text-lg font-semibold text-surface-900 dark:text-surface-100">Cotización {{ detail()?.quoteNumber }}</span>
+          <span class="text-lg font-semibold text-surface-900 dark:text-surface-100">Presupuesto {{ detail()?.quoteNumber }}</span>
         </div>
       </ng-template>
       @if (detail(); as d) {
@@ -186,7 +186,7 @@ export class QuotesPageComponent {
       }),
       catchError(() => {
         this.loading.set(false);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudieron cargar las cotizaciones' });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudieron cargar los presupuestos' });
         return of([] as PortalQuoteList[]);
       }),
     ).subscribe();
@@ -199,7 +199,7 @@ export class QuotesPageComponent {
         this.detailDialogVisible.set(true);
       }),
       catchError(() => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar el detalle de la cotización' });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar el detalle del presupuesto' });
         return of(null as unknown as PortalQuoteDetail);
       }),
     ).subscribe();

@@ -100,7 +100,7 @@ export class SidebarComponent {
   readonly menuItems: MenuItem[] = [
     { label: 'Dashboard', icon: 'pi pi-home', route: '/dashboard' },
     { label: 'Productos', icon: 'pi pi-box', route: '/products' },
-    { label: 'Cotizaciones', icon: 'pi pi-file-edit', route: '/quotes' },
+    { label: 'Presupuestos', icon: 'pi pi-file-edit', route: '/quotes' },
     { label: 'Órdenes', icon: 'pi pi-shopping-cart', route: '/orders' },
     { label: 'Facturas', icon: 'pi pi-receipt', route: '/invoices' },
     { label: 'Pagos', icon: 'pi pi-credit-card', route: '/payments' },

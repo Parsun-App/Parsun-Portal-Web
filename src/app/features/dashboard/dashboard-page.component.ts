@@ -38,7 +38,7 @@ interface StatCard {
           </p>
           <div class="flex gap-3 mt-6">
             <a routerLink="/quotes">
-              <p-button label="Nueva Cotización" icon="pi pi-plus" styleClass="bg-white text-zinc-900 border-white hover:bg-zinc-100 font-medium px-5" />
+              <p-button label="Nuevo Presupuesto" icon="pi pi-plus" styleClass="bg-white text-zinc-900 border-white hover:bg-zinc-100 font-medium px-5" />
             </a>
             <a routerLink="/products">
               <p-button label="Ver Productos" icon="pi pi-box" [outlined]="true" styleClass="border-white/30 text-white hover:bg-white/10 font-medium px-5" />
@@ -166,7 +166,7 @@ export class DashboardPageComponent {
   readonly customerName = computed(() => this.authService.currentUser()?.legalName ?? 'Cliente');
 
   readonly quickActions = [
-    { label: 'Nueva Cotización', desc: 'Solicitar precios', icon: 'pi pi-file-edit', route: '/quotes', bg: 'rgba(59,130,246,0.1)', color: '#3b82f6' },
+    { label: 'Nuevo Presupuesto', desc: 'Solicitar presupuesto', icon: 'pi pi-file-edit', route: '/quotes', bg: 'rgba(59,130,246,0.1)', color: '#3b82f6' },
     { label: 'Mis Órdenes', desc: 'Ver pedidos activos', icon: 'pi pi-shopping-cart', route: '/orders', bg: 'rgba(34,197,94,0.1)', color: '#22c55e' },
     { label: 'Pagar Facturas', desc: 'Saldos pendientes', icon: 'pi pi-credit-card', route: '/payments', bg: 'rgba(245,158,11,0.1)', color: '#f59e0b' },
     { label: 'Mi Perfil', desc: 'Datos de cuenta', icon: 'pi pi-user', route: '/profile', bg: 'rgba(139,92,246,0.1)', color: '#8b5cf6' },
@@ -186,11 +186,11 @@ export class DashboardPageComponent {
       recentActivity: [
         { type: 'ORDER', number: 'ORD-2026-0042', date: '2026-07-27', status: 'CONFIRMED', amount: 45600, reference: 'Pedido mayorista' },
         { type: 'INVOICE', number: 'FAC-2026-0187', date: '2026-07-26', status: 'PENDING_PAYMENT', amount: 28750, reference: 'Factura julio' },
-        { type: 'QUOTE', number: 'COT-2026-0091', date: '2026-07-25', status: 'DRAFT', amount: 12800, reference: 'Cotización equipos' },
+        { type: 'QUOTE', number: 'COT-2026-0091', date: '2026-07-25', status: 'DRAFT', amount: 12800, reference: 'Presupuesto equipos' },
         { type: 'PAYMENT', number: 'PAG-2026-0056', date: '2026-07-24', status: 'APPLIED', amount: 35000, reference: 'Transferencia' },
         { type: 'ORDER', number: 'ORD-2026-0039', date: '2026-07-23', status: 'CONFIRMED', amount: 22300, reference: 'Pedido urgente' },
         { type: 'INVOICE', number: 'FAC-2026-0180', date: '2026-07-22', status: 'PAID', amount: 15200, reference: 'Factura cancelada' },
-        { type: 'QUOTE', number: 'COT-2026-0085', date: '2026-07-20', status: 'DRAFT', amount: 43000, reference: 'Renovación equipos' },
+        { type: 'QUOTE', number: 'COT-2026-0085', date: '2026-07-20', status: 'DRAFT', amount: 43000, reference: 'Presupuesto renovación' },
         { type: 'INVOICE', number: 'FAC-2026-0175', date: '2026-07-18', status: 'OVERDUE', amount: 52750, reference: 'Factura vencida' },
       ],
     });
@@ -199,7 +199,7 @@ export class DashboardPageComponent {
 
   buildStats(data: PortalDashboard): StatCard[] {
     return [
-      { label: 'Cotizaciones Activas', value: String(data.draftQuotes), icon: 'pi pi-file-edit', route: '/quotes', gradient: 'linear-gradient(135deg, #3b82f6, #2563eb)' },
+      { label: 'Presupuestos Activos', value: String(data.draftQuotes), icon: 'pi pi-file-edit', route: '/quotes', gradient: 'linear-gradient(135deg, #3b82f6, #2563eb)' },
       { label: 'Órdenes Confirmadas', value: String(data.confirmedOrders), icon: 'pi pi-shopping-cart', route: '/orders', gradient: 'linear-gradient(135deg, #22c55e, #16a34a)' },
       { label: 'Facturas Pendientes', value: String(data.pendingInvoices), icon: 'pi pi-file-invoice', route: '/invoices', gradient: 'linear-gradient(135deg, #f59e0b, #d97706)' },
       { label: 'Monto Pendiente', value: 'Bs. ' + (data.pendingAmount / 1000).toFixed(0) + 'k', icon: 'pi pi-dollar', route: '/invoices', gradient: 'linear-gradient(135deg, #ef4444, #dc2626)' },
@@ -207,7 +207,7 @@ export class DashboardPageComponent {
   }
 
   activityTypeLabel(type: string): string {
-    const map: Record<string, string> = { QUOTE: 'Cotización', ORDER: 'Orden', INVOICE: 'Factura', PAYMENT: 'Pago' };
+    const map: Record<string, string> = { QUOTE: 'Presupuesto', ORDER: 'Orden', INVOICE: 'Factura', PAYMENT: 'Pago' };
     return map[type] ?? type;
   }
 
