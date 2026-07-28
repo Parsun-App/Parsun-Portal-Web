@@ -41,30 +41,32 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
         </div>
       </div>
 
-      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center justify-between mb-4">
-        <div class="flex gap-2 items-center w-full sm:w-auto">
-          <p-iconField iconPosition="left" class="flex-1 sm:flex-none sm:min-w-[280px]">
-            <p-inputIcon styleClass="pi pi-search" />
-            <input #searchInput pInputText type="text" [value]="searchTerm()" (input)="onSearch(searchInput.value)" placeholder="Buscar..." class="w-full" />
-          </p-iconField>
-          <p-button #filterBtn icon="pi pi-filter" [outlined]="true" severity="secondary"
-            (onClick)="filterPopover.toggle($event)" pTooltip="Filtros"
-            [badge]="activeFilterCount() > 0 ? activeFilterCount().toString() : ''" badgeSeverity="contrast" />
-          <p-popover #filterPopover>
-            <div class="flex flex-col gap-4 p-1 min-w-[260px]">
-              <div class="flex items-center justify-between">
-                <span class="font-semibold text-sm">Filtros</span>
-                @if (activeFilterCount() > 0) {
-                  <p-button label="Limpiar" [text]="true" size="small" severity="secondary" (onClick)="clearFilters()" />
-                }
+      <div class="rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-4 shadow-2xl mb-6">
+        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center justify-between">
+          <div class="flex gap-2 items-center w-full sm:w-auto">
+            <p-iconField iconPosition="left" class="flex-1 sm:flex-none sm:min-w-[280px]">
+              <p-inputIcon styleClass="pi pi-search" />
+              <input #searchInput pInputText type="text" [value]="searchTerm()" (input)="onSearch(searchInput.value)" placeholder="Buscar..." class="w-full" />
+            </p-iconField>
+            <p-button #filterBtn icon="pi pi-filter" [outlined]="true" severity="secondary"
+              (onClick)="filterPopover.toggle($event)" pTooltip="Filtros"
+              [badge]="activeFilterCount() > 0 ? activeFilterCount().toString() : ''" badgeSeverity="contrast" />
+            <p-popover #filterPopover>
+              <div class="flex flex-col gap-4 p-1 min-w-[260px]">
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold text-sm">Filtros</span>
+                  @if (activeFilterCount() > 0) {
+                    <p-button label="Limpiar" [text]="true" size="small" severity="secondary" (onClick)="clearFilters()" />
+                  }
+                </div>
+                <div class="flex flex-col gap-1">
+                  <label class="text-xs font-medium text-surface-500">Estado</label>
+                  <p-select [options]="statusOptions" [ngModel]="filterStatus()" (onChange)="onStatusFilterChange($event.value)"
+                    optionLabel="label" optionValue="value" placeholder="Todos" styleClass="w-full" />
+                </div>
               </div>
-              <div class="flex flex-col gap-1">
-                <label class="text-xs font-medium text-surface-500">Estado</label>
-                <p-select [options]="statusOptions" [ngModel]="filterStatus()" (onChange)="onStatusFilterChange($event.value)"
-                  optionLabel="label" optionValue="value" placeholder="Todos" styleClass="w-full" />
-              </div>
-            </div>
-          </p-popover>
+            </p-popover>
+          </div>
         </div>
       </div>
 
