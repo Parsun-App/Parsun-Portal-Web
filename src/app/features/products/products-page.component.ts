@@ -52,7 +52,7 @@ import { PortalProduct } from '@shared/models';
           <p-select
             [ngModel]="selectedCategory()"
             (ngModelChange)="onCategoryChange($event)"
-            [options]="categoryOptions"
+            [options]="categoryOptions()"
             optionLabel="label"
             optionValue="value"
             placeholder="Todas las categorías"
@@ -194,9 +194,9 @@ export class ProductsPageComponent {
 
   readonly dialogVisible = signal(false);
 
-  readonly categoryOptions = [
+  readonly categoryOptions = signal<{ label: string; value: string | null }[]>([
     { label: 'Todas las categorías', value: null },
-  ];
+  ]);
 
   private readonly searchSubject = new Subject<string>();
 
@@ -241,6 +241,17 @@ export class ProductsPageComponent {
         this.products.set(response.content);
         this.totalElements.set(response.totalElements);
         this.loading.set(false);
+        const seen = new Set<string>();
+        const options: { label: string; value: string | null }[] = [
+          { label: 'Todas las categorías', value: null },
+        ];
+        for (const p of response.content) {
+          if (p.category && !seen.has(p.category)) {
+            seen.add(p.category);
+            options.push({ label: p.categoryName, value: p.category });
+          }
+        }
+        this.categoryOptions.set(options);
       }),
       catchError(() => {
         this.loading.set(false);
