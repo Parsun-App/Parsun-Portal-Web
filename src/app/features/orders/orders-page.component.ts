@@ -61,7 +61,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
                 </div>
                 <div class="flex flex-col gap-1">
                   <label class="text-xs font-medium text-surface-500">Estado</label>
-                  <p-select [options]="statusOptions" [ngModel]="filterStatus()" (onChange)="onStatusFilterChange($event.value)"
+                  <p-select [options]="statusOptions" [ngModel]="filterStatus()" (ngModelChange)="onStatusFilterChange($event)"
                     optionLabel="label" optionValue="value" placeholder="Todos" styleClass="w-full" />
                 </div>
               </div>

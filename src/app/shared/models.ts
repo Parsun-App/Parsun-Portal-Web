@@ -25,7 +25,7 @@ export interface PortalProduct {
   stock: number;
   availableStock: number;
   unit: string;
-  category: string;
+  categoryId: string;
   categoryName: string;
   active: boolean;
 }

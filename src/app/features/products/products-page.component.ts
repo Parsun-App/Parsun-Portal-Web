@@ -246,9 +246,9 @@ export class ProductsPageComponent {
           { label: 'Todas las categorías', value: null },
         ];
         for (const p of response.content) {
-          if (p.category && !seen.has(p.category)) {
-            seen.add(p.category);
-            options.push({ label: p.categoryName, value: p.category });
+          if (p.categoryId && !seen.has(p.categoryId)) {
+            seen.add(p.categoryId);
+            options.push({ label: p.categoryName, value: p.categoryId });
           }
         }
         this.categoryOptions.set(options);
