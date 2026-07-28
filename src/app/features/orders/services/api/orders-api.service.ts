@@ -9,8 +9,9 @@ export class OrdersApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/portal/orders`;
 
-  list(params?: { dateFrom?: string; dateTo?: string; status?: string }): Observable<PortalOrderList[]> {
+  list(params?: { search?: string; dateFrom?: string; dateTo?: string; status?: string }): Observable<PortalOrderList[]> {
     let httpParams = new HttpParams();
+    if (params?.search) httpParams = httpParams.set('search', params.search);
     if (params?.dateFrom) httpParams = httpParams.set('dateFrom', params.dateFrom);
     if (params?.dateTo) httpParams = httpParams.set('dateTo', params.dateTo);
     if (params?.status) httpParams = httpParams.set('status', params.status);

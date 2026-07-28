@@ -1,5 +1,6 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { catchError, of, tap } from 'rxjs';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
@@ -8,9 +9,12 @@ import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TooltipModule } from 'primeng/tooltip';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
-import { FormsModule } from '@angular/forms';
+import { SelectModule } from 'primeng/select';
+import { PopoverModule } from 'primeng/popover';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { OrdersApiService } from './services/api/orders-api.service';
 import { PortalOrderList, PortalOrderDetail } from '@shared/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
@@ -23,7 +27,8 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
   imports: [
     CurrencyPipe, DatePipe, FormsModule,
     TableModule, TagModule, DialogModule, ButtonModule, ToastModule,
-    ConfirmDialogModule, TooltipModule, InputTextModule,
+    ConfirmDialogModule, TooltipModule, IconFieldModule, InputIconModule,
+    InputTextModule, SelectModule, PopoverModule,
   ],
   providers: [MessageService, ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,6 +38,33 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
         <div>
           <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Órdenes</h1>
           <p class="text-surface-500 mt-1">Historial y seguimiento de tus órdenes de compra.</p>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center justify-between mb-4">
+        <div class="flex gap-2 items-center w-full sm:w-auto">
+          <p-iconField iconPosition="left" class="flex-1 sm:flex-none sm:min-w-[280px]">
+            <p-inputIcon styleClass="pi pi-search" />
+            <input #searchInput pInputText type="text" [value]="searchTerm()" (input)="onSearch(searchInput.value)" placeholder="Buscar..." class="w-full" />
+          </p-iconField>
+          <p-button #filterBtn icon="pi pi-filter" [outlined]="true" severity="secondary"
+            (onClick)="filterPopover.toggle($event)" pTooltip="Filtros"
+            [badge]="activeFilterCount() > 0 ? activeFilterCount().toString() : ''" badgeSeverity="contrast" />
+          <p-popover #filterPopover>
+            <div class="flex flex-col gap-4 p-1 min-w-[260px]">
+              <div class="flex items-center justify-between">
+                <span class="font-semibold text-sm">Filtros</span>
+                @if (activeFilterCount() > 0) {
+                  <p-button label="Limpiar" [text]="true" size="small" severity="secondary" (onClick)="clearFilters()" />
+                }
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-surface-500">Estado</label>
+                <p-select [options]="statusOptions" [ngModel]="filterStatus()" (onChange)="onStatusFilterChange($event.value)"
+                  optionLabel="label" optionValue="value" placeholder="Todos" styleClass="w-full" />
+              </div>
+            </div>
+          </p-popover>
         </div>
       </div>
 
@@ -46,77 +78,79 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
           <p class="text-sm">No se encontraron órdenes</p>
         </div>
       } @else {
-        <p-table
-          [value]="orders()"
-          [paginator]="true"
-          [rows]="10"
-          [rowsPerPageOptions]="[10, 20, 50]"
-          styleClass="w-full"
-          [rowHover]="true"
-          dataKey="id"
-        >
-          <ng-template pTemplate="header">
-            <tr class="border-b border-surface-200 dark:border-surface-700">
-              <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">N° Orden</th>
-              <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Estado</th>
-              <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Subtotal</th>
-              <th class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Líneas</th>
-              <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Creada</th>
-              <th class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Acciones</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-order>
-            <tr class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors">
-              <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300 cursor-pointer" (click)="openDetail(order.id)">{{ order.orderNumber }}</td>
-              <td class="px-4 py-3">
-                <p-tag [value]="getStatusLabel(order.status)" [severity]="statusSeverity(order.status)" />
-              </td>
-              <td class="px-4 py-3 text-right font-medium tabular-nums">{{ order.subtotal | currency:'USD':'symbol' }}</td>
-              <td class="px-4 py-3 text-center text-sm text-surface-600 dark:text-surface-400">{{ order.lineCount }}</td>
-              <td class="px-4 py-3 text-sm text-surface-500">{{ order.createdAt | date:'dd/MM/yyyy' }}</td>
-              <td class="px-4 py-3 text-center">
-                <div class="flex items-center justify-center gap-1">
-                  <p-button
-                    icon="pi pi-eye"
-                    (onClick)="openDetail(order.id)"
-                    severity="secondary"
-                    [text]="true"
-                    [rounded]="true"
-                    pTooltip="Ver detalle"
-                  />
-                  @if (order.status === 'DRAFT') {
+        <div class="rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden bg-surface-0 dark:bg-surface-900 shadow-2xl">
+          <p-table
+            [value]="orders()"
+            [paginator]="true"
+            [rows]="10"
+            [rowsPerPageOptions]="[10, 20, 50]"
+            styleClass="w-full"
+            [rowHover]="true"
+            dataKey="id"
+          >
+            <ng-template pTemplate="header">
+              <tr class="border-b border-surface-200 dark:border-surface-700">
+                <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">N° Orden</th>
+                <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Estado</th>
+                <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Subtotal</th>
+                <th class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Líneas</th>
+                <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Creada</th>
+                <th class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Acciones</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-order>
+              <tr class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors">
+                <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300 cursor-pointer" (click)="openDetail(order.id)">{{ order.orderNumber }}</td>
+                <td class="px-4 py-3">
+                  <p-tag [value]="getStatusLabel(order.status)" [severity]="statusSeverity(order.status)" />
+                </td>
+                <td class="px-4 py-3 text-right font-medium tabular-nums">{{ order.subtotal | currency:'USD':'symbol' }}</td>
+                <td class="px-4 py-3 text-center text-sm text-surface-600 dark:text-surface-400">{{ order.lineCount }}</td>
+                <td class="px-4 py-3 text-sm text-surface-500">{{ order.createdAt | date:'dd/MM/yyyy' }}</td>
+                <td class="px-4 py-3 text-center">
+                  <div class="flex items-center justify-center gap-1">
                     <p-button
-                      icon="pi pi-check"
-                      (onClick)="confirmOrder(order.id)"
-                      severity="success"
+                      icon="pi pi-eye"
+                      (onClick)="openDetail(order.id)"
+                      severity="secondary"
                       [text]="true"
                       [rounded]="true"
-                      pTooltip="Confirmar orden"
+                      pTooltip="Ver detalle"
                     />
-                    <p-button
-                      icon="pi pi-times"
-                      (onClick)="cancelOrder(order.id)"
-                      severity="danger"
-                      [text]="true"
-                      [rounded]="true"
-                      pTooltip="Cancelar"
-                    />
-                  }
-                  @if (order.status === 'CONFIRMED') {
-                    <p-button
-                      icon="pi pi-times"
-                      (onClick)="cancelOrder(order.id)"
-                      severity="danger"
-                      [text]="true"
-                      [rounded]="true"
-                      pTooltip="Cancelar"
-                    />
-                  }
-                </div>
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
+                    @if (order.status === 'DRAFT') {
+                      <p-button
+                        icon="pi pi-check"
+                        (onClick)="confirmOrder(order.id)"
+                        severity="success"
+                        [text]="true"
+                        [rounded]="true"
+                        pTooltip="Confirmar orden"
+                      />
+                      <p-button
+                        icon="pi pi-times"
+                        (onClick)="cancelOrder(order.id)"
+                        severity="danger"
+                        [text]="true"
+                        [rounded]="true"
+                        pTooltip="Cancelar"
+                      />
+                    }
+                    @if (order.status === 'CONFIRMED') {
+                      <p-button
+                        icon="pi pi-times"
+                        (onClick)="cancelOrder(order.id)"
+                        severity="danger"
+                        [text]="true"
+                        [rounded]="true"
+                        pTooltip="Cancelar"
+                      />
+                    }
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
       }
     </div>
 
@@ -200,11 +234,29 @@ export class OrdersPageComponent {
   private readonly api = inject(OrdersApiService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
+  private loadTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly loading = signal(false);
   readonly orders = signal<PortalOrderList[]>([]);
   readonly detail = signal<PortalOrderDetail | null>(null);
   readonly detailDialogVisible = signal(false);
+
+  readonly searchTerm = signal('');
+  readonly filterStatus = signal<string | undefined>(undefined);
+
+  readonly activeFilterCount = computed(() => {
+    let count = 0;
+    if (this.searchTerm()) count++;
+    if (this.filterStatus()) count++;
+    return count;
+  });
+
+  readonly statusOptions = [
+    { label: 'Borrador', value: 'DRAFT' },
+    { label: 'Confirmado', value: 'CONFIRMED' },
+    { label: 'Facturado', value: 'INVOICED' },
+    { label: 'Cancelado', value: 'CANCELLED' },
+  ];
 
   readonly getStatusLabel = getStatusLabel;
 
@@ -214,7 +266,12 @@ export class OrdersPageComponent {
 
   private loadOrders(): void {
     this.loading.set(true);
-    this.api.list().pipe(
+    const params: { search?: string; status?: string } = {};
+    const search = this.searchTerm();
+    const status = this.filterStatus();
+    if (search) params.search = search;
+    if (status) params.status = status;
+    this.api.list(params).pipe(
       tap(response => {
         this.orders.set(response);
         this.loading.set(false);
@@ -225,6 +282,27 @@ export class OrdersPageComponent {
         return of([] as PortalOrderList[]);
       }),
     ).subscribe();
+  }
+
+  private scheduleLoad(): void {
+    if (this.loadTimer) clearTimeout(this.loadTimer);
+    this.loadTimer = setTimeout(() => this.loadOrders(), 300);
+  }
+
+  onSearch(value: string): void {
+    this.searchTerm.set(value);
+    this.scheduleLoad();
+  }
+
+  onStatusFilterChange(value: string | null): void {
+    this.filterStatus.set(value ?? undefined);
+    this.loadOrders();
+  }
+
+  clearFilters(): void {
+    this.searchTerm.set('');
+    this.filterStatus.set(undefined);
+    this.loadOrders();
   }
 
   openDetail(id: string): void {

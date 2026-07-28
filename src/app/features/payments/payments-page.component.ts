@@ -1,11 +1,17 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { catchError, of, tap } from 'rxjs';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
+import { TooltipModule } from 'primeng/tooltip';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
+import { PopoverModule } from 'primeng/popover';
 import { MessageService } from 'primeng/api';
 import { PaymentsApiService } from './services/api/payments-api.service';
 import { PortalPaymentList, PortalPaymentDetail } from '@shared/models';
@@ -16,7 +22,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
 @Component({
   selector: 'app-payments-page',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, TableModule, TagModule, DialogModule, ButtonModule, ToastModule],
+  imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule, ToastModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, PopoverModule],
   providers: [MessageService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -25,6 +31,28 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
         <div>
           <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Pagos</h1>
           <p class="text-surface-500 mt-1">Registro y seguimiento de tus pagos realizados.</p>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center justify-between mb-4">
+        <div class="flex gap-2 items-center w-full sm:w-auto">
+          <p-iconField iconPosition="left" class="flex-1 sm:flex-none sm:min-w-[280px]">
+            <p-inputIcon styleClass="pi pi-search" />
+            <input #searchInput pInputText type="text" [value]="searchTerm()" (input)="onSearch(searchInput.value)" placeholder="Buscar..." class="w-full" />
+          </p-iconField>
+          <p-button #filterBtn icon="pi pi-filter" [outlined]="true" severity="secondary"
+            (onClick)="filterPopover.toggle($event)" pTooltip="Filtros"
+            [badge]="activeFilterCount() > 0 ? activeFilterCount().toString() : ''" badgeSeverity="contrast" />
+          <p-popover #filterPopover>
+            <div class="flex flex-col gap-4 p-1 min-w-[260px]">
+              <div class="flex items-center justify-between">
+                <span class="font-semibold text-sm">Filtros</span>
+                @if (activeFilterCount() > 0) {
+                  <p-button label="Limpiar" [text]="true" size="small" severity="secondary" (onClick)="clearFilters()" />
+                }
+              </div>
+            </div>
+          </p-popover>
         </div>
       </div>
 
@@ -38,41 +66,43 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
           <p class="text-sm">No se encontraron pagos</p>
         </div>
       } @else {
-        <p-table
-          [value]="payments()"
-          [paginator]="true"
-          [rows]="10"
-          [rowsPerPageOptions]="[10, 20, 50]"
-          styleClass="w-full"
-          [rowHover]="true"
-          dataKey="id"
-        >
-          <ng-template pTemplate="header">
-            <tr class="border-b border-surface-200 dark:border-surface-700">
-              <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">N° Pago</th>
-              <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Monto</th>
-              <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Referencia</th>
-              <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Fecha</th>
-              <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Estado</th>
-              <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Aplicado</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-payment>
-            <tr
-              class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors cursor-pointer"
-              (click)="openDetail(payment.id)"
-            >
-              <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">{{ payment.paymentNumber }}</td>
-              <td class="px-4 py-3 text-right font-medium tabular-nums">{{ payment.amount | currency:'USD':'symbol' }}</td>
-              <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ payment.referenceNumber || '-' }}</td>
-              <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ payment.paymentDate | date:'dd/MM/yyyy' }}</td>
-              <td class="px-4 py-3">
-                <p-tag [value]="getStatusLabel(payment.status)" [severity]="statusSeverity(payment.status)" />
-              </td>
-              <td class="px-4 py-3 text-right text-sm tabular-nums">{{ payment.appliedAmount | currency:'USD':'symbol' }}</td>
-            </tr>
-          </ng-template>
-        </p-table>
+        <div class="rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden bg-surface-0 dark:bg-surface-900 shadow-2xl">
+          <p-table
+            [value]="payments()"
+            [paginator]="true"
+            [rows]="10"
+            [rowsPerPageOptions]="[10, 20, 50]"
+            styleClass="w-full"
+            [rowHover]="true"
+            dataKey="id"
+          >
+            <ng-template pTemplate="header">
+              <tr class="border-b border-surface-200 dark:border-surface-700">
+                <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">N° Pago</th>
+                <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Monto</th>
+                <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Referencia</th>
+                <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Fecha</th>
+                <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Estado</th>
+                <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Aplicado</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-payment>
+              <tr
+                class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors cursor-pointer"
+                (click)="openDetail(payment.id)"
+              >
+                <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">{{ payment.paymentNumber }}</td>
+                <td class="px-4 py-3 text-right font-medium tabular-nums">{{ payment.amount | currency:'USD':'symbol' }}</td>
+                <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ payment.referenceNumber || '-' }}</td>
+                <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ payment.paymentDate | date:'dd/MM/yyyy' }}</td>
+                <td class="px-4 py-3">
+                  <p-tag [value]="getStatusLabel(payment.status)" [severity]="statusSeverity(payment.status)" />
+                </td>
+                <td class="px-4 py-3 text-right text-sm tabular-nums">{{ payment.appliedAmount | currency:'USD':'symbol' }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
       }
     </div>
 
@@ -139,11 +169,20 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
 export class PaymentsPageComponent {
   private readonly api = inject(PaymentsApiService);
   private readonly messageService = inject(MessageService);
+  private loadTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly loading = signal(false);
   readonly payments = signal<PortalPaymentList[]>([]);
   readonly detail = signal<PortalPaymentDetail | null>(null);
   readonly detailDialogVisible = signal(false);
+
+  readonly searchTerm = signal('');
+
+  readonly activeFilterCount = computed(() => {
+    let count = 0;
+    if (this.searchTerm()) count++;
+    return count;
+  });
 
   readonly getStatusLabel = getStatusLabel;
 
@@ -153,7 +192,9 @@ export class PaymentsPageComponent {
 
   private loadPayments(): void {
     this.loading.set(true);
-    this.api.list().pipe(
+    const params: { search?: string } = {};
+    if (this.searchTerm()) params.search = this.searchTerm();
+    this.api.list(params).pipe(
       tap(response => {
         this.payments.set(response);
         this.loading.set(false);
@@ -164,6 +205,21 @@ export class PaymentsPageComponent {
         return of([] as PortalPaymentList[]);
       }),
     ).subscribe();
+  }
+
+  private scheduleLoad(): void {
+    if (this.loadTimer) clearTimeout(this.loadTimer);
+    this.loadTimer = setTimeout(() => this.loadPayments(), 300);
+  }
+
+  onSearch(value: string): void {
+    this.searchTerm.set(value);
+    this.scheduleLoad();
+  }
+
+  clearFilters(): void {
+    this.searchTerm.set('');
+    this.loadPayments();
   }
 
   openDetail(id: string): void {

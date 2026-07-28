@@ -1,5 +1,6 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { catchError, of, tap } from 'rxjs';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
@@ -7,6 +8,11 @@ import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { PopoverModule } from 'primeng/popover';
 import { MessageService } from 'primeng/api';
 import { QuotesApiService } from './services/api/quotes-api.service';
 import { PortalQuoteList, PortalQuoteDetail } from '@shared/models';
@@ -17,7 +23,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
 @Component({
   selector: 'app-quotes-page',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, TableModule, TagModule, DialogModule, ButtonModule, ToastModule, TooltipModule],
+  imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule, ToastModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, SelectModule, PopoverModule],
   providers: [MessageService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -26,6 +32,33 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
         <div>
           <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Presupuestos</h1>
           <p class="text-surface-500 mt-1">Gestiona tus presupuestos y solicitudes.</p>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center justify-between mb-4">
+        <div class="flex gap-2 items-center w-full sm:w-auto">
+          <p-iconField iconPosition="left" class="flex-1 sm:flex-none sm:min-w-[280px]">
+            <p-inputIcon styleClass="pi pi-search" />
+            <input #searchInput pInputText type="text" [value]="searchTerm()" (input)="onSearch(searchInput.value)" placeholder="Buscar..." class="w-full" />
+          </p-iconField>
+          <p-button #filterBtn icon="pi pi-filter" [outlined]="true" severity="secondary"
+            (onClick)="filterPopover.toggle($event)" pTooltip="Filtros"
+            [badge]="activeFilterCount() > 0 ? activeFilterCount().toString() : ''" badgeSeverity="contrast" />
+          <p-popover #filterPopover>
+            <div class="flex flex-col gap-4 p-1 min-w-[260px]">
+              <div class="flex items-center justify-between">
+                <span class="font-semibold text-sm">Filtros</span>
+                @if (activeFilterCount() > 0) {
+                  <p-button label="Limpiar" [text]="true" size="small" severity="secondary" (onClick)="clearFilters()" />
+                }
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-surface-500">Estado</label>
+                <p-select [options]="statusOptions" [ngModel]="filterStatus()" (onChange)="onStatusFilterChange($event.value)"
+                  optionLabel="label" optionValue="value" placeholder="Todos" styleClass="w-full" />
+              </div>
+            </div>
+          </p-popover>
         </div>
       </div>
 
@@ -39,39 +72,41 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
           <p class="text-sm">No se encontraron presupuestos</p>
         </div>
       } @else {
-        <p-table
-          [value]="quotes()"
-          [paginator]="true"
-          [rows]="10"
-          [rowsPerPageOptions]="[10, 20, 50]"
-          styleClass="w-full"
-          [rowHover]="true"
-          dataKey="id"
-        >
-          <ng-template pTemplate="header">
-            <tr class="border-b border-surface-200 dark:border-surface-700">
-              <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">N° Presupuesto</th>
-              <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Estado</th>
-              <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Vence</th>
-              <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Subtotal</th>
-              <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Creada</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-quote>
-            <tr
-              class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors cursor-pointer"
-              (click)="openDetail(quote.id)"
-            >
-              <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">{{ quote.quoteNumber }}</td>
-              <td class="px-4 py-3">
-                <p-tag [value]="getStatusLabel(quote.status)" [severity]="statusSeverity(quote.status)" />
-              </td>
-              <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ quote.expiryDate | date:'dd/MM/yyyy' }}</td>
-              <td class="px-4 py-3 text-right font-medium tabular-nums">{{ quote.subtotal | currency:'USD':'symbol' }}</td>
-              <td class="px-4 py-3 text-sm text-surface-500">{{ quote.createdAt | date:'dd/MM/yyyy' }}</td>
-            </tr>
-          </ng-template>
-        </p-table>
+        <div class="rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden bg-surface-0 dark:bg-surface-900 shadow-2xl">
+          <p-table
+            [value]="quotes()"
+            [paginator]="true"
+            [rows]="10"
+            [rowsPerPageOptions]="[10, 20, 50]"
+            styleClass="w-full"
+            [rowHover]="true"
+            dataKey="id"
+          >
+            <ng-template pTemplate="header">
+              <tr class="border-b border-surface-200 dark:border-surface-700">
+                <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">N° Presupuesto</th>
+                <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Estado</th>
+                <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Vence</th>
+                <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Subtotal</th>
+                <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Creada</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-quote>
+              <tr
+                class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors cursor-pointer"
+                (click)="openDetail(quote.id)"
+              >
+                <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">{{ quote.quoteNumber }}</td>
+                <td class="px-4 py-3">
+                  <p-tag [value]="getStatusLabel(quote.status)" [severity]="statusSeverity(quote.status)" />
+                </td>
+                <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ quote.expiryDate | date:'dd/MM/yyyy' }}</td>
+                <td class="px-4 py-3 text-right font-medium tabular-nums">{{ quote.subtotal | currency:'USD':'symbol' }}</td>
+                <td class="px-4 py-3 text-sm text-surface-500">{{ quote.createdAt | date:'dd/MM/yyyy' }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
       }
     </div>
 
@@ -161,11 +196,30 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
 export class QuotesPageComponent {
   private readonly api = inject(QuotesApiService);
   private readonly messageService = inject(MessageService);
+  private loadTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly loading = signal(false);
   readonly quotes = signal<PortalQuoteList[]>([]);
   readonly detail = signal<PortalQuoteDetail | null>(null);
   readonly detailDialogVisible = signal(false);
+
+  readonly searchTerm = signal('');
+  readonly filterStatus = signal<string | undefined>(undefined);
+
+  readonly activeFilterCount = computed(() => {
+    let count = 0;
+    if (this.searchTerm()) count++;
+    if (this.filterStatus()) count++;
+    return count;
+  });
+
+  readonly statusOptions = [
+    { label: 'Borrador', value: 'DRAFT' },
+    { label: 'Enviado', value: 'SENT' },
+    { label: 'Convertido', value: 'CONVERTED' },
+    { label: 'Cancelado', value: 'CANCELLED' },
+    { label: 'Vencido', value: 'EXPIRED' },
+  ];
 
   readonly getStatusLabel = getStatusLabel;
 
@@ -175,7 +229,12 @@ export class QuotesPageComponent {
 
   private loadQuotes(): void {
     this.loading.set(true);
-    this.api.list().pipe(
+    const params: { search?: string; status?: string } = {};
+    const search = this.searchTerm();
+    const status = this.filterStatus();
+    if (search) params.search = search;
+    if (status) params.status = status;
+    this.api.list(params).pipe(
       tap(response => {
         this.quotes.set(response);
         this.loading.set(false);
@@ -186,6 +245,27 @@ export class QuotesPageComponent {
         return of([] as PortalQuoteList[]);
       }),
     ).subscribe();
+  }
+
+  private scheduleLoad(): void {
+    if (this.loadTimer) clearTimeout(this.loadTimer);
+    this.loadTimer = setTimeout(() => this.loadQuotes(), 300);
+  }
+
+  onSearch(value: string): void {
+    this.searchTerm.set(value);
+    this.scheduleLoad();
+  }
+
+  onStatusFilterChange(value: string | null): void {
+    this.filterStatus.set(value ?? undefined);
+    this.loadQuotes();
+  }
+
+  clearFilters(): void {
+    this.searchTerm.set('');
+    this.filterStatus.set(undefined);
+    this.loadQuotes();
   }
 
   openDetail(id: string): void {
