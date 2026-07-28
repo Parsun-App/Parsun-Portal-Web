@@ -198,11 +198,14 @@ export class ProductsPageComponent {
     { label: 'Todas las categorías', value: null },
   ]);
 
+  private categoriesLoaded = false;
+
   private readonly searchSubject = new Subject<string>();
 
   readonly products = signal<PortalProduct[]>([]);
 
   constructor() {
+    this.loadCategories();
     this.searchSubject.pipe(
       debounceTime(300),
       distinctUntilChanged(),
@@ -210,6 +213,26 @@ export class ProductsPageComponent {
       switchMap(() => this.loadProducts()),
     ).subscribe();
     this.loadProducts().subscribe();
+  }
+
+  private loadCategories(): void {
+    this.api.list(undefined, undefined, 0, 100).pipe(
+      tap(response => {
+        if (this.categoriesLoaded) return;
+        const seen = new Set<string>();
+        const options: { label: string; value: string | null }[] = [
+          { label: 'Todas las categorías', value: null },
+        ];
+        for (const p of response.content) {
+          if (p.categoryId && !seen.has(p.categoryId)) {
+            seen.add(p.categoryId);
+            options.push({ label: p.categoryName, value: p.categoryId });
+          }
+        }
+        this.categoryOptions.set(options);
+        this.categoriesLoaded = true;
+      }),
+    ).subscribe();
   }
 
   searchChanged(term: string): void {
@@ -241,17 +264,6 @@ export class ProductsPageComponent {
         this.products.set(response.content);
         this.totalElements.set(response.totalElements);
         this.loading.set(false);
-        const seen = new Set<string>();
-        const options: { label: string; value: string | null }[] = [
-          { label: 'Todas las categorías', value: null },
-        ];
-        for (const p of response.content) {
-          if (p.categoryId && !seen.has(p.categoryId)) {
-            seen.add(p.categoryId);
-            options.push({ label: p.categoryName, value: p.categoryId });
-          }
-        }
-        this.categoryOptions.set(options);
       }),
       catchError(() => {
         this.loading.set(false);
