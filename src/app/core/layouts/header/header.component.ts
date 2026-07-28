@@ -1,7 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, signal, afterNextRender } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../features/auth/services/application/auth.service';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
@@ -12,26 +11,10 @@ const DARK_MODE_KEY = 'darkMode';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [ButtonModule, TooltipModule, RouterLink],
+  imports: [ButtonModule, TooltipModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <header class="flex items-center justify-between h-16 px-4 md:px-6 bg-surface-0 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700">
-      <!-- Mobile: logo + user info -->
-      <div class="flex items-center gap-3">
-        <img src="/logo.png" alt="Parsun" class="h-8 w-auto md:hidden" />
-        @if (currentUser(); as user) {
-          <div class="hidden sm:flex items-center gap-2">
-            <div class="w-8 h-8 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary font-semibold text-sm">
-              {{ user.legalName.charAt(0) }}
-            </div>
-            <div class="flex flex-col leading-tight">
-              <span class="text-sm font-semibold text-surface-700 dark:text-surface-300">{{ user.legalName }}</span>
-              <span class="text-xs text-surface-400">{{ user.rif }}</span>
-            </div>
-          </div>
-        }
-      </div>
-
+    <header class="flex items-center justify-end h-16 px-4 md:px-6 bg-surface-0 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700">
       <div class="flex items-center gap-1">
         <p-button
           [icon]="isDarkMode() ? 'pi pi-sun' : 'pi pi-moon'"
@@ -58,7 +41,6 @@ export class HeaderComponent {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
 
-  readonly currentUser = this.authService.currentUser;
   readonly isDarkMode = signal(false);
 
   constructor() {

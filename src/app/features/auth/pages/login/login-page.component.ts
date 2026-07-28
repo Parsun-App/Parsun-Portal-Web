@@ -1,5 +1,5 @@
 import { Component, signal, ChangeDetectionStrategy, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
@@ -8,7 +8,7 @@ import { AuthService } from '../../services/application/auth.service';
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [FormsModule, InputTextModule, ButtonModule, RouterLink],
+  imports: [FormsModule, InputTextModule, ButtonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './login-page.component.html',
 })

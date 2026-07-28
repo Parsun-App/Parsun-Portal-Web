@@ -12,10 +12,13 @@ type Severity = 'info' | 'success' | 'warn' | 'danger' | 'secondary' | 'contrast
 
 interface StatCard {
   label: string;
-  value: string;
+  value: string | number;
   icon: string;
   route: string;
   gradient: string;
+  format?: string;
+  prefix?: string;
+  suffix?: string;
 }
 
 @Component({
@@ -25,26 +28,25 @@ interface StatCard {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="flex flex-col gap-8 animate-fade-in">
-      <!-- Welcome Hero -->
-      <div class="relative overflow-hidden rounded-2xl bg-zinc-900 dark:bg-zinc-950 p-8 md:p-10 text-white">
+      <div class="relative overflow-hidden rounded-2xl bg-zinc-900 dark:bg-zinc-950 p-5 md:p-10 text-white shadow-xl">
         <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
         <div class="absolute bottom-0 left-1/2 w-48 h-48 bg-white/5 rounded-full translate-y-1/3"></div>
         <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <p class="text-zinc-400 text-sm font-medium mb-1">Panel de Control</p>
-            <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-2">
+            <p class="text-zinc-400 text-xs md:text-sm font-medium mb-1">Panel de Control</p>
+            <h1 class="text-xl md:text-4xl font-bold tracking-tight mb-2">
               ¡Bienvenido, {{ customerName() }}!
             </h1>
-            <p class="text-zinc-400 max-w-lg text-base">
+            <p class="text-zinc-400 max-w-lg text-sm md:text-base">
               Aquí tienes un resumen de tu actividad comercial. Gestiona tus presupuestos, órdenes y pagos desde un solo lugar.
             </p>
           </div>
-          <div class="flex gap-3 shrink-0">
-            <a routerLink="/quotes">
-              <p-button label="Nuevo Presupuesto" icon="pi pi-plus" styleClass="bg-white text-zinc-900 border-white hover:bg-zinc-100 font-medium px-5" />
+          <div class="flex flex-col sm:flex-row gap-3 shrink-0">
+            <a routerLink="/quotes" class="w-full sm:w-auto">
+              <p-button label="Nuevo Presupuesto" icon="pi pi-plus" styleClass="w-full sm:w-auto bg-white text-zinc-900 border-white hover:bg-zinc-100 font-medium px-5" />
             </a>
-            <a routerLink="/products">
-              <p-button label="Ver Productos" icon="pi pi-box" [outlined]="true" styleClass="border-white/30 text-white hover:bg-white/10 font-medium px-5" />
+            <a routerLink="/products" class="w-full sm:w-auto">
+              <p-button label="Ver Productos" icon="pi pi-box" [outlined]="true" styleClass="w-full sm:w-auto border-white/30 text-white hover:bg-white/10 font-medium px-5" />
             </a>
           </div>
         </div>
@@ -53,7 +55,7 @@ interface StatCard {
       @if (loading()) {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           @for (i of [1,2,3,4]; track i) {
-            <div class="rounded-xl border border-surface-200 dark:border-surface-700 p-5">
+            <div class="rounded-xl border border-surface-200 dark:border-surface-700 p-5 shadow-md">
               <p-skeleton width="3rem" height="3rem" borderRadius="0.75rem" />
               <p-skeleton width="60%" height="1.5rem" styleClass="mt-3" />
               <p-skeleton width="40%" height="0.875rem" styleClass="mt-2" />
@@ -61,7 +63,6 @@ interface StatCard {
           }
         </div>
       } @else if (dashboard(); as data) {
-        <!-- Stats Grid -->
         <div>
           <div class="flex items-center justify-between mb-4">
             <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100">Resumen</h2>
@@ -69,11 +70,17 @@ interface StatCard {
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             @for (card of buildStats(data); track card.label) {
-              <a [routerLink]="card.route" class="group relative overflow-hidden rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+              <a [routerLink]="card.route" class="group relative overflow-hidden rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-5 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200">
                 <div class="absolute top-0 right-0 w-20 h-20 opacity-5 group-hover:opacity-10 transition-opacity rounded-full -translate-y-1/3 translate-x-1/3" [style.background]="card.gradient"></div>
                 <div class="flex items-start justify-between">
                   <div>
-                    <p class="text-2xl font-bold text-surface-900 dark:text-surface-100 tracking-tight">{{ card.value }}</p>
+                    <p class="text-2xl font-bold text-surface-900 dark:text-surface-100 tracking-tight">
+                      @if (card.format) {
+                        {{ card.prefix }}{{ card.value | number:card.format }}{{ card.suffix }}
+                      } @else {
+                        {{ card.value }}
+                      }
+                    </p>
                     <p class="text-xs text-surface-500 mt-1 font-medium">{{ card.label }}</p>
                   </div>
                   <div class="w-11 h-11 rounded-xl flex items-center justify-center text-lg" [style.background]="card.gradient" [style.color]="'white'">
@@ -85,10 +92,8 @@ interface StatCard {
           </div>
         </div>
 
-        <!-- Recent Activity + Quick Links -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <!-- Activity Table -->
-          <div class="lg:col-span-2 rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 overflow-hidden">
+          <div class="lg:col-span-2 rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 overflow-hidden shadow-lg">
             <div class="px-6 py-4 border-b border-surface-200 dark:border-surface-700 flex items-center justify-between">
               <div>
                 <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100">Actividad Reciente</h2>
@@ -97,31 +102,31 @@ interface StatCard {
               <p-button label="Ver Todo" [text]="true" size="small" icon="pi pi-arrow-right" iconPos="right" />
             </div>
             <div class="overflow-x-auto">
-              <table class="w-full">
+              <table class="w-full min-w-[480px]">
                 <thead>
                   <tr class="bg-surface-50 dark:bg-surface-900/50">
-                    <th class="text-left px-6 py-2.5 text-xs font-semibold text-surface-500 uppercase tracking-wider">Tipo</th>
-                    <th class="text-left px-6 py-2.5 text-xs font-semibold text-surface-500 uppercase tracking-wider">Referencia</th>
-                    <th class="text-left px-6 py-2.5 text-xs font-semibold text-surface-500 uppercase tracking-wider hidden sm:table-cell">Fecha</th>
-                    <th class="text-left px-6 py-2.5 text-xs font-semibold text-surface-500 uppercase tracking-wider">Estado</th>
-                    <th class="text-right px-6 py-2.5 text-xs font-semibold text-surface-500 uppercase tracking-wider">Monto</th>
+                    <th class="text-left px-4 md:px-6 py-2.5 text-xs font-semibold text-surface-500 uppercase tracking-wider">Tipo</th>
+                    <th class="text-left px-4 md:px-6 py-2.5 text-xs font-semibold text-surface-500 uppercase tracking-wider hidden md:table-cell">Referencia</th>
+                    <th class="text-left px-4 md:px-6 py-2.5 text-xs font-semibold text-surface-500 uppercase tracking-wider hidden sm:table-cell">Fecha</th>
+                    <th class="text-left px-4 md:px-6 py-2.5 text-xs font-semibold text-surface-500 uppercase tracking-wider">Estado</th>
+                    <th class="text-right px-4 md:px-6 py-2.5 text-xs font-semibold text-surface-500 uppercase tracking-wider">Monto</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-surface-100 dark:divide-surface-800">
-                  @for (item of data.recentActivity ?? []; track item.number; let i = $index) {
+                  @for (item of data.recentActivity; track item.number; let i = $index) {
                     <tr class="hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors">
-                      <td class="px-6 py-3">
+                      <td class="px-4 md:px-6 py-3">
                         <div class="flex items-center gap-2">
-                          <span class="w-2 h-2 rounded-full" [style.background]="activityColor(item.type)"></span>
+                          <span class="w-2 h-2 rounded-full shrink-0" [style.background]="activityColor(item.type)"></span>
                           <span class="text-sm text-surface-700 dark:text-surface-300 font-medium">{{ activityTypeLabel(item.type) }}</span>
                         </div>
                       </td>
-                      <td class="px-6 py-3 text-sm text-surface-900 dark:text-surface-100 font-mono">{{ item.reference || item.number }}</td>
-                      <td class="px-6 py-3 text-sm text-surface-500 hidden sm:table-cell">{{ item.date | date:'dd/MM/yy' }}</td>
-                      <td class="px-6 py-3">
+                      <td class="px-4 md:px-6 py-3 text-sm text-surface-900 dark:text-surface-100 font-mono hidden md:table-cell">{{ item.reference || item.number }}</td>
+                      <td class="px-4 md:px-6 py-3 text-sm text-surface-500 hidden sm:table-cell">{{ item.date | date:'dd/MM/yy' }}</td>
+                      <td class="px-4 md:px-6 py-3">
                         <p-tag [value]="getStatusLabel(item.status)" [severity]="activityStatusSeverity(item.status)" [rounded]="true" styleClass="text-xs px-2 py-0.5" />
                       </td>
-                      <td class="px-6 py-3 text-right text-sm font-semibold text-surface-900 dark:text-surface-100 tabular-nums whitespace-nowrap">{{ item.amount | currency:'USD':'symbol':'1.0-0' }}</td>
+                      <td class="px-4 md:px-6 py-3 text-right text-sm font-semibold text-surface-900 dark:text-surface-100 tabular-nums whitespace-nowrap">{{ item.amount | currency:'USD':'symbol':'1.0-0' }}</td>
                     </tr>
                   }
                 </tbody>
@@ -129,8 +134,7 @@ interface StatCard {
             </div>
           </div>
 
-          <!-- Quick Actions -->
-          <div class="rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-6">
+          <div class="rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-6 shadow-lg">
             <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100 mb-4">Acciones Rápidas</h2>
             <div class="flex flex-col gap-2">
               @for (action of quickActions; track action.label) {
@@ -206,8 +210,8 @@ export class DashboardPageComponent {
     return [
       { label: 'Presupuestos Activos', value: String(data.draftQuotes), icon: 'pi pi-file-edit', route: '/quotes', gradient: 'linear-gradient(135deg, #3b82f6, #2563eb)' },
       { label: 'Órdenes Confirmadas', value: String(data.confirmedOrders), icon: 'pi pi-shopping-cart', route: '/orders', gradient: 'linear-gradient(135deg, #22c55e, #16a34a)' },
-      { label: 'Facturas Pendientes', value: String(data.pendingInvoices), icon: 'pi pi-file-invoice', route: '/invoices', gradient: 'linear-gradient(135deg, #f59e0b, #d97706)' },
-      { label: 'Monto Pendiente', value: '$ ' + (data.pendingAmount / 1000).toFixed(0) + 'k', icon: 'pi pi-dollar', route: '/invoices', gradient: 'linear-gradient(135deg, #ef4444, #dc2626)' },
+      { label: 'Facturas Pendientes', value: String(data.pendingInvoices), icon: 'pi pi-receipt', route: '/invoices', gradient: 'linear-gradient(135deg, #f59e0b, #d97706)' },
+      { label: 'Monto Pendiente', value: data.pendingAmount / 1000, icon: 'pi pi-dollar', route: '/invoices', gradient: 'linear-gradient(135deg, #ef4444, #dc2626)', format: '1.0-0', prefix: '$', suffix: 'k' },
     ];
   }
 

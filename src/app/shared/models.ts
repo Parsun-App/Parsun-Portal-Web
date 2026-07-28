@@ -1,4 +1,3 @@
-// Dashboard
 export interface PortalDashboard {
   draftQuotes: number;
   confirmedOrders: number;
@@ -17,7 +16,6 @@ export interface PortalRecentActivity {
   reference: string;
 }
 
-// Products
 export interface PortalProduct {
   id: string;
   code: string;
@@ -40,7 +38,6 @@ export interface PagedResponse<T> {
   number: number;
 }
 
-// Quotes
 export interface PortalQuoteList {
   id: string;
   number: string;
@@ -80,7 +77,6 @@ export interface PortalQuoteItem {
   total: number;
 }
 
-// Orders
 export interface PortalOrderList {
   id: string;
   number: string;
@@ -119,7 +115,6 @@ export interface PortalOrderItem {
   total: number;
 }
 
-// Invoices
 export interface PortalInvoiceList {
   id: string;
   number: string;
@@ -163,7 +158,6 @@ export interface PortalInvoiceItem {
   total: number;
 }
 
-// Payments
 export interface PortalPaymentList {
   id: string;
   number: string;
@@ -197,7 +191,6 @@ export interface PortalPaymentInvoice {
   amount: number;
 }
 
-// Profile
 export interface PortalProfile {
   legalName: string;
   rif: string;
