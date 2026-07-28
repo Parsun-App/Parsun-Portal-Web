@@ -37,27 +37,29 @@ import { PortalProduct } from '@shared/models';
         </div>
       </div>
 
-      <div class="flex flex-col sm:flex-row gap-4">
-        <p-iconfield class="w-full sm:w-72">
-          <p-inputicon class="pi pi-search" />
-          <input
-            pInputText
-            [ngModel]="searchTerm()"
-            (ngModelChange)="searchChanged($event)"
-            placeholder="Buscar productos..."
-            class="w-full"
+      <div class="rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-4 shadow-2xl mb-6">
+        <div class="flex flex-col sm:flex-row gap-4">
+          <p-iconfield class="w-full sm:w-72">
+            <p-inputicon class="pi pi-search" />
+            <input
+              pInputText
+              [ngModel]="searchTerm()"
+              (ngModelChange)="searchChanged($event)"
+              placeholder="Buscar productos..."
+              class="w-full"
+            />
+          </p-iconfield>
+          <p-select
+            [ngModel]="selectedCategory()"
+            (ngModelChange)="onCategoryChange($event)"
+            [options]="categoryOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Todas las categorías"
+            class="w-full sm:w-56"
+            [showClear]="true"
           />
-        </p-iconfield>
-        <p-select
-          [ngModel]="selectedCategory()"
-          (ngModelChange)="onCategoryChange($event)"
-          [options]="categoryOptions"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Todas las categorías"
-          class="w-full sm:w-56"
-          [showClear]="true"
-        />
+        </div>
       </div>
 
       @if (loading()) {
@@ -70,6 +72,7 @@ import { PortalProduct } from '@shared/models';
           <p class="text-sm">No se encontraron productos</p>
         </div>
       } @else {
+        <div class="rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden bg-surface-0 dark:bg-surface-900 shadow-2xl">
         <p-table
           [value]="products()"
           [paginator]="true"
@@ -110,6 +113,7 @@ import { PortalProduct } from '@shared/models';
             </tr>
           </ng-template>
         </p-table>
+        </div>
       }
     </div>
 
