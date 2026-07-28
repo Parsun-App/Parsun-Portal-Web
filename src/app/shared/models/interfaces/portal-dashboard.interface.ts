@@ -12,4 +12,5 @@ export interface PortalRecentActivity {
   date: string;
   status: string;
   amount: number;
+  reference?: string;
 }

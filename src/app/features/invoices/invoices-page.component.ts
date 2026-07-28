@@ -93,11 +93,6 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
         <div class="flex flex-col gap-6">
           <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div>
-              <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Cliente</label>
-              <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.customerName }}</p>
-              <p class="text-xs text-surface-400">{{ d.customerRif }}</p>
-            </div>
-            <div>
               <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Estado</label>
               <p class="text-sm mt-1"><p-tag [value]="getStatusLabel(d.status)" [severity]="statusSeverity(d.status)" /></p>
             </div>

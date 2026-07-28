@@ -51,7 +51,6 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
           <ng-template pTemplate="header">
             <tr class="border-b border-surface-200 dark:border-surface-700">
               <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">N° Presupuesto</th>
-              <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Cliente</th>
               <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Estado</th>
               <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Vence</th>
               <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Subtotal</th>
@@ -64,7 +63,6 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
               (click)="openDetail(quote.id)"
             >
               <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">{{ quote.quoteNumber }}</td>
-              <td class="px-4 py-3 text-sm text-surface-900 dark:text-surface-100">{{ quote.customerName }}</td>
               <td class="px-4 py-3">
                 <p-tag [value]="getStatusLabel(quote.status)" [severity]="statusSeverity(quote.status)" />
               </td>
@@ -92,11 +90,6 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
       @if (detail(); as d) {
         <div class="flex flex-col gap-6">
           <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <div>
-              <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Cliente</label>
-              <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.customerName }}</p>
-              <p class="text-xs text-surface-400">{{ d.customerRif }}</p>
-            </div>
             <div>
               <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Estado</label>
               <p class="text-sm mt-1"><p-tag [value]="getStatusLabel(d.status)" [severity]="statusSeverity(d.status)" /></p>

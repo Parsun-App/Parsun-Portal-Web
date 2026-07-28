@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { AuthService } from '../auth/services/application/auth.service';
+import { DashboardApiService } from './services/api/dashboard-api.service';
 import { PortalDashboard } from '@shared/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
 
@@ -166,6 +167,7 @@ interface StatCard {
 })
 export class DashboardPageComponent {
   private readonly authService = inject(AuthService);
+  private readonly dashboardApi = inject(DashboardApiService);
 
   readonly loading = signal(true);
   readonly dashboard = signal<PortalDashboard | null>(null);
@@ -182,28 +184,20 @@ export class DashboardPageComponent {
   ];
 
   constructor() {
-    setTimeout(() => this.loadMockData(), 600);
+    this.loadDashboard();
   }
 
-  private loadMockData(): void {
-    this.dashboard.set({
-      draftQuotes: 3,
-      confirmedOrders: 8,
-      pendingInvoices: 5,
-      pendingAmount: 125000.50,
-      totalProducts: 142,
-      recentActivity: [
-        { type: 'ORDER', number: 'ORD-2026-0042', date: '2026-07-27', status: 'CONFIRMED', amount: 45600, reference: 'Pedido mayorista' },
-        { type: 'INVOICE', number: 'FAC-2026-0187', date: '2026-07-26', status: 'PENDING_PAYMENT', amount: 28750, reference: 'Factura julio' },
-        { type: 'QUOTE', number: 'COT-2026-0091', date: '2026-07-25', status: 'DRAFT', amount: 12800, reference: 'Presupuesto equipos' },
-        { type: 'PAYMENT', number: 'PAG-2026-0056', date: '2026-07-24', status: 'APPLIED', amount: 35000, reference: 'Transferencia' },
-        { type: 'ORDER', number: 'ORD-2026-0039', date: '2026-07-23', status: 'CONFIRMED', amount: 22300, reference: 'Pedido urgente' },
-        { type: 'INVOICE', number: 'FAC-2026-0180', date: '2026-07-22', status: 'PAID', amount: 15200, reference: 'Factura cancelada' },
-        { type: 'QUOTE', number: 'COT-2026-0085', date: '2026-07-20', status: 'DRAFT', amount: 43000, reference: 'Presupuesto renovación' },
-        { type: 'INVOICE', number: 'FAC-2026-0175', date: '2026-07-18', status: 'OVERDUE', amount: 52750, reference: 'Factura vencida' },
-      ],
+  private loadDashboard(): void {
+    this.loading.set(true);
+    this.dashboardApi.getDashboard().subscribe({
+      next: (data) => {
+        this.dashboard.set(data);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.loading.set(false);
+      },
     });
-    this.loading.set(false);
   }
 
   buildStats(data: PortalDashboard): StatCard[] {

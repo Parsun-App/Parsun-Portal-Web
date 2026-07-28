@@ -45,7 +45,6 @@ export interface PortalQuoteList {
   status: string;
   total: number;
   items: number;
-  customerName: string;
   createdAt: string;
 }
 
@@ -63,8 +62,6 @@ export interface PortalQuoteDetail {
   orderNumber?: string;
   createdByName?: string;
   createdAt: string;
-  customerName: string;
-  customerRif: string;
   items: PortalQuoteItem[];
   lines: PortalQuoteItem[];
 }
@@ -85,7 +82,6 @@ export interface PortalOrderList {
   status: string;
   total: number;
   items: number;
-  customerName: string;
   createdAt: string;
 }
 
@@ -101,8 +97,6 @@ export interface PortalOrderDetail {
   notes?: string;
   invoiceNumber?: string;
   createdAt: string;
-  customerName: string;
-  customerRif: string;
   items: PortalOrderItem[];
   lines: PortalOrderItem[];
 }
@@ -125,7 +119,6 @@ export interface PortalInvoiceList {
   total: number;
   balance: number;
   paidAmount: number;
-  customerName: string;
   createdAt: string;
 }
 
@@ -144,8 +137,6 @@ export interface PortalInvoiceDetail {
   paymentType?: string;
   notes?: string;
   createdAt: string;
-  customerName: string;
-  customerRif: string;
   items: PortalInvoiceItem[];
   lines: PortalInvoiceItem[];
 }
