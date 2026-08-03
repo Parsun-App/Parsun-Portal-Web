@@ -80,6 +80,7 @@ import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.
           [lazy]="true"
           (onPage)="onPageChange($event)"
           [rowsPerPageOptions]="[10, 20, 50]"
+          [paginatorDropdownAppendTo]="'body'"
           styleClass="w-full"
           [rowHover]="true"
           dataKey="id"

@@ -73,6 +73,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
             [paginator]="true"
             [rows]="10"
             [rowsPerPageOptions]="[10, 20, 50]"
+            [paginatorDropdownAppendTo]="'body'"
             styleClass="w-full"
             [rowHover]="true"
             dataKey="id"
