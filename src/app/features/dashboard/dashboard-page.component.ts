@@ -23,6 +23,8 @@ interface StatCard {
   suffix?: string;
 }
 
+const THOUSAND = 1000;
+
 @Component({
   selector: 'app-dashboard-page',
   standalone: true,
@@ -206,8 +208,32 @@ export class DashboardPageComponent {
       { label: 'Presupuestos Activos', value: String(data.draftQuotes), icon: 'pi pi-file-edit', route: '/quotes', gradient: 'linear-gradient(135deg, #3b82f6, #2563eb)' },
       { label: 'Órdenes Confirmadas', value: String(data.confirmedOrders), icon: 'pi pi-shopping-cart', route: '/orders', gradient: 'linear-gradient(135deg, #22c55e, #16a34a)' },
       { label: 'Facturas Pendientes', value: String(data.pendingInvoices), icon: 'pi pi-receipt', route: '/invoices', gradient: 'linear-gradient(135deg, #f59e0b, #d97706)' },
-      { label: 'Monto Pendiente', value: data.pendingAmount / 1000, icon: 'pi pi-dollar', route: '/invoices', gradient: 'linear-gradient(135deg, #ef4444, #dc2626)', format: '1.0-0', prefix: '$', suffix: 'k' },
+      this.pendingAmountCard(data.pendingAmount),
     ];
+  }
+
+  private pendingAmountCard(amount: number): StatCard {
+    if (amount >= THOUSAND) {
+      return {
+        label: 'Monto Pendiente',
+        value: amount / THOUSAND,
+        icon: 'pi pi-dollar',
+        route: '/invoices',
+        gradient: 'linear-gradient(135deg, #ef4444, #dc2626)',
+        format: '1.0-1',
+        prefix: '$',
+        suffix: 'k',
+      };
+    }
+    return {
+      label: 'Monto Pendiente',
+      value: amount,
+      icon: 'pi pi-dollar',
+      route: '/invoices',
+      gradient: 'linear-gradient(135deg, #ef4444, #dc2626)',
+      format: '1.0-0',
+      prefix: '$',
+    };
   }
 
   activityTypeLabel(type: string): string {
