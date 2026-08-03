@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
 import { catchError, of, Subject, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs';
@@ -16,6 +16,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { ProductsApiService } from './services/api/products-api.service';
 import { PortalProduct } from '@shared/models';
+import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-products-page',
@@ -24,7 +25,7 @@ import { PortalProduct } from '@shared/models';
     FormsModule, CurrencyPipe,
     InputTextModule, IconFieldModule, InputIconModule,
     SelectModule, TableModule, TagModule, DialogModule, ButtonModule,
-    ProgressSpinnerModule, ToastModule,
+    ProgressSpinnerModule, ToastModule, EmptyStateComponent,
   ],
   providers: [MessageService],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -67,10 +68,8 @@ import { PortalProduct } from '@shared/models';
           <i class="pi pi-spin pi-spinner text-3xl text-surface-400"></i>
         </div>
       } @else if (products() && products()!.length === 0) {
-        <div class="flex flex-col items-center justify-center h-64 text-surface-400 gap-3">
-          <i class="pi pi-box text-4xl"></i>
-          <p class="text-sm">No se encontraron productos</p>
-        </div>
+        @let empty = emptyConfig();
+        <app-empty-state [icon]="empty.icon" [title]="empty.title" [message]="empty.message" />
       } @else {
         <div class="rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden bg-surface-0 dark:bg-surface-900 shadow-2xl">
         <p-table
@@ -183,6 +182,7 @@ import { PortalProduct } from '@shared/models';
 })
 export class ProductsPageComponent {
   private readonly api = inject(ProductsApiService);
+  private readonly messageService = inject(MessageService);
 
   readonly searchTerm = signal('');
   readonly selectedCategory = signal<string | null>(null);
@@ -193,6 +193,23 @@ export class ProductsPageComponent {
   readonly totalElements = signal(0);
 
   readonly dialogVisible = signal(false);
+
+  readonly hasActiveFilters = computed(() => Boolean(this.searchTerm()) || Boolean(this.selectedCategory()));
+
+  readonly emptyConfig = computed(() => {
+    if (this.hasActiveFilters()) {
+      return {
+        icon: 'pi pi-box',
+        title: 'Sin resultados',
+        message: 'No encontramos resultados para tu búsqueda o filtros actuales.',
+      };
+    }
+    return {
+      icon: 'pi pi-box',
+      title: 'No hay productos',
+      message: 'Tus productos aparecerán aquí cuando los tengas.',
+    };
+  });
 
   readonly categoryOptions = signal<{ label: string; value: string | null }[]>([
     { label: 'Todas las categorías', value: null },
@@ -267,6 +284,7 @@ export class ProductsPageComponent {
       }),
       catchError(() => {
         this.loading.set(false);
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudieron cargar los productos' });
         return of({ content: [], totalElements: 0, totalPages: 0, size: 20, number: 0, first: true, last: true, empty: true });
       }),
     );

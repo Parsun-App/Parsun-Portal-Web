@@ -8,6 +8,7 @@ import { AuthService } from '../auth/services/application/auth.service';
 import { DashboardApiService } from './services/api/dashboard-api.service';
 import { PortalDashboard } from '@shared/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
+import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 
 type Severity = 'info' | 'success' | 'warn' | 'danger' | 'secondary' | 'contrast';
 
@@ -25,7 +26,7 @@ interface StatCard {
 @Component({
   selector: 'app-dashboard-page',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, DecimalPipe, TagModule, RouterLink, ButtonModule, SkeletonModule],
+  imports: [CurrencyPipe, DatePipe, DecimalPipe, TagModule, RouterLink, ButtonModule, SkeletonModule, EmptyStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="flex flex-col gap-8 animate-fade-in">
@@ -129,6 +130,12 @@ interface StatCard {
                       </td>
                       <td class="px-4 md:px-6 py-3 text-right text-sm font-semibold text-surface-900 dark:text-surface-100 tabular-nums whitespace-nowrap">{{ item.amount | currency:'USD':'symbol':'1.0-0' }}</td>
                     </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="5">
+                        <app-empty-state [compact]="true" icon="pi pi-inbox" title="Sin actividad reciente" message="Cuando realices movimientos, aparecerán aquí." />
+                      </td>
+                    </tr>
                   }
                 </tbody>
               </table>
@@ -154,13 +161,7 @@ interface StatCard {
           </div>
         </div>
       } @else {
-        <div class="flex flex-col items-center justify-center py-20 text-center">
-          <div class="w-20 h-20 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
-            <i class="pi pi-chart-bar text-3xl text-surface-400"></i>
-          </div>
-          <h3 class="text-lg font-semibold text-surface-700 dark:text-surface-300">Sin datos disponibles</h3>
-          <p class="text-surface-500 text-sm mt-1">No se pudo cargar la información del panel.</p>
-        </div>
+        <app-empty-state icon="pi pi-chart-bar" title="Sin datos disponibles" message="No se pudo cargar la información del panel." />
       }
     </div>
   `,

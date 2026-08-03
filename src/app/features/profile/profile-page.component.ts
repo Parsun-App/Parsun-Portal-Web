@@ -9,11 +9,12 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessageService } from 'primeng/api';
 import { ProfileApiService } from './services/api/profile-api.service';
 import { PortalProfile } from '@shared/models';
+import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-profile-page',
   standalone: true,
-  imports: [CurrencyPipe, CardModule, TagModule, ButtonModule, ToastModule, ProgressSpinnerModule],
+  imports: [CurrencyPipe, CardModule, TagModule, ButtonModule, ToastModule, ProgressSpinnerModule, EmptyStateComponent],
   providers: [MessageService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -145,6 +146,8 @@ import { PortalProfile } from '@shared/models';
             </div>
           </p-card>
         </div>
+      } @else {
+        <app-empty-state icon="pi pi-user" title="No se pudo cargar el perfil" message="Intenta nuevamente en unos momentos." />
       }
     </div>
 

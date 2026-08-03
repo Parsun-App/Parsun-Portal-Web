@@ -17,13 +17,14 @@ import { MessageService } from 'primeng/api';
 import { QuotesApiService } from './services/api/quotes-api.service';
 import { PortalQuoteList, PortalQuoteDetail } from '@shared/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
+import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 
 type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'contrast';
 
 @Component({
   selector: 'app-quotes-page',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule, ToastModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, SelectModule, PopoverModule],
+  imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule, ToastModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, SelectModule, PopoverModule, EmptyStateComponent],
   providers: [MessageService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -69,10 +70,8 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
           <i class="pi pi-spin pi-spinner text-3xl text-surface-400"></i>
         </div>
       } @else if (quotes().length === 0) {
-        <div class="flex flex-col items-center justify-center h-64 text-surface-400 gap-3">
-          <i class="pi pi-file-edit text-4xl"></i>
-          <p class="text-sm">No se encontraron presupuestos</p>
-        </div>
+        @let empty = emptyConfig();
+        <app-empty-state [icon]="empty.icon" [title]="empty.title" [message]="empty.message" />
       } @else {
         <div class="rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden bg-surface-0 dark:bg-surface-900 shadow-2xl">
           <p-table
@@ -213,6 +212,23 @@ export class QuotesPageComponent {
     if (this.searchTerm()) count++;
     if (this.filterStatus()) count++;
     return count;
+  });
+
+  readonly hasActiveFilters = computed(() => Boolean(this.searchTerm()) || Boolean(this.filterStatus()));
+
+  readonly emptyConfig = computed(() => {
+    if (this.hasActiveFilters()) {
+      return {
+        icon: 'pi pi-file-edit',
+        title: 'Sin resultados',
+        message: 'No encontramos resultados para tu búsqueda o filtros actuales.',
+      };
+    }
+    return {
+      icon: 'pi pi-file-edit',
+      title: 'No hay presupuestos',
+      message: 'Tus presupuestos aparecerán aquí cuando los tengas.',
+    };
   });
 
   readonly statusOptions = [
