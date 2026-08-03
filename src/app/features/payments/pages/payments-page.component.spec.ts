@@ -1,0 +1,106 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
+import { signal } from '@angular/core';
+import { PaymentsPageComponent } from './payments-page.component';
+import { PaymentsService } from '@features/payments/services/application/payments.service';
+import { PortalPaymentList } from '@features/payments/models';
+
+const PAYMENTS: PortalPaymentList[] = [
+  {
+    id: 'pay1',
+    paymentNumber: 'PAG-0001',
+    customerId: 'cust-1',
+    amount: 200,
+    referenceNumber: null,
+    paymentDate: '2026-08-02',
+    status: 'APPLIED',
+    appliedAmount: 200,
+    createdAt: '2026-08-02',
+  },
+];
+
+describe('PaymentsPageComponent', () => {
+  let fixture: ComponentFixture<PaymentsPageComponent>;
+  let component: PaymentsPageComponent;
+  let serviceMock: {
+    loading: ReturnType<typeof signal<boolean>>;
+    payments: ReturnType<typeof signal<PortalPaymentList[]>>;
+    detail: ReturnType<typeof signal<unknown | null>>;
+    detailDialogVisible: ReturnType<typeof signal<boolean>>;
+    searchTerm: ReturnType<typeof signal<string>>;
+    onSearch: ReturnType<typeof vi.fn>;
+    clearFilters: ReturnType<typeof vi.fn>;
+    openDetail: ReturnType<typeof vi.fn>;
+  };
+
+  beforeEach(async () => {
+    serviceMock = {
+      loading: signal(false),
+      payments: signal<PortalPaymentList[]>(PAYMENTS),
+      detail: signal(null),
+      detailDialogVisible: signal(false),
+      searchTerm: signal(''),
+      onSearch: vi.fn(),
+      clearFilters: vi.fn(),
+      openDetail: vi.fn(),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [PaymentsPageComponent],
+      providers: [
+        provideHttpClient(),
+        provideRouter([]),
+        { provide: PaymentsService, useValue: serviceMock },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(PaymentsPageComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should forward the payments signal from the service', () => {
+    expect(component.payments).toBe(serviceMock.payments);
+  });
+
+  it('should count active filters from the search term only', () => {
+    expect(component.activeFilterCount()).toBe(0);
+    serviceMock.searchTerm.set('PAG-0001');
+    expect(component.activeFilterCount()).toBe(1);
+  });
+
+  it('should delegate clear filters to the service', () => {
+    component.clearFilters();
+    expect(serviceMock.clearFilters).toHaveBeenCalledTimes(1);
+  });
+
+  it('should delegate search changes to the service', () => {
+    component.onSearch('PAG-0001');
+    expect(serviceMock.onSearch).toHaveBeenCalledWith('PAG-0001');
+  });
+
+  it('should delegate opening a detail to the service', () => {
+    component.openDetail('pay1');
+    expect(serviceMock.openDetail).toHaveBeenCalledWith('pay1');
+  });
+
+  it('should use the filtered empty state when the search term is set', () => {
+    serviceMock.searchTerm.set('PAG-0001');
+    expect(component.emptyConfig().title).toBe('Sin resultados');
+  });
+
+  it('should use the plain empty state when there is no search term', () => {
+    expect(component.emptyConfig().title).toBe('No hay pagos');
+  });
+
+  it('should map applied payments to the success severity', () => {
+    expect(component.statusSeverity('APPLIED')).toBe('success');
+  });
+
+  it('should render the page title', () => {
+    const h1 = fixture.nativeElement.querySelector('h1');
+    expect(h1.textContent.trim()).toBe('Pagos');
+  });
+});
