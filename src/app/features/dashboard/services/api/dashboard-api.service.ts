@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
-import { PortalDashboard } from '@shared/models';
+import { PortalDashboard } from '@features/dashboard/models';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardApiService {

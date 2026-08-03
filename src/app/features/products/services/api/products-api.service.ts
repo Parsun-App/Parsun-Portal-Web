@@ -2,7 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
-import { PagedResponse, PortalProduct } from '@shared/models';
+import { PortalProduct } from '@features/products/models';
+import type { PagedResponse } from '@shared/models';
 
 @Injectable({ providedIn: 'root' })
 export class ProductsApiService {

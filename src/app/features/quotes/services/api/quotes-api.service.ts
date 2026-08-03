@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
-import { PortalQuoteList, PortalQuoteDetail } from '@shared/models';
+import { PortalQuoteList, PortalQuoteDetail } from '@features/quotes/models';
 
 export interface CreateQuoteRequest {
   notes?: string;
