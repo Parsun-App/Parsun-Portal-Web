@@ -8,16 +8,6 @@ import { HeaderComponent } from './header/header.component';
   standalone: true,
   imports: [RouterOutlet, SidebarComponent, HeaderComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div class="flex h-screen bg-app-bg-primary">
-      <app-sidebar />
-      <div class="flex flex-col flex-1 overflow-hidden">
-        <app-header />
-        <main class="flex-1 overflow-auto p-6">
-          <router-outlet />
-        </main>
-      </div>
-    </div>
-  `,
+  templateUrl: './portal-layout.component.html',
 })
 export class PortalLayoutComponent {}

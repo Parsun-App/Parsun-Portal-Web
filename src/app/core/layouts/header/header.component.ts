@@ -13,28 +13,7 @@ const DARK_MODE_KEY = 'darkMode';
   standalone: true,
   imports: [ButtonModule, TooltipModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <header class="flex items-center justify-end h-16 px-4 md:px-6 bg-surface-0 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700">
-      <div class="flex items-center gap-1">
-        <p-button
-          [icon]="isDarkMode() ? 'pi pi-sun' : 'pi pi-moon'"
-          (onClick)="toggleDarkMode()"
-          severity="secondary"
-          [text]="true"
-          [rounded]="true"
-          pTooltip="Cambiar tema"
-        />
-        <p-button
-          icon="pi pi-sign-out"
-          (onClick)="logout()"
-          severity="danger"
-          [text]="true"
-          [rounded]="true"
-          pTooltip="Cerrar sesión"
-        />
-      </div>
-    </header>
-  `,
+  templateUrl: './header.component.html',
 })
 export class HeaderComponent {
   private readonly authService = inject(AuthService);
