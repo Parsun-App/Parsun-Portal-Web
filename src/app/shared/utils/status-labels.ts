@@ -1,5 +1,6 @@
 export const STATUS_LABELS: Record<string, string> = {
   DRAFT: 'Borrador',
+  CUSTOMER_DRAFT: 'Borrador por Cliente',
   SENT: 'Enviado',
   CONVERTED: 'Convertido',
   CONVERTED_TO_ORDER: 'Convertido a Orden',

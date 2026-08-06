@@ -48,11 +48,11 @@ const DETAIL: PortalQuoteDetail = {
 };
 
 describe('QuotesService', () => {
-  let apiMock: { list: ReturnType<typeof vi.fn>; getById: ReturnType<typeof vi.fn> };
+  let apiMock: { list: ReturnType<typeof vi.fn>; getById: ReturnType<typeof vi.fn>; create: ReturnType<typeof vi.fn> };
   let messageMock: { add: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
-    apiMock = { list: vi.fn().mockReturnValue(of([] as PortalQuoteList[])), getById: vi.fn() };
+    apiMock = { list: vi.fn().mockReturnValue(of([] as PortalQuoteList[])), getById: vi.fn(), create: vi.fn() };
     messageMock = { add: vi.fn() };
   });
 
@@ -150,5 +150,53 @@ describe('QuotesService', () => {
     expect(messageMock.add).toHaveBeenCalledWith(QUOTES_MESSAGES.detailError);
     expect(service.detail()).toBeNull();
     expect(service.detailDialogVisible()).toBe(false);
+  });
+
+  it('should open and close the create dialog', () => {
+    const service = createService();
+    service.openCreateDialog();
+    expect(service.createDialogVisible()).toBe(true);
+    service.closeCreateDialog();
+    expect(service.createDialogVisible()).toBe(false);
+  });
+
+  it('should not close the create dialog while a creation is in progress', () => {
+    apiMock.create.mockReturnValue(new Subject<PortalQuoteDetail>().asObservable());
+    const service = createService();
+    service.openCreateDialog();
+    service.create({ lines: [{ productId: 'p1', quantity: 1, unitPrice: 500 }] });
+    expect(service.creating()).toBe(true);
+    service.closeCreateDialog();
+    expect(service.createDialogVisible()).toBe(true);
+  });
+
+  it('should create a quote, show success, close the dialog and reload', () => {
+    apiMock.list.mockReturnValue(of(QUOTES));
+    apiMock.create.mockReturnValue(of(DETAIL));
+    const service = createService();
+    service.openCreateDialog();
+    const callsBefore = apiMock.list.mock.calls.length;
+    service.create({ lines: [{ productId: 'p1', quantity: 2, unitPrice: 500 }], expiryDate: '2026-09-01' });
+    expect(apiMock.create).toHaveBeenCalledWith({ lines: [{ productId: 'p1', quantity: 2, unitPrice: 500 }], expiryDate: '2026-09-01' });
+    expect(messageMock.add).toHaveBeenCalledWith(QUOTES_MESSAGES.createSuccess);
+    expect(service.createDialogVisible()).toBe(false);
+    expect(service.creating()).toBe(false);
+    expect(apiMock.list.mock.calls.length).toBe(callsBefore + 1);
+  });
+
+  it('should show an error toast and keep the dialog open when creation fails', () => {
+    apiMock.create.mockReturnValue(throwError(() => new Error('boom')));
+    const service = createService();
+    service.openCreateDialog();
+    service.create({ lines: [{ productId: 'p1', quantity: 1, unitPrice: 500 }] });
+    expect(messageMock.add).toHaveBeenCalledWith(QUOTES_MESSAGES.createError);
+    expect(service.createDialogVisible()).toBe(true);
+    expect(service.creating()).toBe(false);
+  });
+
+  it('should forward a notification message to the toast service', () => {
+    const service = createService();
+    service.notify(QUOTES_MESSAGES.validationError);
+    expect(messageMock.add).toHaveBeenCalledWith(QUOTES_MESSAGES.validationError);
   });
 });

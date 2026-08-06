@@ -1,11 +1,17 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { catchError, of, tap } from 'rxjs';
-import { QuotesApiService } from '@features/quotes/services/api/quotes-api.service';
+import { QuotesApiService, CreateQuoteRequest } from '@features/quotes/services/api/quotes-api.service';
 import { PortalQuoteList, PortalQuoteDetail } from '@features/quotes/models';
 import { QUOTES_MESSAGES } from '@features/quotes/messages/quotes.messages';
 
 const SEARCH_DEBOUNCE_MS = 300;
+
+interface ToastMessage {
+  severity: 'success' | 'info' | 'warn' | 'error' | 'secondary' | 'contrast';
+  summary: string;
+  detail: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class QuotesService {
@@ -17,6 +23,8 @@ export class QuotesService {
   readonly quotes = signal<PortalQuoteList[]>([]);
   readonly detail = signal<PortalQuoteDetail | null>(null);
   readonly detailDialogVisible = signal(false);
+  readonly createDialogVisible = signal(false);
+  readonly creating = signal(false);
   readonly searchTerm = signal('');
   readonly filterStatus = signal<string | undefined>(undefined);
 
@@ -80,5 +88,35 @@ export class QuotesService {
 
   closeDetail(): void {
     this.detailDialogVisible.set(false);
+  }
+
+  notify(message: ToastMessage): void {
+    this.messageService.add(message);
+  }
+
+  openCreateDialog(): void {
+    this.createDialogVisible.set(true);
+  }
+
+  closeCreateDialog(): void {
+    if (this.creating()) return;
+    this.createDialogVisible.set(false);
+  }
+
+  create(request: CreateQuoteRequest): void {
+    this.creating.set(true);
+    this.api.create(request).pipe(
+      tap(() => {
+        this.creating.set(false);
+        this.createDialogVisible.set(false);
+        this.messageService.add(QUOTES_MESSAGES.createSuccess);
+        this.load();
+      }),
+      catchError(() => {
+        this.creating.set(false);
+        this.messageService.add(QUOTES_MESSAGES.createError);
+        return of(null as unknown as PortalQuoteDetail);
+      }),
+    ).subscribe();
   }
 }
