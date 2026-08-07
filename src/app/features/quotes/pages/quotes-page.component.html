@@ -4,7 +4,7 @@
       <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Presupuestos</h1>
       <p class="text-surface-500 mt-1">Gestiona tus presupuestos y solicitudes.</p>
     </div>
-    <p-button label="Nuevo presupuesto" icon="pi pi-plus" (click)="openCreate()" />
+    <p-button label="Nuevo presupuesto" icon="pi pi-plus" (click)="openCreateDialog()" />
   </div>
 
   <div class="rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-4 shadow-2xl">
@@ -62,20 +62,48 @@
             <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Vence</th>
             <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Subtotal</th>
             <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Creada</th>
+            <th class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Acciones</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-quote>
-          <tr
-            class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors cursor-pointer"
-            (click)="openDetail(quote.id)"
-          >
-            <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">{{ quote.quoteNumber }}</td>
+          <tr class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors">
+            <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300 cursor-pointer" (click)="openDetail(quote.id)">{{ quote.quoteNumber }}</td>
             <td class="px-4 py-3">
               <p-tag [value]="getStatusLabel(quote.status)" [severity]="statusSeverity(quote.status)" />
             </td>
             <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ quote.expiryDate | date:'dd/MM/yyyy' }}</td>
             <td class="px-4 py-3 text-right font-medium tabular-nums">{{ quote.subtotal | currency:'USD':'symbol' }}</td>
             <td class="px-4 py-3 text-sm text-surface-500">{{ quote.createdAt | date:'dd/MM/yyyy' }}</td>
+            <td class="px-4 py-3 text-center">
+              <div class="flex items-center justify-center gap-1">
+                <p-button
+                  icon="pi pi-eye"
+                  (onClick)="openDetail(quote.id)"
+                  severity="secondary"
+                  [text]="true"
+                  [rounded]="true"
+                  pTooltip="Ver detalle"
+                />
+                @if (isDraft(quote.status)) {
+                  <p-button
+                    icon="pi pi-pencil"
+                    (onClick)="editQuote(quote.id)"
+                    severity="info"
+                    [text]="true"
+                    [rounded]="true"
+                    pTooltip="Editar"
+                  />
+                  <p-button
+                    icon="pi pi-trash"
+                    (onClick)="cancelQuote(quote.id)"
+                    severity="danger"
+                    [text]="true"
+                    [rounded]="true"
+                    pTooltip="Cancelar"
+                  />
+                }
+              </div>
+            </td>
           </tr>
         </ng-template>
       </p-table>
@@ -159,23 +187,30 @@
     </div>
   }
   <ng-template pTemplate="footer">
-    <p-button label="Cerrar" (click)="detailDialogVisible.set(false)" severity="secondary" [text]="true" />
+    <div class="flex items-center justify-between w-full">
+      <div class="flex gap-1">
+        @if (detail(); as d) {
+          @if (isDraft(d.status)) {
+            <p-button icon="pi pi-pencil" label="Editar" (onClick)="editQuote(d.id)" severity="info" [outlined]="true" size="small" />
+            <p-button icon="pi pi-trash" label="Cancelar" (onClick)="cancelQuote(d.id)" severity="danger" [outlined]="true" size="small" />
+          }
+        }
+      </div>
+      <p-button label="Cerrar" (click)="detailDialogVisible.set(false)" severity="secondary" [text]="true" />
+    </div>
   </ng-template>
 </p-dialog>
 
+<p-confirmDialog />
+
 <p-dialog
   [(visible)]="createDialogVisible"
-  header="Nuevo presupuesto"
+  [header]="isEditing() ? 'Editar presupuesto' : 'Nuevo presupuesto'"
   [modal]="true"
   [style]="{ width: '42rem' }"
   [draggable]="false"
 >
   <div class="flex flex-col gap-4">
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Notas</label>
-      <textarea pInputTextarea [(ngModel)]="formNotes" rows="2" class="w-full" placeholder="Notas del presupuesto (opcional)"></textarea>
-    </div>
-
     <div>
       <div class="flex items-center justify-between mb-2">
         <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Líneas</label>
@@ -183,40 +218,83 @@
       </div>
 
       <div class="flex flex-col gap-3">
-        @for (line of formLines(); track $index; let i = $index) {
+        @for (line of lines(); track $index; let i = $index) {
           <div class="p-3 rounded-lg border border-surface-200 dark:border-surface-700">
             <div class="flex items-center justify-between mb-2">
               <span class="text-xs font-medium text-surface-500">Línea {{ i + 1 }}</span>
-              @if (formLines().length > 1) {
+              @if (lines().length > 1) {
                 <p-button icon="pi pi-trash" size="small" severity="danger" [text]="true" (click)="removeLine(i)" />
               }
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div class="col-span-2">
-                <label class="text-xs text-surface-500">Producto ID</label>
-                <input pInputText [(ngModel)]="line.productId" class="w-full text-sm" placeholder="UUID del producto" />
+                <label class="text-xs text-surface-500">Producto</label>
+                <p-autocomplete
+                  [ngModel]="line.product"
+                  (ngModelChange)="onLineProductChange(i, $event)"
+                  (completeMethod)="searchProducts($event, i)"
+                  [suggestions]="filteredSuggestions()"
+                  optionLabel="name"
+                  [dropdown]="true"
+                  [minLength]="0"
+                  placeholder="Buscar producto..."
+                  styleClass="w-full"
+                  inputStyleClass="w-full text-sm"
+                >
+                  <ng-template let-product pTemplate="selectedItem">
+                    <span>{{ product.name }}</span>
+                  </ng-template>
+                  <ng-template let-product pTemplate="item">
+                    <div class="flex items-center justify-between w-full">
+                      <div>
+                        <span class="font-medium">{{ product.name }}</span>
+                        <span class="text-surface-400 ml-1 font-mono text-xs">({{ product.code }})</span>
+                      </div>
+                      <span class="font-medium tabular-nums">{{ product.price | currency:'USD':'symbol' }}</span>
+                    </div>
+                  </ng-template>
+                </p-autocomplete>
               </div>
               <div>
                 <label class="text-xs text-surface-500">Cantidad</label>
-                <p-inputNumber [(ngModel)]="line.quantity" [min]="0.0001" mode="decimal" [minFractionDigits]="0" styleClass="w-full" inputStyleClass="w-full text-sm" />
+                <p-inputNumber
+                  [ngModel]="line.quantity"
+                  (ngModelChange)="updateLineQuantity(i, $event)"
+                  [min]="0.0001"
+                  mode="decimal"
+                  [minFractionDigits]="0"
+                  styleClass="w-full"
+                  inputStyleClass="w-full text-sm"
+                />
               </div>
               <div>
                 <label class="text-xs text-surface-500">Precio Unit.</label>
-                <p-inputNumber [(ngModel)]="line.unitPrice" [min]="0.01" mode="decimal" [minFractionDigits]="2" styleClass="w-full" inputStyleClass="w-full text-sm" />
-              </div>
-              <div class="col-span-2">
-                <label class="text-xs text-surface-500">Almacén ID</label>
-                <input pInputText [(ngModel)]="line.warehouseId" class="w-full text-sm" placeholder="UUID del almacén" />
+                <input pInputText [value]="line.unitPrice | currency:'USD':'symbol'" readonly class="w-full text-sm bg-surface-100 dark:bg-surface-800" />
               </div>
             </div>
           </div>
         }
       </div>
     </div>
+
+    <div class="flex justify-end border-t border-surface-200 dark:border-surface-700 pt-3">
+      <span class="text-lg font-bold text-surface-900 dark:text-surface-100">Total: {{ draftTotal() | currency:'USD':'symbol' }}</span>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Notas</label>
+      <textarea pInputTextarea [(ngModel)]="notes" rows="2" class="w-full" placeholder="Notas del presupuesto (opcional)"></textarea>
+    </div>
   </div>
 
   <ng-template pTemplate="footer">
     <p-button label="Cancelar" severity="secondary" [text]="true" (click)="createDialogVisible.set(false)" />
-    <p-button label="Guardar borrador" icon="pi pi-save" [loading]="creating()" [disabled]="!canCreate()" (click)="submitCreate()" />
+    <p-button
+      [label]="isEditing() ? 'Guardar cambios' : 'Guardar borrador'"
+      [icon]="isEditing() ? 'pi pi-check' : 'pi pi-save'"
+      [loading]="creating()"
+      [disabled]="!canSubmit()"
+      (click)="submit()"
+    />
   </ng-template>
 </p-dialog>

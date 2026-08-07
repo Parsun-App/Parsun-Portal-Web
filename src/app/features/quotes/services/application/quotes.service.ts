@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { catchError, of, tap } from 'rxjs';
-import { QuotesApiService, CreateQuoteRequest } from '@features/quotes/services/api/quotes-api.service';
+import { QuotesApiService, CreateQuoteRequest, UpdateQuoteRequest } from '@features/quotes/services/api/quotes-api.service';
 import { PortalQuoteList, PortalQuoteDetail } from '@features/quotes/models';
 import { QUOTES_MESSAGES } from '@features/quotes/messages/quotes.messages';
 
@@ -80,6 +80,10 @@ export class QuotesService {
     ).subscribe();
   }
 
+  loadQuoteForEdit(id: string) {
+    return this.api.getById(id);
+  }
+
   closeDetail(): void {
     this.detailDialogVisible.set(false);
   }
@@ -88,8 +92,17 @@ export class QuotesService {
     this.createDialogVisible.set(true);
   }
 
-  closeCreate(): void {
+  openCreateDialog(): void {
+    this.createDialogVisible.set(true);
+  }
+
+  closeCreateDialog(): void {
+    if (this.creating()) return;
     this.createDialogVisible.set(false);
+  }
+
+  notify(message: { severity: string; summary: string; detail: string }): void {
+    this.messageService.add(message);
   }
 
   create(request: CreateQuoteRequest): void {
@@ -104,6 +117,37 @@ export class QuotesService {
       catchError(() => {
         this.creating.set(false);
         this.messageService.add(QUOTES_MESSAGES.createError);
+        return of(null);
+      }),
+    ).subscribe();
+  }
+
+  cancelQuote(id: string): void {
+    this.api.cancel(id, 'Cancelado por cliente').pipe(
+      tap(() => {
+        this.detailDialogVisible.set(false);
+        this.messageService.add(QUOTES_MESSAGES.cancelSuccess);
+        this.load();
+      }),
+      catchError(() => {
+        this.messageService.add(QUOTES_MESSAGES.cancelError);
+        return of(null);
+      }),
+    ).subscribe();
+  }
+
+  updateQuote(id: string, request: UpdateQuoteRequest): void {
+    this.creating.set(true);
+    this.api.update(id, request).pipe(
+      tap(() => {
+        this.creating.set(false);
+        this.createDialogVisible.set(false);
+        this.messageService.add(QUOTES_MESSAGES.updateSuccess);
+        this.load();
+      }),
+      catchError(() => {
+        this.creating.set(false);
+        this.messageService.add(QUOTES_MESSAGES.updateError);
         return of(null);
       }),
     ).subscribe();

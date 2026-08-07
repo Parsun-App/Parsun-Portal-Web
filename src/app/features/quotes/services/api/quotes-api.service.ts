@@ -8,12 +8,16 @@ export interface CreateQuoteLineRequest {
   productId: string;
   quantity: number;
   unitPrice: number;
-  warehouseAllocations: { warehouseId: string; allocatedQuantity: number }[];
 }
 
 export interface CreateQuoteRequest {
   notes?: string;
   expiryDate?: string;
+  lines: CreateQuoteLineRequest[];
+}
+
+export interface UpdateQuoteRequest {
+  notes?: string;
   lines: CreateQuoteLineRequest[];
 }
 
@@ -41,6 +45,10 @@ export class QuotesApiService {
 
   cancel(id: string, reason: string): Observable<void> {
     return this.http.patch<void>(`${this.baseUrl}/${id}/cancel`, { reason });
+  }
+
+  update(id: string, request: UpdateQuoteRequest): Observable<PortalQuoteDetail> {
+    return this.http.put<PortalQuoteDetail>(`${this.baseUrl}/${id}`, request);
   }
 
   convertToOrder(id: string): Observable<void> {
