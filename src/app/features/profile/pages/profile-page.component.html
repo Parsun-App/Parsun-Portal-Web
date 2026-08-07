@@ -125,8 +125,97 @@
           }
         </div>
       </p-card>
+
+      <p-card>
+        <ng-template pTemplate="header">
+          <div class="px-6 pt-5">
+            <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100">Seguridad</h2>
+          </div>
+        </ng-template>
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-surface-700 dark:text-surface-300">Cambia tu contraseña de acceso al portal.</p>
+          </div>
+          <p-button
+            label="Cambiar Contraseña"
+            icon="pi pi-lock"
+            severity="secondary"
+            (click)="openChangePasswordDialog()"
+          />
+        </div>
+      </p-card>
     </div>
   } @else {
     <app-empty-state icon="pi pi-user" title="No se pudo cargar el perfil" message="Intenta nuevamente en unos momentos." />
   }
+
+  <p-dialog
+    header="Cambiar Contraseña"
+    [(visible)]="showChangePasswordDialog"
+    [modal]="true"
+    [style]="{ width: '28rem' }"
+    [draggable]="false"
+  >
+    <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="flex flex-col gap-4">
+      <div class="flex flex-col gap-1">
+        <label for="currentPassword" class="text-sm font-medium text-surface-700 dark:text-surface-300">Contraseña actual</label>
+        <p-password
+          id="currentPwd"
+          formControlName="currentPassword"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+          [feedback]="false"
+          [toggleMask]="true"
+          placeholder="Contraseña actual"
+          autocomplete="current-password"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label for="newPassword" class="text-sm font-medium text-surface-700 dark:text-surface-300">Nueva contraseña</label>
+        <p-password
+          id="newPwd"
+          formControlName="newPassword"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+          [toggleMask]="true"
+          placeholder="Nueva contraseña"
+          autocomplete="new-password"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label for="confirmPwd" class="text-sm font-medium text-surface-700 dark:text-surface-300">Confirmar contraseña</label>
+        <p-password
+          id="confirmPwd"
+          formControlName="confirmPassword"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+          [feedback]="false"
+          [toggleMask]="true"
+          placeholder="Repetir nueva contraseña"
+          autocomplete="new-password"
+        />
+        @if (passwordForm.hasError('passwordsMismatch') && passwordForm.get('confirmPassword')?.touched) {
+          <small class="text-red-500">Las contraseñas no coinciden</small>
+        }
+      </div>
+
+      @if (passwordError()) {
+        <p-message severity="error" [text]="passwordError()!" styleClass="w-full" />
+      }
+
+      @if (passwordSuccess()) {
+        <p-message severity="success" text="Contraseña actualizada correctamente" styleClass="w-full" />
+      }
+
+      <p-button
+        type="submit"
+        label="Cambiar contraseña"
+        styleClass="w-full"
+        [loading]="changingPassword()"
+        [disabled]="passwordForm.invalid"
+      />
+    </form>
+  </p-dialog>
 </div>

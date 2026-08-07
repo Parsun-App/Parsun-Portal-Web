@@ -4,10 +4,17 @@ import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
 import { PortalQuoteList, PortalQuoteDetail } from '@features/quotes/models';
 
+export interface CreateQuoteLineRequest {
+  productId: string;
+  quantity: number;
+  unitPrice: number;
+  warehouseAllocations: { warehouseId: string; allocatedQuantity: number }[];
+}
+
 export interface CreateQuoteRequest {
   notes?: string;
   expiryDate?: string;
-  lines: { productId: string; quantity: number; unitPrice: number }[];
+  lines: CreateQuoteLineRequest[];
 }
 
 @Injectable({ providedIn: 'root' })

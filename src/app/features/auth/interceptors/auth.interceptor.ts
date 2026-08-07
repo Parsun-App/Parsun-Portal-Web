@@ -1,14 +1,13 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { Router } from '@angular/router';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../services/application/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
-  const router = inject(Router);
 
-  if (req.url.includes('/api/portal/auth/')) {
+  const bypassPaths = ['/api/portal/auth/login', '/api/portal/auth/refresh', '/api/portal/auth/logout'];
+  if (bypassPaths.some(path => req.url.includes(path))) {
     return next(req);
   }
 
@@ -31,7 +30,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
               });
               return next(retryReq);
             }
-            router.navigate(['/auth/login']);
+            authService.logout();
             return throwError(() => error);
           }),
         );

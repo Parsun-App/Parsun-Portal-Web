@@ -7,12 +7,6 @@ import { QUOTES_MESSAGES } from '@features/quotes/messages/quotes.messages';
 
 const SEARCH_DEBOUNCE_MS = 300;
 
-interface ToastMessage {
-  severity: 'success' | 'info' | 'warn' | 'error' | 'secondary' | 'contrast';
-  summary: string;
-  detail: string;
-}
-
 @Injectable({ providedIn: 'root' })
 export class QuotesService {
   private readonly api = inject(QuotesApiService);
@@ -20,11 +14,11 @@ export class QuotesService {
   private loadTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly loading = signal(false);
+  readonly creating = signal(false);
   readonly quotes = signal<PortalQuoteList[]>([]);
   readonly detail = signal<PortalQuoteDetail | null>(null);
   readonly detailDialogVisible = signal(false);
   readonly createDialogVisible = signal(false);
-  readonly creating = signal(false);
   readonly searchTerm = signal('');
   readonly filterStatus = signal<string | undefined>(undefined);
 
@@ -90,16 +84,11 @@ export class QuotesService {
     this.detailDialogVisible.set(false);
   }
 
-  notify(message: ToastMessage): void {
-    this.messageService.add(message);
-  }
-
-  openCreateDialog(): void {
+  openCreate(): void {
     this.createDialogVisible.set(true);
   }
 
-  closeCreateDialog(): void {
-    if (this.creating()) return;
+  closeCreate(): void {
     this.createDialogVisible.set(false);
   }
 
@@ -115,7 +104,7 @@ export class QuotesService {
       catchError(() => {
         this.creating.set(false);
         this.messageService.add(QUOTES_MESSAGES.createError);
-        return of(null as unknown as PortalQuoteDetail);
+        return of(null);
       }),
     ).subscribe();
   }

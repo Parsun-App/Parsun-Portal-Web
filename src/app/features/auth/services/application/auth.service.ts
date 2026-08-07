@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { catchError, finalize, tap, Observable, of, throwError } from 'rxjs';
 import { AuthApiService } from '../api/auth-api.service';
-import { CustomerSummary, PortalAuthResponse } from '../../models/interfaces/auth.interface';
+import { CustomerSummary, PortalAuthResponse, ChangePasswordRequest } from '../../models/interfaces/auth.interface';
 
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
@@ -54,8 +54,27 @@ export class AuthService {
   }
 
   logout(): void {
+    const token = this.refreshTokenSignal();
+    if (token) {
+      this.authApi.logout(token).subscribe({
+        error: () => {},
+      });
+    }
     this.clearSession();
     this.router.navigate(['/auth/login']);
+  }
+
+  changePassword(request: ChangePasswordRequest): Observable<CustomerSummary> {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    return this.authApi.changePassword(request).pipe(
+      catchError(err => {
+        this.errorSignal.set(err.error?.message || 'Error al cambiar la contraseña');
+        return throwError(() => err);
+      }),
+      finalize(() => this.loadingSignal.set(false)),
+    );
   }
 
   refreshToken(): Observable<PortalAuthResponse | null> {
@@ -66,7 +85,20 @@ export class AuthService {
     }
 
     return this.authApi.refresh(token).pipe(
-      tap(response => this.setSession(response)),
+      tap(response => {
+        const currentCustomer = this.currentCustomerSignal();
+        this.accessTokenSignal.set(response.accessToken);
+        this.refreshTokenSignal.set(response.refreshToken);
+        if (currentCustomer) {
+          this.currentCustomerSignal.set(currentCustomer);
+        } else if (response.customer) {
+          this.currentCustomerSignal.set(response.customer);
+        }
+        if (this.isBrowser) {
+          localStorage.setItem(ACCESS_TOKEN_KEY, response.accessToken);
+          localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
+        }
+      }),
       catchError(() => {
         this.logout();
         return of(null);

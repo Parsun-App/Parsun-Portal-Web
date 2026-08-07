@@ -18,3 +18,8 @@ export interface PortalAuthResponse {
   expiresIn: number;
   customer: CustomerSummary;
 }
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
