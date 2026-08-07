@@ -4,6 +4,7 @@
       <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Órdenes</h1>
       <p class="text-surface-500 mt-1">Historial y seguimiento de tus órdenes de compra.</p>
     </div>
+    <p-button label="Nueva orden" icon="pi pi-plus" (click)="openCreateDialog()" />
   </div>
 
   <div class="rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-4 shadow-2xl mb-6">
@@ -83,27 +84,17 @@
                   [rounded]="true"
                   pTooltip="Ver detalle"
                 />
-                @if (order.status === 'DRAFT') {
+                @if (order.status === 'DRAFT' || order.status === 'CUSTOMER_DRAFT') {
                   <p-button
-                    icon="pi pi-check"
-                    (onClick)="confirmOrder(order.id)"
-                    severity="success"
+                    icon="pi pi-pencil"
+                    (onClick)="editOrder(order.id)"
+                    severity="info"
                     [text]="true"
                     [rounded]="true"
-                    pTooltip="Confirmar orden"
+                    pTooltip="Editar"
                   />
                   <p-button
-                    icon="pi pi-times"
-                    (onClick)="cancelOrder(order.id)"
-                    severity="danger"
-                    [text]="true"
-                    [rounded]="true"
-                    pTooltip="Cancelar"
-                  />
-                }
-                @if (order.status === 'CONFIRMED') {
-                  <p-button
-                    icon="pi pi-times"
+                    icon="pi pi-trash"
                     (onClick)="cancelOrder(order.id)"
                     severity="danger"
                     [text]="true"
@@ -188,7 +179,113 @@
     </div>
   }
   <ng-template pTemplate="footer">
-    <p-button label="Cerrar" (click)="detailDialogVisible.set(false)" severity="secondary" [text]="true" />
+    <div class="flex items-center justify-between w-full">
+      <div class="flex gap-1">
+        @if (detail(); as d) {
+          @if (isDraft(d.status)) {
+            <p-button icon="pi pi-pencil" label="Editar" (onClick)="editOrder(d.id)" severity="info" [outlined]="true" size="small" />
+            <p-button icon="pi pi-trash" label="Cancelar" (onClick)="cancelOrder(d.id)" severity="danger" [outlined]="true" size="small" />
+          }
+        }
+      </div>
+      <p-button label="Cerrar" (click)="detailDialogVisible.set(false)" severity="secondary" [text]="true" />
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  [(visible)]="createDialogVisible"
+  [header]="isEditing() ? 'Editar orden' : 'Nueva orden'"
+  [modal]="true"
+  [style]="{ width: '42rem' }"
+  [draggable]="false"
+>
+  <div class="flex flex-col gap-4">
+    <div>
+      <div class="flex items-center justify-between mb-2">
+        <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Líneas</label>
+        <p-button label="Agregar línea" icon="pi pi-plus" size="small" severity="secondary" [text]="true" (click)="addLine()" />
+      </div>
+
+      <div class="flex flex-col gap-3">
+        @for (line of lines(); track $index; let i = $index) {
+          <div class="p-3 rounded-lg border border-surface-200 dark:border-surface-700">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-medium text-surface-500">Línea {{ i + 1 }}</span>
+              @if (lines().length > 1) {
+                <p-button icon="pi pi-trash" size="small" severity="danger" [text]="true" (click)="removeLine(i)" />
+              }
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="col-span-2">
+                <label class="text-xs text-surface-500">Producto</label>
+                <p-autocomplete
+                  [ngModel]="line.product"
+                  (ngModelChange)="onLineProductChange(i, $event)"
+                  (completeMethod)="searchProducts($event, i)"
+                  [suggestions]="filteredSuggestions()"
+                  optionLabel="name"
+                  [dropdown]="true"
+                  [minLength]="0"
+                  placeholder="Buscar producto..."
+                  styleClass="w-full"
+                  inputStyleClass="w-full text-sm"
+                >
+                  <ng-template let-product pTemplate="selectedItem">
+                    <span>{{ product.name }}</span>
+                  </ng-template>
+                  <ng-template let-product pTemplate="item">
+                    <div class="flex items-center justify-between w-full">
+                      <div>
+                        <span class="font-medium">{{ product.name }}</span>
+                        <span class="text-surface-400 ml-1 font-mono text-xs">({{ product.code }})</span>
+                      </div>
+                      <span class="font-medium tabular-nums">{{ product.price | currency:'USD':'symbol' }}</span>
+                    </div>
+                  </ng-template>
+                </p-autocomplete>
+              </div>
+              <div>
+                <label class="text-xs text-surface-500">Cantidad</label>
+                <p-inputNumber
+                  [ngModel]="line.quantity"
+                  (ngModelChange)="updateLineQuantity(i, $event)"
+                  [min]="0.0001"
+                  mode="decimal"
+                  [minFractionDigits]="0"
+                  styleClass="w-full"
+                  inputStyleClass="w-full text-sm"
+                />
+              </div>
+              <div>
+                <label class="text-xs text-surface-500">Precio Unit.</label>
+                <input pInputText [value]="line.unitPrice | currency:'USD':'symbol'" readonly class="w-full text-sm bg-surface-100 dark:bg-surface-800" />
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="flex justify-end border-t border-surface-200 dark:border-surface-700 pt-3">
+      <span class="text-lg font-bold text-surface-900 dark:text-surface-100">Total: {{ draftTotal() | currency:'USD':'symbol' }}</span>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Notas</label>
+      <textarea pInputTextarea [(ngModel)]="notes" rows="2" class="w-full" placeholder="Notas de la orden (opcional)"></textarea>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" severity="secondary" [text]="true" (click)="createDialogVisible.set(false)" />
+    <p-button
+      [label]="isEditing() ? 'Guardar cambios' : 'Guardar borrador'"
+      [icon]="isEditing() ? 'pi pi-check' : 'pi pi-save'"
+      [loading]="creating()"
+      [disabled]="!canSubmit()"
+      (click)="submit()"
+    />
   </ng-template>
 </p-dialog>
 

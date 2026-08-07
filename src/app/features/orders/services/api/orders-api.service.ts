@@ -4,6 +4,22 @@ import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
 import { PortalOrderList, PortalOrderDetail } from '@features/orders/models';
 
+export interface CreateOrderLineRequest {
+  productId: string;
+  quantity: number;
+  unitPrice: number;
+}
+
+export interface CreateOrderRequest {
+  notes?: string;
+  lines: CreateOrderLineRequest[];
+}
+
+export interface UpdateOrderRequest {
+  notes?: string;
+  lines: CreateOrderLineRequest[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class OrdersApiService {
   private readonly http = inject(HttpClient);
@@ -20,6 +36,14 @@ export class OrdersApiService {
 
   getById(id: string): Observable<PortalOrderDetail> {
     return this.http.get<PortalOrderDetail>(`${this.baseUrl}/${id}`);
+  }
+
+  create(request: CreateOrderRequest): Observable<PortalOrderDetail> {
+    return this.http.post<PortalOrderDetail>(this.baseUrl, request);
+  }
+
+  update(id: string, request: UpdateOrderRequest): Observable<PortalOrderDetail> {
+    return this.http.put<PortalOrderDetail>(`${this.baseUrl}/${id}`, request);
   }
 
   confirm(id: string): Observable<void> {

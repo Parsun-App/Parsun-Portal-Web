@@ -109,11 +109,6 @@ describe('OrdersPageComponent', () => {
     expect(serviceMock.openDetail).toHaveBeenCalledWith('o1');
   });
 
-  it('should delegate confirming an order to the service', () => {
-    component.confirmOrder('o1');
-    expect(serviceMock.confirmOrder).toHaveBeenCalledWith('o1');
-  });
-
   it('should ask for confirmation before cancelling an order and delegate on accept', () => {
     component.cancelOrder('o1');
     expect(confirmationMock.confirm).toHaveBeenCalledTimes(1);

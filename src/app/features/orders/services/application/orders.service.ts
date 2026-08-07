@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { catchError, of, tap } from 'rxjs';
-import { OrdersApiService } from '@features/orders/services/api/orders-api.service';
+import { OrdersApiService, CreateOrderRequest, UpdateOrderRequest } from '@features/orders/services/api/orders-api.service';
 import { PortalOrderList, PortalOrderDetail } from '@features/orders/models';
 import { ORDERS_MESSAGES } from '@features/orders/messages/orders.messages';
 
@@ -15,9 +15,11 @@ export class OrdersService {
   private loadTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly loading = signal(false);
+  readonly creating = signal(false);
   readonly orders = signal<PortalOrderList[]>([]);
   readonly detail = signal<PortalOrderDetail | null>(null);
   readonly detailDialogVisible = signal(false);
+  readonly createDialogVisible = signal(false);
   readonly searchTerm = signal('');
   readonly filterStatus = signal<string | undefined>(undefined);
 
@@ -81,6 +83,57 @@ export class OrdersService {
 
   closeDetail(): void {
     this.detailDialogVisible.set(false);
+  }
+
+  openCreateDialog(): void {
+    this.createDialogVisible.set(true);
+  }
+
+  closeCreateDialog(): void {
+    if (this.creating()) return;
+    this.createDialogVisible.set(false);
+  }
+
+  notify(message: { severity: string; summary: string; detail: string }): void {
+    this.messageService.add(message);
+  }
+
+  loadOrderForEdit(id: string) {
+    return this.api.getById(id);
+  }
+
+  create(request: CreateOrderRequest): void {
+    this.creating.set(true);
+    this.api.create(request).pipe(
+      tap(() => {
+        this.creating.set(false);
+        this.createDialogVisible.set(false);
+        this.messageService.add(ORDERS_MESSAGES.createSuccess);
+        this.load();
+      }),
+      catchError(() => {
+        this.creating.set(false);
+        this.messageService.add(ORDERS_MESSAGES.createError);
+        return of(null);
+      }),
+    ).subscribe();
+  }
+
+  updateOrder(id: string, request: UpdateOrderRequest): void {
+    this.creating.set(true);
+    this.api.update(id, request).pipe(
+      tap(() => {
+        this.creating.set(false);
+        this.createDialogVisible.set(false);
+        this.messageService.add(ORDERS_MESSAGES.updateSuccess);
+        this.load();
+      }),
+      catchError(() => {
+        this.creating.set(false);
+        this.messageService.add(ORDERS_MESSAGES.updateError);
+        return of(null);
+      }),
+    ).subscribe();
   }
 
   confirmOrder(id: string): void {
