@@ -95,11 +95,13 @@ export class OrdersPageComponent {
   });
 
   readonly statusOptions = [
+    { label: 'Todos los borradores', value: '' },
     { label: 'Borrador', value: 'DRAFT' },
     { label: 'Borrador de Cliente', value: 'CUSTOMER_DRAFT' },
     { label: 'Confirmado', value: 'CONFIRMED' },
     { label: 'Facturado', value: 'INVOICED' },
     { label: 'Cancelado', value: 'CANCELLED' },
+    { label: 'Todos', value: 'ALL' },
   ];
 
   readonly getStatusLabel = getStatusLabel;

@@ -91,11 +91,13 @@ export class QuotesPageComponent {
   });
 
   readonly statusOptions = [
+    { label: 'Borradores', value: '' },
     { label: 'Borrador', value: 'DRAFT' },
     { label: 'Borrador por Cliente', value: 'CUSTOMER_DRAFT' },
     { label: 'Convertido a Orden', value: 'CONVERTED_TO_ORDER' },
     { label: 'Convertido a Factura', value: 'CONVERTED_TO_INVOICE' },
     { label: 'Cancelado', value: 'CANCELLED' },
+    { label: 'Todos', value: 'ALL' },
   ];
 
   readonly getStatusLabel = getStatusLabel;
