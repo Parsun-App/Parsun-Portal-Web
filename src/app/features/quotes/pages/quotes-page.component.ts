@@ -74,6 +74,7 @@ export class QuotesPageComponent {
 
   readonly statusOptions = [
     { label: 'Borrador', value: 'DRAFT' },
+    { label: 'Borrador por Cliente', value: 'CUSTOMER_DRAFT' },
     { label: 'Convertido a Orden', value: 'CONVERTED_TO_ORDER' },
     { label: 'Convertido a Factura', value: 'CONVERTED_TO_INVOICE' },
     { label: 'Cancelado', value: 'CANCELLED' },
@@ -135,6 +136,7 @@ export class QuotesPageComponent {
   statusSeverity(status: string): StatusSeverity {
     const map: Record<string, StatusSeverity> = {
       DRAFT: 'info',
+      CUSTOMER_DRAFT: 'warn',
       CONVERTED_TO_ORDER: 'success',
       CONVERTED_TO_INVOICE: 'success',
       CANCELLED: 'danger',
