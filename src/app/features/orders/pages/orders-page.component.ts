@@ -89,8 +89,8 @@ export class OrdersPageComponent {
     }
     return {
       icon: 'pi pi-shopping-cart',
-      title: 'No hay órdenes',
-      message: 'Tus órdenes aparecerán aquí cuando las tengas.',
+      title: 'No hay pedidos',
+      message: 'Tus pedidos aparecerán aquí cuando los tengas.',
     };
   });
 
@@ -267,7 +267,7 @@ export class OrdersPageComponent {
 
   cancelOrder(id: string): void {
     this.confirmationService.confirm({
-      message: '¿Está seguro de cancelar esta orden?',
+      message: '¿Está seguro de cancelar este pedido?',
       header: 'Confirmar Cancelación',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Sí, cancelar',

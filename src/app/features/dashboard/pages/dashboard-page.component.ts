@@ -45,7 +45,7 @@ export class DashboardPageComponent {
 
   readonly quickActions = [
     { label: 'Nuevo Presupuesto', desc: 'Solicitar presupuesto', icon: 'pi pi-file-edit', route: '/quotes', bg: 'rgba(59,130,246,0.1)', color: '#3b82f6' },
-    { label: 'Mis Órdenes', desc: 'Ver pedidos activos', icon: 'pi pi-shopping-cart', route: '/orders', bg: 'rgba(34,197,94,0.1)', color: '#22c55e' },
+    { label: 'Mis Pedidos', desc: 'Ver pedidos activos', icon: 'pi pi-shopping-cart', route: '/orders', bg: 'rgba(34,197,94,0.1)', color: '#22c55e' },
     { label: 'Pagar Facturas', desc: 'Saldos pendientes', icon: 'pi pi-credit-card', route: '/payments', bg: 'rgba(245,158,11,0.1)', color: '#f59e0b' },
     { label: 'Mi Perfil', desc: 'Datos de cuenta', icon: 'pi pi-user', route: '/profile', bg: 'rgba(139,92,246,0.1)', color: '#8b5cf6' },
   ];
@@ -57,7 +57,7 @@ export class DashboardPageComponent {
   buildStats(data: PortalDashboard): StatCard[] {
     return [
       { label: 'Presupuestos Activos', value: String(data.draftQuotes), icon: 'pi pi-file-edit', route: '/quotes', gradient: 'linear-gradient(135deg, #3b82f6, #2563eb)' },
-      { label: 'Órdenes Confirmadas', value: String(data.confirmedOrders), icon: 'pi pi-shopping-cart', route: '/orders', gradient: 'linear-gradient(135deg, #22c55e, #16a34a)' },
+      { label: 'Pedidos Confirmados', value: String(data.confirmedOrders), icon: 'pi pi-shopping-cart', route: '/orders', gradient: 'linear-gradient(135deg, #22c55e, #16a34a)' },
       { label: 'Facturas Pendientes', value: String(data.pendingInvoices), icon: 'pi pi-receipt', route: '/invoices', gradient: 'linear-gradient(135deg, #f59e0b, #d97706)' },
       this.pendingAmountCard(data.pendingAmount),
     ];
@@ -88,7 +88,7 @@ export class DashboardPageComponent {
   }
 
   activityTypeLabel(type: string): string {
-    const map: Record<string, string> = { QUOTE: 'Presupuesto', ORDER: 'Orden', INVOICE: 'Factura', PAYMENT: 'Pago' };
+    const map: Record<string, string> = { QUOTE: 'Presupuesto', ORDER: 'Pedido', INVOICE: 'Factura', PAYMENT: 'Pago' };
     return map[type] ?? type;
   }
 

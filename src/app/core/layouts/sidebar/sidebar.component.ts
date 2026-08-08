@@ -24,7 +24,7 @@ export class SidebarComponent {
     { label: 'Dashboard', icon: 'pi pi-home', route: '/dashboard' },
     { label: 'Productos', icon: 'pi pi-box', route: '/products' },
     { label: 'Presupuestos', icon: 'pi pi-file-edit', route: '/quotes' },
-    { label: 'Órdenes', icon: 'pi pi-shopping-cart', route: '/orders' },
+    { label: 'Pedidos', icon: 'pi pi-shopping-cart', route: '/orders' },
     { label: 'Facturas', icon: 'pi pi-receipt', route: '/invoices' },
     { label: 'Pagos', icon: 'pi pi-credit-card', route: '/payments' },
     { label: 'Mi Perfil', icon: 'pi pi-user', route: '/profile' },

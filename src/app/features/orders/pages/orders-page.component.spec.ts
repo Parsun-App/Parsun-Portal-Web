@@ -126,11 +126,11 @@ describe('OrdersPageComponent', () => {
   });
 
   it('should use the plain empty state when there are no filters', () => {
-    expect(component.emptyConfig().title).toBe('No hay órdenes');
+    expect(component.emptyConfig().title).toBe('No hay pedidos');
   });
 
   it('should render the page title', () => {
     const h1 = fixture.nativeElement.querySelector('h1');
-    expect(h1.textContent.trim()).toBe('Órdenes');
+    expect(h1.textContent.trim()).toBe('Pedidos');
   });
 });

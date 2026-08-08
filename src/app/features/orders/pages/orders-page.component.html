@@ -1,10 +1,10 @@
 <div class="flex flex-col gap-6">
   <div class="flex items-center justify-between">
     <div>
-      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Órdenes</h1>
-      <p class="text-surface-500 mt-1">Historial y seguimiento de tus órdenes de compra.</p>
+      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Pedidos</h1>
+      <p class="text-surface-500 mt-1">Historial y seguimiento de tus pedidos de compra.</p>
     </div>
-    <p-button label="Nueva orden" icon="pi pi-plus" (click)="openCreateDialog()" />
+    <p-button label="Nuevo pedido" icon="pi pi-plus" (click)="openCreateDialog()" />
   </div>
 
   <div class="rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-4 shadow-2xl mb-6">
@@ -57,7 +57,7 @@
       >
         <ng-template pTemplate="header">
           <tr class="border-b border-surface-200 dark:border-surface-700">
-            <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">N° Orden</th>
+            <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">N° Pedido</th>
             <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Estado</th>
             <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Subtotal</th>
             <th class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Líneas</th>
@@ -120,7 +120,7 @@
   <ng-template pTemplate="header">
     <div class="flex items-center gap-3">
       <i class="pi pi-shopping-cart text-xl text-surface-500"></i>
-      <span class="text-lg font-semibold text-surface-900 dark:text-surface-100">Orden {{ detail()?.orderNumber }}</span>
+      <span class="text-lg font-semibold text-surface-900 dark:text-surface-100">Pedido {{ detail()?.orderNumber }}</span>
     </div>
   </ng-template>
   @if (detail(); as d) {
@@ -195,7 +195,7 @@
 
 <p-dialog
   [(visible)]="createDialogVisible"
-  [header]="isEditing() ? 'Editar orden' : 'Nueva orden'"
+  [header]="isEditing() ? 'Editar pedido' : 'Nuevo pedido'"
   [modal]="true"
   [style]="{ width: '42rem' }"
   [draggable]="false"
@@ -273,7 +273,7 @@
 
     <div class="flex flex-col gap-1">
       <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Notas</label>
-      <textarea pInputTextarea [(ngModel)]="notes" rows="2" class="w-full" placeholder="Notas de la orden (opcional)"></textarea>
+      <textarea pInputTextarea [(ngModel)]="notes" rows="2" class="w-full" placeholder="Notas del pedido (opcional)"></textarea>
     </div>
   </div>
 

@@ -14,24 +14,24 @@ describe('EmptyStateComponent', () => {
   });
 
   it('should render the title', () => {
-    fixture.componentRef.setInput('title', 'No hay órdenes');
+    fixture.componentRef.setInput('title', 'No hay pedidos');
     fixture.detectChanges();
 
     const title = fixture.nativeElement.querySelector('h3');
-    expect(title.textContent.trim()).toBe('No hay órdenes');
+    expect(title.textContent.trim()).toBe('No hay pedidos');
   });
 
   it('should render the message when provided', () => {
-    fixture.componentRef.setInput('title', 'No hay órdenes');
-    fixture.componentRef.setInput('message', 'Tus órdenes aparecerán aquí cuando los tengas.');
+    fixture.componentRef.setInput('title', 'No hay pedidos');
+    fixture.componentRef.setInput('message', 'Tus pedidos aparecerán aquí cuando los tengas.');
     fixture.detectChanges();
 
     const message = fixture.nativeElement.querySelector('p');
-    expect(message.textContent.trim()).toContain('Tus órdenes aparecerán aquí');
+    expect(message.textContent.trim()).toContain('Tus pedidos aparecerán aquí');
   });
 
   it('should not render the message when omitted', () => {
-    fixture.componentRef.setInput('title', 'No hay órdenes');
+    fixture.componentRef.setInput('title', 'No hay pedidos');
     fixture.detectChanges();
 
     const message = fixture.nativeElement.querySelector('p');
@@ -39,7 +39,7 @@ describe('EmptyStateComponent', () => {
   });
 
   it('should use pi-inbox as default icon', () => {
-    fixture.componentRef.setInput('title', 'No hay órdenes');
+    fixture.componentRef.setInput('title', 'No hay pedidos');
     fixture.detectChanges();
 
     const icon = fixture.nativeElement.querySelector('i');
@@ -47,7 +47,7 @@ describe('EmptyStateComponent', () => {
   });
 
   it('should allow overriding the icon', () => {
-    fixture.componentRef.setInput('title', 'No hay órdenes');
+    fixture.componentRef.setInput('title', 'No hay pedidos');
     fixture.componentRef.setInput('icon', 'pi pi-shopping-cart');
     fixture.detectChanges();
 
@@ -58,7 +58,7 @@ describe('EmptyStateComponent', () => {
 
   it('should render the action button and trigger the callback on click', () => {
     const action = vi.fn();
-    fixture.componentRef.setInput('title', 'No hay órdenes');
+    fixture.componentRef.setInput('title', 'No hay pedidos');
     fixture.componentRef.setInput('actionLabel', 'Recargar');
     fixture.componentRef.setInput('action', action);
     fixture.detectChanges();
@@ -72,7 +72,7 @@ describe('EmptyStateComponent', () => {
   });
 
   it('should not render the action button when the action is missing', () => {
-    fixture.componentRef.setInput('title', 'No hay órdenes');
+    fixture.componentRef.setInput('title', 'No hay pedidos');
     fixture.componentRef.setInput('actionLabel', 'Recargar');
     fixture.detectChanges();
 
@@ -81,7 +81,7 @@ describe('EmptyStateComponent', () => {
   });
 
   it('should not render the action button when the label is missing', () => {
-    fixture.componentRef.setInput('title', 'No hay órdenes');
+    fixture.componentRef.setInput('title', 'No hay pedidos');
     fixture.componentRef.setInput('action', vi.fn());
     fixture.detectChanges();
 

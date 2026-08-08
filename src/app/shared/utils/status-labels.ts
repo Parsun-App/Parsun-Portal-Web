@@ -3,7 +3,7 @@ export const STATUS_LABELS: Record<string, string> = {
   CUSTOMER_DRAFT: 'Borrador por Cliente',
   SENT: 'Enviado',
   CONVERTED: 'Convertido',
-  CONVERTED_TO_ORDER: 'Convertido a Orden',
+  CONVERTED_TO_ORDER: 'Convertido a Pedido',
   CONVERTED_TO_INVOICE: 'Convertido a Factura',
   CANCELLED: 'Cancelado',
   EXPIRED: 'Vencido',
