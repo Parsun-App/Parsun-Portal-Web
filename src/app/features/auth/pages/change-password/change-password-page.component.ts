@@ -1,4 +1,4 @@
-import { Component, signal, ChangeDetectionStrategy, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy, inject, OnInit, OnDestroy, computed } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { CardModule } from 'primeng/card';
@@ -9,6 +9,7 @@ import { AuthService } from '../../services/application/auth.service';
 import { ProfileService } from '@features/profile/services/application/profile.service';
 import { passwordsMatchValidator } from '../../validators/password-match.validator';
 import { passwordComplexityValidator } from '../../validators/password-complexity.validator';
+import { getPasswordError } from '../../validators/password-validation.helper';
 
 @Component({
   selector: 'app-change-password-page',
@@ -22,6 +23,7 @@ export class ChangePasswordPageComponent implements OnInit, OnDestroy {
   private readonly profileService = inject(ProfileService);
   private readonly fb = inject(FormBuilder);
   private valueChangesSub?: Subscription;
+  private newPasswordSub?: Subscription;
 
   readonly loading = this.authService.loading;
   readonly error = this.authService.error;
@@ -39,12 +41,20 @@ export class ChangePasswordPageComponent implements OnInit, OnDestroy {
     confirmPassword: ['', Validators.required],
   }, { validators: passwordsMatchValidator });
 
+  private readonly newPasswordValue = signal('');
+
+  readonly newPasswordError = computed(() =>
+    getPasswordError(this.newPasswordValue(), this.profileService.profile()?.rif ?? null));
+
   ngOnInit(): void {
     this.valueChangesSub = this.form.valueChanges.subscribe(() => this.success.set(false));
+    this.newPasswordSub = this.form.get('newPassword')?.valueChanges.subscribe(
+      val => this.newPasswordValue.set(val ?? ''));
   }
 
   ngOnDestroy(): void {
     this.valueChangesSub?.unsubscribe();
+    this.newPasswordSub?.unsubscribe();
   }
 
   changePassword(): void {

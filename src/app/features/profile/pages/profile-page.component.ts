@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CardModule } from 'primeng/card';
@@ -13,6 +13,7 @@ import { AuthService } from '@features/auth/services/application/auth.service';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 import { passwordsMatchValidator } from '@features/auth/validators/password-match.validator';
 import { passwordComplexityValidator } from '@features/auth/validators/password-complexity.validator';
+import { getPasswordError } from '@features/auth/validators/password-validation.helper';
 
 @Component({
   selector: 'app-profile-page',
@@ -47,8 +48,15 @@ export class ProfilePageComponent {
     confirmPassword: ['', Validators.required],
   }, { validators: passwordsMatchValidator });
 
+  private readonly newPasswordValue = signal('');
+
+  readonly newPasswordError = computed(() =>
+    getPasswordError(this.newPasswordValue(), this.profileService.profile()?.rif ?? null));
+
   constructor() {
     this.profileService.load();
+    this.passwordForm.get('newPassword')?.valueChanges.subscribe(
+      val => this.newPasswordValue.set(val ?? ''));
   }
 
   openChangePasswordDialog(): void {

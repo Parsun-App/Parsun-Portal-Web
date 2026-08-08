@@ -178,10 +178,14 @@
           formControlName="newPassword"
           styleClass="w-full"
           inputStyleClass="w-full"
+          [feedback]="false"
           [toggleMask]="true"
           placeholder="Nueva contraseña"
           autocomplete="new-password"
         />
+        @if (newPasswordError()) {
+          <small class="text-red-500">{{ newPasswordError() }}</small>
+        }
       </div>
 
       <div class="flex flex-col gap-1">
