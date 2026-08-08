@@ -12,6 +12,7 @@ import { ProfileService } from '@features/profile/services/application/profile.s
 import { AuthService } from '@features/auth/services/application/auth.service';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 import { passwordsMatchValidator } from '@features/auth/validators/password-match.validator';
+import { passwordComplexityValidator } from '@features/auth/validators/password-complexity.validator';
 
 @Component({
   selector: 'app-profile-page',
@@ -40,11 +41,7 @@ export class ProfilePageComponent {
       '',
       [
         Validators.required,
-        Validators.minLength(8),
-        Validators.pattern('.*[A-Z].*'),
-        Validators.pattern('.*[a-z].*'),
-        Validators.pattern('.*[0-9].*'),
-        Validators.pattern('.*[!@#$%^&*()_+\\-=\\[\\]{};\':"\\\\|,.<>\\/?].*'),
+        passwordComplexityValidator(() => this.profileService.profile()?.rif ?? null),
       ],
     ],
     confirmPassword: ['', Validators.required],

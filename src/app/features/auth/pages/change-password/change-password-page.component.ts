@@ -6,7 +6,9 @@ import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { AuthService } from '../../services/application/auth.service';
+import { ProfileService } from '@features/profile/services/application/profile.service';
 import { passwordsMatchValidator } from '../../validators/password-match.validator';
+import { passwordComplexityValidator } from '../../validators/password-complexity.validator';
 
 @Component({
   selector: 'app-change-password-page',
@@ -17,6 +19,7 @@ import { passwordsMatchValidator } from '../../validators/password-match.validat
 })
 export class ChangePasswordPageComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
+  private readonly profileService = inject(ProfileService);
   private readonly fb = inject(FormBuilder);
   private valueChangesSub?: Subscription;
 
@@ -30,11 +33,7 @@ export class ChangePasswordPageComponent implements OnInit, OnDestroy {
       '',
       [
         Validators.required,
-        Validators.minLength(8),
-        Validators.pattern('.*[A-Z].*'),
-        Validators.pattern('.*[a-z].*'),
-        Validators.pattern('.*[0-9].*'),
-        Validators.pattern('.*[!@#$%^&*()_+\\-=\\[\\]{};\':"\\\\|,.<>\\/?].*'),
+        passwordComplexityValidator(() => this.profileService.profile()?.rif ?? null),
       ],
     ],
     confirmPassword: ['', Validators.required],

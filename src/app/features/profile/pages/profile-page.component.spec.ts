@@ -3,8 +3,11 @@ import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
+import { of } from 'rxjs';
+import { MessageService } from 'primeng/api';
 import { ProfilePageComponent } from './profile-page.component';
 import { ProfileService } from '@features/profile/services/application/profile.service';
+import { AuthService } from '@features/auth/services/application/auth.service';
 import { PortalProfile } from '@features/profile/models';
 
 const PROFILE: PortalProfile = {
@@ -20,6 +23,13 @@ const PROFILE: PortalProfile = {
   emails: ['contacto@inversiones.com'],
   phones: ['+58 412 123 4567'],
   addresses: [{ address: 'Av. Principal', billing: true, state: 'Caracas', municipality: 'Libertador' }],
+};
+
+const authServiceMock = {
+  loading: signal(false),
+  error: signal(null),
+  login: vi.fn(),
+  changePassword: vi.fn().mockReturnValue(of({} as PortalProfile)),
 };
 
 describe('ProfilePageComponent', () => {
@@ -43,7 +53,9 @@ describe('ProfilePageComponent', () => {
       providers: [
         provideHttpClient(),
         provideRouter([]),
+        MessageService,
         { provide: ProfileService, useValue: serviceMock },
+        { provide: AuthService, useValue: authServiceMock },
       ],
     }).compileComponents();
 
@@ -74,5 +86,28 @@ describe('ProfilePageComponent', () => {
     fixture.detectChanges();
     const title = fixture.nativeElement.querySelector('h3');
     expect(title.textContent.trim()).toBe('No se pudo cargar el perfil');
+  });
+
+  it('should accept the customer rif as a valid new password', () => {
+    component.openChangePasswordDialog();
+    fixture.detectChanges();
+    component.passwordForm.patchValue({
+      currentPassword: 'OldPass@1',
+      newPassword: 'J-12345678-9',
+      confirmPassword: 'J-12345678-9',
+    });
+    expect(component.passwordForm.get('newPassword')?.errors).toBeNull();
+    expect(component.passwordForm.valid).toBe(true);
+  });
+
+  it('should reject a password that lacks complexity requirements', () => {
+    component.openChangePasswordDialog();
+    fixture.detectChanges();
+    component.passwordForm.patchValue({
+      currentPassword: 'OldPass@1',
+      newPassword: 'simple',
+      confirmPassword: 'simple',
+    });
+    expect(component.passwordForm.get('newPassword')?.errors).not.toBeNull();
   });
 });
