@@ -58,22 +58,22 @@
         <ng-template pTemplate="header">
           <tr class="border-b border-surface-200 dark:border-surface-700">
             <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">N° Pedido</th>
+            <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Fecha</th>
             <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Estado</th>
             <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Subtotal</th>
             <th class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Líneas</th>
-            <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Creada</th>
             <th class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Acciones</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-order>
           <tr class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors">
             <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">{{ order.orderNumber }}</td>
+            <td class="px-4 py-3 text-sm text-surface-500">{{ order.createdAt | date:'dd/MM/yyyy' }}</td>
             <td class="px-4 py-3">
               <p-tag [value]="getStatusLabel(order.status)" [severity]="statusSeverity(order.status)" />
             </td>
             <td class="px-4 py-3 text-right font-medium tabular-nums">{{ order.subtotal | currency:'USD':'symbol' }}</td>
             <td class="px-4 py-3 text-center text-sm text-surface-600 dark:text-surface-400">{{ order.lineCount }}</td>
-            <td class="px-4 py-3 text-sm text-surface-500">{{ order.createdAt | date:'dd/MM/yyyy' }}</td>
             <td class="px-4 py-3 text-center">
               <div class="flex items-center justify-center gap-1">
                 <p-button

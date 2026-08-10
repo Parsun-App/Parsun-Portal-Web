@@ -52,11 +52,11 @@
         <ng-template pTemplate="header">
           <tr class="border-b border-surface-200 dark:border-surface-700">
             <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">N° Pago</th>
-            <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Monto</th>
-            <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Referencia</th>
-            <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Fecha</th>
-            <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Estado</th>
+             <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Fecha</th>
+             <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Monto</th>
              <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Aplicado</th>
+             <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Referencia</th>
+             <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Estado</th>
              <th class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider w-16">Acciones</th>
           </tr>
         </ng-template>
@@ -65,13 +65,13 @@
             class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors"
           >
             <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">{{ payment.paymentNumber }}</td>
-            <td class="px-4 py-3 text-right font-medium tabular-nums">{{ payment.amount | currency:'USD':'symbol' }}</td>
-            <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ payment.referenceNumber || '-' }}</td>
             <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ payment.paymentDate | date:'dd/MM/yyyy' }}</td>
+            <td class="px-4 py-3 text-right font-medium tabular-nums">{{ payment.amount | currency:'USD':'symbol' }}</td>
+            <td class="px-4 py-3 text-right text-sm tabular-nums">{{ payment.appliedAmount | currency:'USD':'symbol' }}</td>
+            <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ payment.referenceNumber || '-' }}</td>
             <td class="px-4 py-3">
               <p-tag [value]="getStatusLabel(payment.status)" [severity]="statusSeverity(payment.status)" />
             </td>
-            <td class="px-4 py-3 text-right text-sm tabular-nums">{{ payment.appliedAmount | currency:'USD':'symbol' }}</td>
             <td class="px-4 py-3 text-center">
               <p-button
                 icon="pi pi-eye"
