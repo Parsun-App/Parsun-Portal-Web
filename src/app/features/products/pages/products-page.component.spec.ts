@@ -3,7 +3,8 @@ import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
-import type { TablePageEvent } from 'primeng/table';
+import type { TablePageEvent, PaginatorState } from 'primeng/table';
+import { MessageService } from 'primeng/api';
 import { ProductsPageComponent } from './products-page.component';
 import { ProductsService } from '@features/products/services/application/products.service';
 import { PortalProduct } from '@features/products/models';
@@ -24,9 +25,12 @@ describe('ProductsPageComponent', () => {
     selectedCategory: ReturnType<typeof signal<string | null>>;
     categoryOptions: ReturnType<typeof signal<{ label: string; value: string | null }[]>>;
     pageSize: ReturnType<typeof signal<number>>;
+    currentPage: ReturnType<typeof signal<number>>;
     searchChanged: ReturnType<typeof vi.fn>;
     onCategoryChange: ReturnType<typeof vi.fn>;
     onPageChange: ReturnType<typeof vi.fn>;
+    onGridPageChange: ReturnType<typeof vi.fn>;
+    downloadCatalog: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
@@ -38,9 +42,12 @@ describe('ProductsPageComponent', () => {
       selectedCategory: signal<string | null>(null),
       categoryOptions: signal([{ label: 'Todas las categorías', value: null }]),
       pageSize: signal(20),
+      currentPage: signal(0),
       searchChanged: vi.fn(),
       onCategoryChange: vi.fn(),
       onPageChange: vi.fn(),
+      onGridPageChange: vi.fn(),
+      downloadCatalog: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -49,6 +56,7 @@ describe('ProductsPageComponent', () => {
         provideHttpClient(),
         provideRouter([]),
         { provide: ProductsService, useValue: serviceMock },
+        MessageService,
       ],
     }).compileComponents();
 
@@ -107,5 +115,17 @@ describe('ProductsPageComponent', () => {
     fixture.detectChanges();
     const title = fixture.nativeElement.querySelector('h3');
     expect(title.textContent.trim()).toBe('Sin resultados');
+  });
+
+  it('should default to grid view mode', () => {
+    expect(component.viewMode()).toBe('grid');
+  });
+
+  it('should toggle between table and grid views', () => {
+    expect(component.viewMode()).toBe('grid');
+    component.toggleView();
+    expect(component.viewMode()).toBe('table');
+    component.toggleView();
+    expect(component.viewMode()).toBe('grid');
   });
 });

@@ -16,4 +16,10 @@ export class ProductsApiService {
     if (categoryId) params = params.set('categoryId', categoryId);
     return this.http.get<PagedResponse<PortalProduct>>(this.baseUrl, { params });
   }
+
+  downloadCatalogPdf(): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/catalog/pdf`, {
+      responseType: 'blob',
+    });
+  }
 }

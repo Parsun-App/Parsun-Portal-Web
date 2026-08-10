@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { TablePageEvent } from 'primeng/table';
-import { Subject, catchError, debounceTime, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
+import { Subject, Observable, catchError, debounceTime, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
 import { ProductsApiService } from '@features/products/services/api/products-api.service';
 import { PortalProduct } from '@features/products/models';
 import { PRODUCTS_MESSAGES } from '@features/products/messages/products.messages';
@@ -77,6 +77,16 @@ export class ProductsService {
     this.currentPage.set(Math.floor(event.first / event.rows));
     this.pageSize.set(event.rows);
     this.loadProducts().subscribe();
+  }
+
+  onGridPageChange(first: number, rows: number): void {
+    this.currentPage.set(Math.floor(first / rows));
+    this.pageSize.set(rows);
+    this.loadProducts().subscribe();
+  }
+
+  downloadCatalog(): Observable<Blob> {
+    return this.api.downloadCatalogPdf();
   }
 
   private loadProducts() {
