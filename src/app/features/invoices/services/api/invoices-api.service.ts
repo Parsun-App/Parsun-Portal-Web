@@ -4,6 +4,12 @@ import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
 import { PortalInvoiceList, PortalInvoiceDetail } from '@features/invoices/models';
 
+export interface PortalInvoiceSummary {
+  totalDebt: number;
+  pendingCount: number;
+  paidThisMonth: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class InvoicesApiService {
   private readonly http = inject(HttpClient);
@@ -20,5 +26,9 @@ export class InvoicesApiService {
 
   getById(id: string): Observable<PortalInvoiceDetail> {
     return this.http.get<PortalInvoiceDetail>(`${this.baseUrl}/${id}`);
+  }
+
+  getSummary(): Observable<PortalInvoiceSummary> {
+    return this.http.get<PortalInvoiceSummary>(`${this.baseUrl}/summary`);
   }
 }

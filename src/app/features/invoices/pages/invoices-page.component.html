@@ -2,11 +2,71 @@
   <div class="flex items-center justify-between">
     <div>
       <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Facturas</h1>
-      <p class="text-surface-500 mt-1">Consulta y descarga tus facturas electrónicas.</p>
+      <p class="text-surface-500 mt-1">Consulta, paga y descarga tus facturas electrónicas.</p>
     </div>
+    <p-button label="Registrar Pago" icon="pi pi-plus" (click)="openRegisterDialog()" />
   </div>
 
-  <div class="rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-4 shadow-2xl mb-6">
+  @if (summaryLoading()) {
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      @for (i of [1,2,3]; track i) {
+        <div class="rounded-2xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-6 shadow-md">
+          <p-skeleton width="3rem" height="3rem" borderRadius="0.75rem" />
+          <p-skeleton width="60%" height="1rem" styleClass="mt-4" />
+          <p-skeleton width="40%" height="2rem" styleClass="mt-2" />
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="rounded-2xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-6 shadow-md hover:shadow-xl transition-all duration-300">
+        <div class="flex items-center justify-between mb-4">
+          <div class="p-3 bg-red-100 dark:bg-red-900/30 rounded-xl">
+            <i class="pi pi-dollar text-red-600 dark:text-red-400 text-2xl"></i>
+          </div>
+          <div class="px-3 py-1 bg-surface-100 dark:bg-surface-700 rounded-full">
+            <span class="text-xs font-semibold text-surface-600 dark:text-surface-300">Total</span>
+          </div>
+        </div>
+        <p class="text-sm font-medium text-surface-500 dark:text-surface-400 mb-2">Deuda Total</p>
+        <p class="text-3xl font-bold text-red-600 dark:text-red-400">{{ totalDebt() | currency:'USD':'symbol':'1.2-2' }}</p>
+      </div>
+
+      <div class="rounded-2xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-6 shadow-md hover:shadow-xl transition-all duration-300">
+        <div class="flex items-center justify-between mb-4">
+          <div class="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-xl">
+            <i class="pi pi-file text-amber-600 dark:text-amber-400 text-2xl"></i>
+          </div>
+          <div class="px-3 py-1 bg-surface-100 dark:bg-surface-700 rounded-full">
+            <span class="text-xs font-semibold text-surface-600 dark:text-surface-300">Facturas</span>
+          </div>
+        </div>
+        <p class="text-sm font-medium text-surface-500 dark:text-surface-400 mb-2">Facturas Pendientes</p>
+        <p class="text-3xl font-bold text-surface-900 dark:text-surface-100">{{ pendingCount() }}</p>
+      </div>
+
+      <div class="rounded-2xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-6 shadow-md hover:shadow-xl transition-all duration-300">
+        <div class="flex items-center justify-between mb-4">
+          <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl">
+            <i class="pi pi-check-circle text-green-600 dark:text-green-400 text-2xl"></i>
+          </div>
+          <div class="px-3 py-1 bg-surface-100 dark:bg-surface-700 rounded-full">
+            <span class="text-xs font-semibold text-surface-600 dark:text-surface-300">Este Mes</span>
+          </div>
+        </div>
+        <p class="text-sm font-medium text-surface-500 dark:text-surface-400 mb-2">Pagado Este Mes</p>
+        <p class="text-3xl font-bold text-green-600 dark:text-green-400">{{ paidThisMonth() | currency:'USD':'symbol':'1.2-2' }}</p>
+      </div>
+    </div>
+  }
+
+  @if (pendingCount() > 0) {
+    <div class="flex justify-end">
+      <button pButton label="Pagar Toda la Deuda" icon="pi pi-credit-card" severity="danger" [loading]="paying()" (click)="payAllDebt()" class="font-medium"></button>
+    </div>
+  }
+
+  <div class="rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-4 shadow-2xl">
     <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center justify-between">
       <div class="flex gap-2 items-center w-full sm:w-auto">
         <p-iconField iconPosition="left" class="flex-1 sm:flex-none sm:min-w-[280px]">
@@ -17,7 +77,7 @@
           (onClick)="filterPopover.toggle($event)" pTooltip="Filtros"
           [badge]="activeFilterCount() > 0 ? activeFilterCount().toString() : ''" badgeSeverity="contrast" />
         <p-popover #filterPopover>
-          <div class="flex flex-col gap-4 p-1 min-w-[260px]">
+          <div class="flex flex-col gap-4 p-1 min-w-[280px]">
             <div class="flex items-center justify-between">
               <span class="font-semibold text-sm">Filtros</span>
               @if (activeFilterCount() > 0) {
@@ -31,13 +91,11 @@
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-xs font-medium text-surface-500">Desde</label>
-              <p-datepicker [ngModel]="dateFromDate()" (ngModelChange)="onDateFromChange($event)"
-                dateFormat="yy-mm-dd" styleClass="w-full" />
+              <p-datepicker [ngModel]="dateFromDate()" (ngModelChange)="onDateFromChange($event)" dateFormat="yy-mm-dd" styleClass="w-full" />
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-xs font-medium text-surface-500">Hasta</label>
-              <p-datepicker [ngModel]="dateToDate()" (ngModelChange)="onDateToChange($event)"
-                dateFormat="yy-mm-dd" styleClass="w-full" />
+              <p-datepicker [ngModel]="dateToDate()" (ngModelChange)="onDateToChange($event)" dateFormat="yy-mm-dd" styleClass="w-full" />
             </div>
           </div>
         </p-popover>
@@ -54,46 +112,33 @@
     <app-empty-state [icon]="empty.icon" [title]="empty.title" [message]="empty.message" />
   } @else {
     <div class="rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden bg-surface-0 dark:bg-surface-900 shadow-2xl">
-      <p-table
-        [value]="invoices()"
-        [paginator]="true"
-        [rows]="10"
-        [rowsPerPageOptions]="[10, 20, 50]"
-        [paginatorDropdownAppendTo]="'body'"
-        styleClass="w-full"
-        [rowHover]="true"
-        dataKey="id"
-      >
+      <p-table [value]="invoices()" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50]" [paginatorDropdownAppendTo]="'body'" styleClass="w-full" [rowHover]="true" dataKey="id">
         <ng-template pTemplate="header">
           <tr class="border-b border-surface-200 dark:border-surface-700">
-             <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">N° Factura</th>
-             <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Fecha</th>
-             <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Estado</th>
-             <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Total</th>
-             <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Pagado</th>
-             <th class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider w-16">Acciones</th>
+            <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">N° Factura</th>
+            <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Fecha</th>
+            <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Estado</th>
+            <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Total</th>
+            <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Pagado</th>
+            <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Saldo</th>
+            <th class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider w-28">Acciones</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-invoice>
-          <tr
-            class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors"
-          >
+          <tr class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors">
             <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">{{ invoice.invoiceNumber }}</td>
             <td class="px-4 py-3 text-sm text-surface-500">{{ invoice.createdAt | date:'dd/MM/yyyy' }}</td>
-            <td class="px-4 py-3">
-              <p-tag [value]="getStatusLabel(invoice.status)" [severity]="statusSeverity(invoice.status)" />
-            </td>
+            <td class="px-4 py-3"><p-tag [value]="getStatusLabel(invoice.status)" [severity]="statusSeverity(invoice.status)" /></td>
             <td class="px-4 py-3 text-right font-medium tabular-nums">{{ invoice.total | currency:'USD':'symbol' }}</td>
             <td class="px-4 py-3 text-right text-sm tabular-nums">{{ invoice.paidAmount | currency:'USD':'symbol' }}</td>
+            <td class="px-4 py-3 text-right text-sm font-medium tabular-nums" [class.text-red-600]="invoice.total - invoice.paidAmount > 0">{{ (invoice.total - invoice.paidAmount) | currency:'USD':'symbol' }}</td>
             <td class="px-4 py-3 text-center">
-              <p-button
-                icon="pi pi-eye"
-                (onClick)="openDetail(invoice.id)"
-                severity="secondary"
-                [text]="true"
-                [rounded]="true"
-                pTooltip="Ver detalle"
-              />
+              <div class="flex items-center justify-center gap-1">
+                <p-button icon="pi pi-eye" (onClick)="openDetail(invoice.id)" severity="secondary" [text]="true" [rounded]="true" pTooltip="Ver detalle" />
+                @if (isPending(invoice)) {
+                  <p-button icon="pi pi-credit-card" (onClick)="openPayDialog(invoice)" severity="success" [text]="true" [rounded]="true" pTooltip="Pagar" />
+                }
+              </div>
             </td>
           </tr>
         </ng-template>
@@ -102,12 +147,7 @@
   }
 </div>
 
-<p-dialog
-  [(visible)]="detailDialogVisible"
-  [style]="{ width: '48rem' }"
-  [modal]="true"
-  [closable]="true"
->
+<p-dialog [(visible)]="detailDialogVisible" [style]="{ width: '48rem' }" [modal]="true" [closable]="true">
   <ng-template pTemplate="header">
     <div class="flex items-center gap-3">
       <i class="pi pi-file-invoice text-xl text-surface-500"></i>
@@ -117,31 +157,11 @@
   @if (detail(); as d) {
     <div class="flex flex-col gap-6">
       <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <div>
-          <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Estado</label>
-          <p class="text-sm mt-1"><p-tag [value]="getStatusLabel(d.status)" [severity]="statusSeverity(d.status)" /></p>
-        </div>
-        <div>
-          <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Tipo de Pago</label>
-          <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.paymentType }}</p>
-        </div>
-        <div>
-          <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Subtotal</label>
-          <p class="text-sm mt-1 font-medium text-surface-900 dark:text-surface-100">{{ d.subtotal | currency:'USD':'symbol' }}</p>
-        </div>
-        <div>
-          <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Fecha</label>
-          <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
-        </div>
+        <div><label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Estado</label><p class="text-sm mt-1"><p-tag [value]="getStatusLabel(d.status)" [severity]="statusSeverity(d.status)" /></p></div>
+        <div><label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Subtotal</label><p class="text-sm mt-1 font-medium text-surface-900 dark:text-surface-100">{{ d.subtotal | currency:'USD':'symbol' }}</p></div>
+        <div><label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Fecha</label><p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.createdAt | date:'dd/MM/yyyy HH:mm' }}</p></div>
       </div>
-
-      @if (d.notes) {
-        <div>
-          <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Notas</label>
-          <p class="text-sm mt-1 text-surface-700 dark:text-surface-300">{{ d.notes }}</p>
-        </div>
-      }
-
+      @if (d.notes) { <div><label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Notas</label><p class="text-sm mt-1 text-surface-700 dark:text-surface-300">{{ d.notes }}</p></div> }
       <div>
         <label class="text-xs font-medium text-surface-500 uppercase tracking-wider mb-2 block">Líneas</label>
         <p-table [value]="d.lines" styleClass="w-full" dataKey="id">
@@ -155,23 +175,91 @@
           </ng-template>
           <ng-template pTemplate="body" let-line>
             <tr class="border-b border-surface-100 dark:border-surface-800">
-              <td class="px-3 py-2 text-sm">
-                <span class="font-medium text-surface-900 dark:text-surface-100">{{ line.productName }}</span>
-                <span class="text-surface-400 ml-1 font-mono text-xs">({{ line.productCode }})</span>
-              </td>
+              <td class="px-3 py-2 text-sm"><span class="font-medium text-surface-900 dark:text-surface-100">{{ line.productName }}</span><span class="text-surface-400 ml-1 font-mono text-xs">({{ line.productCode }})</span></td>
               <td class="px-3 py-2 text-right text-sm">{{ line.quantity }}</td>
               <td class="px-3 py-2 text-right text-sm tabular-nums">{{ line.unitPrice | currency:'USD':'symbol' }}</td>
               <td class="px-3 py-2 text-right text-sm font-medium tabular-nums">{{ line.lineTotal | currency:'USD':'symbol' }}</td>
             </tr>
           </ng-template>
         </p-table>
-        <div class="flex justify-end mt-3">
-          <span class="text-lg font-bold text-surface-900 dark:text-surface-100">{{ d.subtotal | currency:'USD':'symbol' }}</span>
-        </div>
+        <div class="flex justify-end mt-3"><span class="text-lg font-bold text-surface-900 dark:text-surface-100">{{ d.subtotal | currency:'USD':'symbol' }}</span></div>
       </div>
     </div>
   }
   <ng-template pTemplate="footer">
     <p-button label="Cerrar" (click)="detailDialogVisible.set(false)" severity="secondary" [text]="true" />
+  </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="payDialogVisible" header="Pagar Factura" [modal]="true" [style]="{ width: '24rem' }" [draggable]="false">
+  <div class="flex flex-col gap-4">
+    <div class="bg-surface-100 dark:bg-surface-800 rounded-lg p-3 flex items-center justify-between">
+      <span class="text-sm text-surface-500">Saldo pendiente</span>
+      <span class="text-lg font-bold text-surface-900 dark:text-surface-100">{{ payFullAmount() | currency:'USD':'symbol' }}</span>
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Monto a pagar</label>
+      <p-inputNumber [(ngModel)]="payAmount" [min]="0.01" [max]="payFullAmount()" mode="currency" currency="USD" locale="en-US" styleClass="w-full" inputStyleClass="w-full" />
+    </div>
+    <div class="flex gap-2">
+      <button pButton label="Total" size="small" severity="secondary" [outlined]="true" (click)="setPayFull()" class="flex-1 text-xs"></button>
+      <button pButton label="Mitad" size="small" severity="secondary" [outlined]="true" (click)="setPayHalf()" class="flex-1 text-xs"></button>
+    </div>
+    @if (isPayPartial()) {
+      <div class="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg p-2">
+        Pago parcial. Quedarán {{ remaining() | currency:'USD':'symbol' }} pendientes.
+      </div>
+    }
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Método de pago</label>
+      <p-select [options]="paymentMethods()" [(ngModel)]="payMethodId" optionLabel="name" optionValue="id" placeholder="Seleccionar..." styleClass="w-full" />
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Fecha de pago</label>
+      <p-datepicker [(ngModel)]="payDate" dateFormat="yy-mm-dd" styleClass="w-full" />
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Referencia</label>
+      <input pInputText [(ngModel)]="payReference" placeholder="Opcional" class="w-full" />
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" severity="secondary" [text]="true" (click)="payDialogVisible.set(false)" [disabled]="paying()" />
+    <p-button label="Pagar" icon="pi pi-check" [loading]="paying()" [disabled]="!canSubmitPay()" (click)="submitPay()" />
+  </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="registerDialogVisible" header="Registrar Pago" [modal]="true" [style]="{ width: '28rem' }" [draggable]="false">
+  <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Monto *</label>
+      <p-inputNumber [(ngModel)]="registerAmount" [min]="0" mode="currency" currency="USD" locale="en-US" styleClass="w-full" inputStyleClass="w-full" />
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Método de pago *</label>
+      <p-select [options]="paymentMethods()" [(ngModel)]="registerMethodId" optionLabel="name" optionValue="id" placeholder="Seleccionar..." styleClass="w-full" />
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Fecha de pago *</label>
+      <p-datepicker [(ngModel)]="registerDate" dateFormat="yy-mm-dd" styleClass="w-full" />
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Referencia</label>
+      <input pInputText [(ngModel)]="registerReference" placeholder="N° de transferencia o comprobante" class="w-full" />
+      <small class="text-surface-500">Requerida si no adjunta un justificante.</small>
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Justificante</label>
+      <p-fileupload mode="basic" accept="image/*,.pdf" [maxFileSize]="10000000" (onSelect)="onRegisterFileSelected($event)" chooseLabel="Seleccionar archivo" />
+      <small class="text-surface-500">Requerido si no ingresa una referencia.</small>
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Notas</label>
+      <textarea pTextarea [(ngModel)]="registerNotes" rows="2" class="w-full" placeholder="Notas adicionales (opcional)"></textarea>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" severity="secondary" [text]="true" (click)="registerDialogVisible.set(false)" [disabled]="registering()" />
+    <p-button label="Registrar" icon="pi pi-check" [loading]="registering()" [disabled]="!canSubmitRegister()" (click)="submitRegister()" />
   </ng-template>
 </p-dialog>
