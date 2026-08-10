@@ -56,13 +56,13 @@
             <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Referencia</th>
             <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Fecha</th>
             <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Estado</th>
-            <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Aplicado</th>
+             <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Aplicado</th>
+             <th class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider w-16">Acciones</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-payment>
           <tr
-            class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors cursor-pointer"
-            (click)="openDetail(payment.id)"
+            class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors"
           >
             <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">{{ payment.paymentNumber }}</td>
             <td class="px-4 py-3 text-right font-medium tabular-nums">{{ payment.amount | currency:'USD':'symbol' }}</td>
@@ -72,6 +72,16 @@
               <p-tag [value]="getStatusLabel(payment.status)" [severity]="statusSeverity(payment.status)" />
             </td>
             <td class="px-4 py-3 text-right text-sm tabular-nums">{{ payment.appliedAmount | currency:'USD':'symbol' }}</td>
+            <td class="px-4 py-3 text-center">
+              <p-button
+                icon="pi pi-eye"
+                (onClick)="openDetail(payment.id)"
+                severity="secondary"
+                [text]="true"
+                [rounded]="true"
+                pTooltip="Ver detalle"
+              />
+            </td>
           </tr>
         </ng-template>
       </p-table>
