@@ -4,6 +4,11 @@
       <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Facturas</h1>
       <p class="text-surface-500 mt-1">Consulta, paga y descarga tus facturas electrónicas.</p>
     </div>
+    <div class="flex gap-2">
+      @if (pendingCount() > 0) {
+        <p-button label="Pagar Deuda" icon="pi pi-dollar" severity="secondary" (click)="openPayAll()" />
+      }
+    </div>
   </div>
 
   @if (summaryLoading()) {
@@ -56,12 +61,6 @@
         <p class="text-sm font-medium text-surface-500 dark:text-surface-400 mb-2">Pagado Este Mes</p>
         <p class="text-3xl font-bold text-green-600 dark:text-green-400">{{ paidThisMonth() | currency:'USD':'symbol':'1.2-2' }}</p>
       </div>
-    </div>
-  }
-
-  @if (pendingCount() > 0) {
-    <div class="flex justify-end">
-      <p-button label="Pagar Toda la Deuda" icon="pi pi-dollar" severity="secondary" (click)="openPayAll()" />
     </div>
   }
 
