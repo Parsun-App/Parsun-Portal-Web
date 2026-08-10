@@ -31,12 +31,12 @@
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-xs font-medium text-surface-500">Desde</label>
-              <p-datepicker [ngModel]="dateFrom() ? parseDate(dateFrom()) : null" (ngModelChange)="onDateFromChange($event)"
+              <p-datepicker [ngModel]="dateFromDate()" (ngModelChange)="onDateFromChange($event)"
                 dateFormat="yy-mm-dd" styleClass="w-full" />
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-xs font-medium text-surface-500">Hasta</label>
-              <p-datepicker [ngModel]="dateTo() ? parseDate(dateTo()) : null" (ngModelChange)="onDateToChange($event)"
+              <p-datepicker [ngModel]="dateToDate()" (ngModelChange)="onDateToChange($event)"
                 dateFormat="yy-mm-dd" styleClass="w-full" />
             </div>
           </div>

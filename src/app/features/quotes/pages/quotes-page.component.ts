@@ -57,6 +57,8 @@ export class QuotesPageComponent {
   readonly filterStatus = this.quotesService.filterStatus;
   readonly dateFrom = this.quotesService.dateFrom;
   readonly dateTo = this.quotesService.dateTo;
+  readonly dateFromDate = signal<Date | null>(null);
+  readonly dateToDate = signal<Date | null>(null);
 
   readonly products = signal<PortalProduct[]>([]);
   readonly filteredSuggestions = signal<PortalProduct[]>([]);
@@ -249,10 +251,6 @@ export class QuotesPageComponent {
     this.quotesService.onStatusFilterChange(value);
   }
 
-  clearFilters(): void {
-    this.quotesService.clearFilters();
-  }
-
   openDetail(id: string): void {
     this.quotesService.openDetail(id);
   }
@@ -292,13 +290,21 @@ export class QuotesPageComponent {
   }
 
   onDateFromChange(value: Date | null): void {
+    this.dateFromDate.set(value);
     const from = value ? this.formatDate(value) : '';
     this.quotesService.onDateFilterChange(from, this.dateTo());
   }
 
   onDateToChange(value: Date | null): void {
+    this.dateToDate.set(value);
     const to = value ? this.formatDate(value) : '';
     this.quotesService.onDateFilterChange(this.dateFrom(), to);
+  }
+
+  clearFilters(): void {
+    this.dateFromDate.set(null);
+    this.dateToDate.set(null);
+    this.quotesService.clearFilters();
   }
 
   parseDate(dateStr: string): Date {

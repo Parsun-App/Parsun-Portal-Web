@@ -61,6 +61,8 @@ export class OrdersPageComponent {
   readonly filterStatus = this.ordersService.filterStatus;
   readonly dateFrom = this.ordersService.dateFrom;
   readonly dateTo = this.ordersService.dateTo;
+  readonly dateFromDate = signal<Date | null>(null);
+  readonly dateToDate = signal<Date | null>(null);
 
   readonly products = signal<PortalProduct[]>([]);
   readonly filteredSuggestions = signal<PortalProduct[]>([]);
@@ -253,10 +255,6 @@ export class OrdersPageComponent {
     this.ordersService.onStatusFilterChange(value);
   }
 
-  clearFilters(): void {
-    this.ordersService.clearFilters();
-  }
-
   openDetail(id: string): void {
     this.ordersService.openDetail(id);
   }
@@ -294,13 +292,21 @@ export class OrdersPageComponent {
   }
 
   onDateFromChange(value: Date | null): void {
+    this.dateFromDate.set(value);
     const from = value ? this.formatDate(value) : '';
     this.ordersService.onDateFilterChange(from, this.dateTo());
   }
 
   onDateToChange(value: Date | null): void {
+    this.dateToDate.set(value);
     const to = value ? this.formatDate(value) : '';
     this.ordersService.onDateFilterChange(this.dateFrom(), to);
+  }
+
+  clearFilters(): void {
+    this.dateFromDate.set(null);
+    this.dateToDate.set(null);
+    this.ordersService.clearFilters();
   }
 
   parseDate(dateStr: string): Date {

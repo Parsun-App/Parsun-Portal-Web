@@ -1,4 +1,4 @@
-import { Component, inject, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, computed, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
@@ -36,6 +36,8 @@ export class PaymentsPageComponent {
   readonly filterStatus = this.paymentsService.filterStatus;
   readonly dateFrom = this.paymentsService.dateFrom;
   readonly dateTo = this.paymentsService.dateTo;
+  readonly dateFromDate = signal<Date | null>(null);
+  readonly dateToDate = signal<Date | null>(null);
 
   readonly activeFilterCount = computed(() => {
     let count = 0;
@@ -80,16 +82,20 @@ export class PaymentsPageComponent {
   }
 
   onDateFromChange(value: Date | null): void {
+    this.dateFromDate.set(value);
     const from = value ? this.formatDate(value) : '';
     this.paymentsService.onDateFilterChange(from, this.dateTo());
   }
 
   onDateToChange(value: Date | null): void {
+    this.dateToDate.set(value);
     const to = value ? this.formatDate(value) : '';
     this.paymentsService.onDateFilterChange(this.dateFrom(), to);
   }
 
   clearFilters(): void {
+    this.dateFromDate.set(null);
+    this.dateToDate.set(null);
     this.paymentsService.clearFilters();
   }
 
