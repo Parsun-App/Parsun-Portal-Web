@@ -67,7 +67,7 @@
         </ng-template>
         <ng-template pTemplate="body" let-quote>
           <tr class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors">
-            <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300 cursor-pointer" (click)="openDetail(quote.id)">{{ quote.quoteNumber }}</td>
+            <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">{{ quote.quoteNumber }}</td>
             <td class="px-4 py-3">
               <p-tag [value]="getStatusLabel(quote.status)" [severity]="statusSeverity(quote.status)" />
             </td>
