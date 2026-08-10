@@ -61,7 +61,6 @@
             <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Fecha</th>
             <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Estado</th>
             <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Subtotal</th>
-            <th class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Líneas</th>
             <th class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Acciones</th>
           </tr>
         </ng-template>
@@ -73,7 +72,6 @@
               <p-tag [value]="getStatusLabel(order.status)" [severity]="statusSeverity(order.status)" />
             </td>
             <td class="px-4 py-3 text-right font-medium tabular-nums">{{ order.subtotal | currency:'USD':'symbol' }}</td>
-            <td class="px-4 py-3 text-center text-sm text-surface-600 dark:text-surface-400">{{ order.lineCount }}</td>
             <td class="px-4 py-3 text-center">
               <div class="flex items-center justify-center gap-1">
                 <p-button
