@@ -32,8 +32,11 @@ describe('OrdersPageComponent', () => {
     detail: ReturnType<typeof signal<unknown | null>>;
     detailDialogVisible: ReturnType<typeof signal<boolean>>;
     searchTerm: ReturnType<typeof signal<string>>;
+    dateFrom: ReturnType<typeof signal<string>>;
+    dateTo: ReturnType<typeof signal<string>>;
     filterStatus: ReturnType<typeof signal<string | undefined>>;
     onSearch: ReturnType<typeof vi.fn>;
+    onDateFilterChange: ReturnType<typeof vi.fn>;
     onStatusFilterChange: ReturnType<typeof vi.fn>;
     clearFilters: ReturnType<typeof vi.fn>;
     openDetail: ReturnType<typeof vi.fn>;
@@ -49,8 +52,11 @@ describe('OrdersPageComponent', () => {
       detail: signal(null),
       detailDialogVisible: signal(false),
       searchTerm: signal(''),
+      dateFrom: signal(''),
+      dateTo: signal(''),
       filterStatus: signal<string | undefined>(undefined),
       onSearch: vi.fn(),
+      onDateFilterChange: vi.fn(),
       onStatusFilterChange: vi.fn(),
       clearFilters: vi.fn(),
       openDetail: vi.fn(),

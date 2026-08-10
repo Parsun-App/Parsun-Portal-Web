@@ -13,6 +13,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
+import { DatePickerModule } from 'primeng/datepicker';
 import { PopoverModule } from 'primeng/popover';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ConfirmationService } from 'primeng/api';
@@ -39,7 +40,7 @@ interface FormLine {
     TableModule, TagModule, DialogModule, ButtonModule,
     ConfirmDialogModule, TooltipModule, IconFieldModule, InputIconModule,
     InputTextModule, InputNumberModule, TextareaModule,
-    SelectModule, PopoverModule, AutoCompleteModule, EmptyStateComponent,
+    SelectModule, DatePickerModule, PopoverModule, AutoCompleteModule, EmptyStateComponent,
   ],
   providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -58,6 +59,8 @@ export class OrdersPageComponent {
   readonly createDialogVisible = this.ordersService.createDialogVisible;
   readonly searchTerm = this.ordersService.searchTerm;
   readonly filterStatus = this.ordersService.filterStatus;
+  readonly dateFrom = this.ordersService.dateFrom;
+  readonly dateTo = this.ordersService.dateTo;
 
   readonly products = signal<PortalProduct[]>([]);
   readonly filteredSuggestions = signal<PortalProduct[]>([]);
@@ -74,10 +77,11 @@ export class OrdersPageComponent {
     let count = 0;
     if (this.searchTerm()) count++;
     if (this.filterStatus()) count++;
+    if (this.dateFrom() || this.dateTo()) count++;
     return count;
   });
 
-  readonly hasActiveFilters = computed(() => Boolean(this.searchTerm()) || Boolean(this.filterStatus()));
+  readonly hasActiveFilters = computed(() => Boolean(this.searchTerm()) || Boolean(this.filterStatus()) || Boolean(this.dateFrom()) || Boolean(this.dateTo()));
 
   readonly emptyConfig = computed(() => {
     if (this.hasActiveFilters()) {
@@ -287,5 +291,26 @@ export class OrdersPageComponent {
       CANCELLED: 'danger',
     };
     return map[status] ?? 'info';
+  }
+
+  onDateFromChange(value: Date | null): void {
+    const from = value ? this.formatDate(value) : '';
+    this.ordersService.onDateFilterChange(from, this.dateTo());
+  }
+
+  onDateToChange(value: Date | null): void {
+    const to = value ? this.formatDate(value) : '';
+    this.ordersService.onDateFilterChange(this.dateFrom(), to);
+  }
+
+  parseDate(dateStr: string): Date {
+    return new Date(dateStr + 'T00:00:00');
+  }
+
+  private formatDate(date: Date): string {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 }

@@ -10,6 +10,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
+import { DatePickerModule } from 'primeng/datepicker';
 import { PopoverModule } from 'primeng/popover';
 import { InvoicesService } from '@features/invoices/services/application/invoices.service';
 import { getStatusLabel } from '@shared/utils/status-labels';
@@ -20,7 +21,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
 @Component({
   selector: 'app-invoices-page',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, SelectModule, PopoverModule, EmptyStateComponent],
+  imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, SelectModule, DatePickerModule, PopoverModule, EmptyStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './invoices-page.component.html',
 })
@@ -33,15 +34,18 @@ export class InvoicesPageComponent {
   readonly detailDialogVisible = this.invoicesService.detailDialogVisible;
   readonly searchTerm = this.invoicesService.searchTerm;
   readonly filterStatus = this.invoicesService.filterStatus;
+  readonly dateFrom = this.invoicesService.dateFrom;
+  readonly dateTo = this.invoicesService.dateTo;
 
   readonly activeFilterCount = computed(() => {
     let count = 0;
     if (this.searchTerm()) count++;
     if (this.filterStatus()) count++;
+    if (this.dateFrom() || this.dateTo()) count++;
     return count;
   });
 
-  readonly hasActiveFilters = computed(() => Boolean(this.searchTerm()) || Boolean(this.filterStatus()));
+  readonly hasActiveFilters = computed(() => Boolean(this.searchTerm()) || Boolean(this.filterStatus()) || Boolean(this.dateFrom()) || Boolean(this.dateTo()));
 
   readonly emptyConfig = computed(() => {
     if (this.hasActiveFilters()) {
@@ -76,12 +80,26 @@ export class InvoicesPageComponent {
     this.invoicesService.onStatusFilterChange(value);
   }
 
+  onDateFromChange(value: Date | null): void {
+    const from = value ? this.formatDate(value) : '';
+    this.invoicesService.onDateFilterChange(from, this.dateTo());
+  }
+
+  onDateToChange(value: Date | null): void {
+    const to = value ? this.formatDate(value) : '';
+    this.invoicesService.onDateFilterChange(this.dateFrom(), to);
+  }
+
   clearFilters(): void {
     this.invoicesService.clearFilters();
   }
 
   openDetail(id: string): void {
     this.invoicesService.openDetail(id);
+  }
+
+  parseDate(dateStr: string): Date {
+    return new Date(dateStr + 'T00:00:00');
   }
 
   statusSeverity(status: string): StatusSeverity {
@@ -93,5 +111,12 @@ export class InvoicesPageComponent {
       OVERDUE: 'danger',
     };
     return map[status] ?? 'info';
+  }
+
+  private formatDate(date: Date): string {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 }

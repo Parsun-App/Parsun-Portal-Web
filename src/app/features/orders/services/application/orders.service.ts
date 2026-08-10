@@ -22,6 +22,8 @@ export class OrdersService {
   readonly createDialogVisible = signal(false);
   readonly searchTerm = signal('');
   readonly filterStatus = signal<string | undefined>(undefined);
+  readonly dateFrom = signal('');
+  readonly dateTo = signal('');
 
   constructor() {
     this.load();
@@ -29,11 +31,15 @@ export class OrdersService {
 
   load(): void {
     this.loading.set(true);
-    const params: { search?: string; status?: string } = {};
+    const params: { search?: string; status?: string; dateFrom?: string; dateTo?: string } = {};
     const search = this.searchTerm();
     const status = this.filterStatus();
+    const from = this.dateFrom();
+    const to = this.dateTo();
     if (search) params.search = search;
     if (status) params.status = status;
+    if (from) params.dateFrom = from;
+    if (to) params.dateTo = to;
     this.api.list(params).pipe(
       tap(response => {
         this.orders.set(response);
@@ -62,9 +68,17 @@ export class OrdersService {
     this.load();
   }
 
+  onDateFilterChange(from: string, to: string): void {
+    this.dateFrom.set(from);
+    this.dateTo.set(to);
+    this.load();
+  }
+
   clearFilters(): void {
     this.searchTerm.set('');
     this.filterStatus.set(undefined);
+    this.dateFrom.set('');
+    this.dateTo.set('');
     this.load();
   }
 

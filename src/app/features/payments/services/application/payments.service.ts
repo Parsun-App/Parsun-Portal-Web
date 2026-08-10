@@ -18,6 +18,9 @@ export class PaymentsService {
   readonly detail = signal<PortalPaymentDetail | null>(null);
   readonly detailDialogVisible = signal(false);
   readonly searchTerm = signal('');
+  readonly filterStatus = signal<string | undefined>(undefined);
+  readonly dateFrom = signal('');
+  readonly dateTo = signal('');
 
   constructor() {
     this.load();
@@ -25,8 +28,15 @@ export class PaymentsService {
 
   load(): void {
     this.loading.set(true);
-    const params: { search?: string } = {};
-    if (this.searchTerm()) params.search = this.searchTerm();
+    const params: { search?: string; dateFrom?: string; dateTo?: string; status?: string } = {};
+    const search = this.searchTerm();
+    const status = this.filterStatus();
+    const from = this.dateFrom();
+    const to = this.dateTo();
+    if (search) params.search = search;
+    if (status) params.status = status;
+    if (from) params.dateFrom = from;
+    if (to) params.dateTo = to;
     this.api.list(params).pipe(
       tap(response => {
         this.payments.set(response);
@@ -50,8 +60,22 @@ export class PaymentsService {
     this.scheduleLoad();
   }
 
+  onStatusFilterChange(value: string | null): void {
+    this.filterStatus.set(value ?? undefined);
+    this.load();
+  }
+
+  onDateFilterChange(from: string, to: string): void {
+    this.dateFrom.set(from);
+    this.dateTo.set(to);
+    this.load();
+  }
+
   clearFilters(): void {
     this.searchTerm.set('');
+    this.filterStatus.set(undefined);
+    this.dateFrom.set('');
+    this.dateTo.set('');
     this.load();
   }
 

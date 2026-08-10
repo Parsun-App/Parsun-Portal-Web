@@ -16,13 +16,28 @@
         <p-button #filterBtn icon="pi pi-filter" [outlined]="true" severity="secondary"
           (onClick)="filterPopover.toggle($event)" pTooltip="Filtros"
           [badge]="activeFilterCount() > 0 ? activeFilterCount().toString() : ''" badgeSeverity="contrast" />
-        <p-popover #filterPopover>
-          <div class="flex flex-col gap-4 p-1 min-w-[260px]">
+         <p-popover #filterPopover>
+          <div class="flex flex-col gap-4 p-1 min-w-[280px]">
             <div class="flex items-center justify-between">
               <span class="font-semibold text-sm">Filtros</span>
               @if (activeFilterCount() > 0) {
                 <p-button label="Limpiar" [text]="true" size="small" severity="secondary" (onClick)="clearFilters()" />
               }
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-medium text-surface-500">Estado</label>
+              <p-select [options]="statusOptions" [ngModel]="filterStatus()" (ngModelChange)="onStatusFilterChange($event)"
+                optionLabel="label" optionValue="value" placeholder="Todos" styleClass="w-full" />
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-medium text-surface-500">Desde</label>
+              <p-datepicker [ngModel]="dateFrom() ? parseDate(dateFrom()) : null" (ngModelChange)="onDateFromChange($event)"
+                dateFormat="yy-mm-dd" styleClass="w-full" />
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-medium text-surface-500">Hasta</label>
+              <p-datepicker [ngModel]="dateTo() ? parseDate(dateTo()) : null" (ngModelChange)="onDateToChange($event)"
+                dateFormat="yy-mm-dd" styleClass="w-full" />
             </div>
           </div>
         </p-popover>
