@@ -1,14 +1,15 @@
 <div class="flex flex-col gap-6">
-  <div class="flex items-center justify-between">
-    <div>
-      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Facturas</h1>
-      <p class="text-surface-500 mt-1">Consulta, paga y descarga tus facturas electrónicas.</p>
+  <div class="text-center mb-2">
+    <div class="inline-flex items-center justify-center w-16 h-16 bg-surface-900 dark:bg-surface-100 rounded-2xl mb-4 shadow-lg">
+      <i class="pi pi-file text-surface-0 dark:text-surface-900 text-3xl"></i>
     </div>
-    <div class="flex gap-2">
-      @if (pendingCount() > 0) {
-        <p-button label="Pagar Deuda" icon="pi pi-dollar" severity="secondary" (click)="openPayAll()" />
-      }
-    </div>
+    <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-100 mb-1">Facturas</h1>
+    <p class="text-surface-500">Gestiona las facturas de clientes</p>
+  </div>
+  <div class="flex items-center justify-end">
+    @if (pendingCount() > 0) {
+      <p-button label="Pagar Deuda" icon="pi pi-dollar" severity="secondary" (click)="openPayAll()" />
+    }
   </div>
 
   @if (summaryLoading()) {
