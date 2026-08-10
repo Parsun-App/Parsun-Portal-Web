@@ -64,6 +64,10 @@ export class QuotesPageComponent implements OnInit {
   readonly searchTerm = this.quotesService.searchTerm;
   readonly filterStatus = this.quotesService.filterStatus;
   readonly dateFrom = this.quotesService.dateFrom;
+
+  readonly pendingQuotes = computed(() => this.quotes().filter(q => q.status === 'DRAFT' || q.status === 'CUSTOMER_DRAFT').length);
+  readonly convertedQuotes = computed(() => this.quotes().filter(q => q.status === 'CONVERTED_TO_ORDER' || q.status === 'CONVERTED_TO_INVOICE').length);
+  readonly quotesTotal = computed(() => this.quotes().reduce((s, q) => s + q.subtotal, 0));
   readonly dateTo = this.quotesService.dateTo;
   readonly dateFromDate = signal<Date | null>(null);
   readonly dateToDate = signal<Date | null>(null);

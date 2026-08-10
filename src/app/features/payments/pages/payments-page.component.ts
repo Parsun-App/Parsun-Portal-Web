@@ -46,6 +46,10 @@ export class PaymentsPageComponent implements OnInit {
   readonly dateFromDate = signal<Date | null>(null);
   readonly dateToDate = signal<Date | null>(null);
 
+  readonly totalPayments = computed(() => this.payments().length);
+  readonly appliedTotal = computed(() => this.payments().filter(p => p.status === 'APPLIED').reduce((s, p) => s + p.amount, 0));
+  readonly pendingTotal = computed(() => this.payments().filter(p => p.status === 'PENDING').reduce((s, p) => s + p.amount, 0));
+
   readonly registerDialogVisible = signal(false);
   readonly registering = signal(false);
   readonly paymentMethods = signal<PaymentMethod[]>([]);
