@@ -6,7 +6,35 @@ import { signal } from '@angular/core';
 import { DashboardPageComponent } from './dashboard-page.component';
 import { DashboardService } from '@features/dashboard/services/application/dashboard.service';
 import { AuthService } from '@features/auth/services/application/auth.service';
+import { QuotesService } from '@features/quotes/services/application/quotes.service';
+import { OrdersService } from '@features/orders/services/application/orders.service';
+import { ProductsApiService } from '@features/products/services/api/products-api.service';
 import { PortalDashboard } from '@features/dashboard/models';
+
+function createMockService() {
+  return {
+    loading: signal(false),
+    creating: signal(false),
+    quotes: signal([]),
+    orders: signal([]),
+    detail: signal(null),
+    detailDialogVisible: signal(false),
+    createDialogVisible: signal(false),
+    searchTerm: signal(''),
+    filterStatus: signal<string | undefined>(undefined),
+    dateFrom: signal(''),
+    dateTo: signal(''),
+    openCreateDialog: vi.fn(),
+    openDetail: vi.fn(),
+    onSearch: vi.fn(),
+    onStatusFilterChange: vi.fn(),
+    onDateFilterChange: vi.fn(),
+    clearFilters: vi.fn(),
+    load: vi.fn(),
+    cancelQuote: vi.fn(),
+    cancelOrder: vi.fn(),
+  };
+}
 
 const PORTAL_DASHBOARD: PortalDashboard = {
   draftQuotes: 2,
@@ -35,6 +63,9 @@ describe('DashboardPageComponent', () => {
         provideRouter([]),
         { provide: DashboardService, useValue: dashboardMock },
         { provide: AuthService, useValue: authMock },
+        { provide: QuotesService, useValue: createMockService() },
+        { provide: OrdersService, useValue: createMockService() },
+        { provide: ProductsApiService, useValue: { downloadCatalogPdf: vi.fn() } },
       ],
     }).compileComponents();
 

@@ -13,9 +13,7 @@
         </p>
       </div>
       <div class="flex flex-col sm:flex-row gap-3 shrink-0">
-        <a routerLink="/quotes" class="w-full sm:w-auto">
-          <p-button label="Nuevo Presupuesto" icon="pi pi-plus" styleClass="w-full sm:w-auto bg-white text-zinc-900 border-white hover:bg-zinc-100 font-medium px-5" />
-        </a>
+        <p-button label="Nuevo Presupuesto" icon="pi pi-plus" (click)="quotesService.openCreateDialog()" styleClass="w-full sm:w-auto bg-white text-zinc-900 border-white hover:bg-zinc-100 font-medium px-5" />
         <a routerLink="/products" class="w-full sm:w-auto">
           <p-button label="Ver Productos" icon="pi pi-box" [outlined]="true" styleClass="w-full sm:w-auto border-white/30 text-white hover:bg-white/10 font-medium px-5" />
         </a>
@@ -115,16 +113,29 @@
         <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100 mb-4">Acciones Rápidas</h2>
         <div class="flex flex-col gap-2">
           @for (action of quickActions; track action.label) {
-            <a [routerLink]="action.route" class="flex items-center gap-3 px-4 py-3 rounded-xl text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors group">
-              <span class="w-9 h-9 rounded-lg flex items-center justify-center text-lg group-hover:scale-110 transition-transform" [style.background]="action.bg" [style.color]="action.color">
-                <i [class]="action.icon"></i>
-              </span>
-              <div>
-                <span class="text-sm font-medium">{{ action.label }}</span>
-                <p class="text-xs text-surface-400">{{ action.desc }}</p>
-              </div>
-              <i class="pi pi-chevron-right text-surface-300 ml-auto text-xs"></i>
-            </a>
+            @if (action.link) {
+              <a [routerLink]="action.link" class="flex items-center gap-3 px-4 py-3 rounded-xl text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors group">
+                <span class="w-9 h-9 rounded-lg flex items-center justify-center text-lg group-hover:scale-110 transition-transform" [style.background]="action.bg" [style.color]="action.color">
+                  <i [class]="action.icon"></i>
+                </span>
+                <div>
+                  <span class="text-sm font-medium">{{ action.label }}</span>
+                  <p class="text-xs text-surface-400">{{ action.desc }}</p>
+                </div>
+                <i class="pi pi-chevron-right text-surface-300 ml-auto text-xs"></i>
+              </a>
+            } @else {
+              <button (click)="action.action!()" class="flex items-center gap-3 px-4 py-3 rounded-xl text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors group w-full text-left cursor-pointer">
+                <span class="w-9 h-9 rounded-lg flex items-center justify-center text-lg group-hover:scale-110 transition-transform" [style.background]="action.bg" [style.color]="action.color">
+                  <i [class]="action.icon"></i>
+                </span>
+                <div>
+                  <span class="text-sm font-medium">{{ action.label }}</span>
+                  <p class="text-xs text-surface-400">{{ action.desc }}</p>
+                </div>
+                <i class="pi pi-chevron-right text-surface-300 ml-auto text-xs"></i>
+              </button>
+            }
           }
         </div>
       </div>
@@ -132,4 +143,9 @@
   } @else {
     <app-empty-state icon="pi pi-chart-bar" title="Sin datos disponibles" message="No se pudo cargar la información del panel." />
   }
+</div>
+
+<div hidden>
+  <app-quotes-page />
+  <app-orders-page />
 </div>

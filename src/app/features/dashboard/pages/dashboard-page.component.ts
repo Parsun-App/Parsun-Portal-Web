@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy, computed } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, computed, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { TagModule } from 'primeng/tag';
 import { RouterLink } from '@angular/router';
@@ -6,6 +6,11 @@ import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { AuthService } from '@features/auth/services/application/auth.service';
 import { DashboardService } from '@features/dashboard/services/application/dashboard.service';
+import { QuotesService } from '@features/quotes/services/application/quotes.service';
+import { OrdersService } from '@features/orders/services/application/orders.service';
+import { ProductsApiService } from '@features/products/services/api/products-api.service';
+import { QuotesPageComponent } from '@features/quotes/pages/quotes-page.component';
+import { OrdersPageComponent } from '@features/orders/pages/orders-page.component';
 import { PortalDashboard } from '@features/dashboard/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
@@ -23,35 +28,66 @@ interface StatCard {
   suffix?: string;
 }
 
+interface QuickAction {
+  label: string;
+  desc: string;
+  icon: string;
+  bg: string;
+  color: string;
+  link?: string;
+  action?: () => void;
+}
+
 const THOUSAND = 1000;
 
 @Component({
   selector: 'app-dashboard-page',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, DecimalPipe, TagModule, RouterLink, ButtonModule, SkeletonModule, EmptyStateComponent],
+  imports: [CurrencyPipe, DatePipe, DecimalPipe, TagModule, RouterLink, ButtonModule, SkeletonModule, EmptyStateComponent, QuotesPageComponent, OrdersPageComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dashboard-page.component.html',
 })
 export class DashboardPageComponent {
-  private readonly authService = inject(AuthService);
   private readonly dashboardService = inject(DashboardService);
+  private readonly authService = inject(AuthService);
+  readonly quotesService = inject(QuotesService);
+  readonly ordersService = inject(OrdersService);
+  private readonly productsApi = inject(ProductsApiService);
 
   readonly loading = this.dashboardService.loading;
   readonly dashboard = this.dashboardService.dashboard;
+  readonly downloadingCatalog = signal(false);
 
   readonly customerName = computed(() => this.authService.currentUser()?.legalName ?? 'Cliente');
-
   readonly getStatusLabel = getStatusLabel;
 
-  readonly quickActions = [
-    { label: 'Nuevo Presupuesto', desc: 'Solicitar presupuesto', icon: 'pi pi-file-edit', route: '/quotes', bg: 'rgba(59,130,246,0.1)', color: '#3b82f6' },
-    { label: 'Mis Pedidos', desc: 'Ver pedidos activos', icon: 'pi pi-shopping-cart', route: '/orders', bg: 'rgba(34,197,94,0.1)', color: '#22c55e' },
-    { label: 'Pagar Facturas', desc: 'Saldos pendientes', icon: 'pi pi-credit-card', route: '/payments', bg: 'rgba(245,158,11,0.1)', color: '#f59e0b' },
-    { label: 'Mi Perfil', desc: 'Datos de cuenta', icon: 'pi pi-user', route: '/profile', bg: 'rgba(139,92,246,0.1)', color: '#8b5cf6' },
+  readonly quickActions: QuickAction[] = [
+    { label: 'Agregar Presupuesto', desc: 'Crear nuevo presupuesto', icon: 'pi pi-file-edit', bg: 'rgba(59,130,246,0.1)', color: '#3b82f6', action: () => this.quotesService.openCreateDialog() },
+    { label: 'Agregar Pedido', desc: 'Crear nuevo pedido', icon: 'pi pi-shopping-cart', bg: 'rgba(34,197,94,0.1)', color: '#22c55e', action: () => this.ordersService.openCreateDialog() },
+    { label: 'Agregar Pago', desc: 'Registrar un pago', icon: 'pi pi-credit-card', bg: 'rgba(245,158,11,0.1)', color: '#f59e0b', link: '/payments' },
+    { label: 'Ver Perfil', desc: 'Datos de cuenta', icon: 'pi pi-user', bg: 'rgba(139,92,246,0.1)', color: '#8b5cf6', link: '/profile' },
+    { label: 'Ver Pagos Pendientes', desc: 'Facturas por pagar', icon: 'pi pi-receipt', bg: 'rgba(239,68,68,0.1)', color: '#ef4444', link: '/invoices' },
+    { label: 'Descargar Catálogo', desc: 'Catálogo en PDF', icon: 'pi pi-download', bg: 'rgba(14,165,233,0.1)', color: '#0ea5e9', action: () => this.downloadCatalog() },
   ];
 
   constructor() {
     this.dashboardService.load();
+  }
+
+  downloadCatalog(): void {
+    this.downloadingCatalog.set(true);
+    this.productsApi.downloadCatalogPdf().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'catalogo-comercial.pdf';
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.downloadingCatalog.set(false);
+      },
+      error: () => this.downloadingCatalog.set(false),
+    });
   }
 
   buildStats(data: PortalDashboard): StatCard[] {
@@ -66,24 +102,13 @@ export class DashboardPageComponent {
   private pendingAmountCard(amount: number): StatCard {
     if (amount >= THOUSAND) {
       return {
-        label: 'Monto Pendiente',
-        value: amount / THOUSAND,
-        icon: 'pi pi-dollar',
-        route: '/invoices',
-        gradient: 'linear-gradient(135deg, #ef4444, #dc2626)',
-        format: '1.0-1',
-        prefix: '$',
-        suffix: 'k',
+        label: 'Monto Pendiente', value: amount / THOUSAND, icon: 'pi pi-dollar', route: '/invoices',
+        gradient: 'linear-gradient(135deg, #ef4444, #dc2626)', format: '1.0-1', prefix: '$', suffix: 'k',
       };
     }
     return {
-      label: 'Monto Pendiente',
-      value: amount,
-      icon: 'pi pi-dollar',
-      route: '/invoices',
-      gradient: 'linear-gradient(135deg, #ef4444, #dc2626)',
-      format: '1.0-0',
-      prefix: '$',
+      label: 'Monto Pendiente', value: amount, icon: 'pi pi-dollar', route: '/invoices',
+      gradient: 'linear-gradient(135deg, #ef4444, #dc2626)', format: '1.0-0', prefix: '$',
     };
   }
 
