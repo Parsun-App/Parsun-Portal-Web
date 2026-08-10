@@ -89,11 +89,11 @@
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-xs font-medium text-surface-500">Desde</label>
-              <p-datepicker [ngModel]="dateFromDate()" (ngModelChange)="onDateFromChange($event)" dateFormat="yy-mm-dd" styleClass="w-full" />
+              <p-datepicker [ngModel]="dateFromDate()" (ngModelChange)="onDateFromChange($event)" dateFormat="dd/mm/yy" placeholder="DD/MM/AA" styleClass="w-full" />
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-xs font-medium text-surface-500">Hasta</label>
-              <p-datepicker [ngModel]="dateToDate()" (ngModelChange)="onDateToChange($event)" dateFormat="yy-mm-dd" styleClass="w-full" />
+              <p-datepicker [ngModel]="dateToDate()" (ngModelChange)="onDateToChange($event)" dateFormat="dd/mm/yy" placeholder="DD/MM/AA" styleClass="w-full" />
             </div>
           </div>
         </p-popover>
@@ -125,7 +125,7 @@
         <ng-template pTemplate="body" let-invoice>
           <tr class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors">
             <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">{{ invoice.invoiceNumber }}</td>
-            <td class="px-4 py-3 text-sm text-surface-500">{{ invoice.createdAt | date:'dd/MM/yyyy' }}</td>
+            <td class="px-4 py-3 text-sm text-surface-500">{{ invoice.createdAt | date:'dd/MM/yy' }}</td>
             <td class="px-4 py-3"><p-tag [value]="getStatusLabel(invoice.status)" [severity]="statusSeverity(invoice.status)" /></td>
             <td class="px-4 py-3 text-right font-medium tabular-nums">{{ invoice.total | currency:'USD':'symbol' }}</td>
             <td class="px-4 py-3 text-right text-sm tabular-nums">{{ invoice.paidAmount | currency:'USD':'symbol' }}</td>
@@ -157,7 +157,7 @@
       <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div><label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Estado</label><p class="text-sm mt-1"><p-tag [value]="getStatusLabel(d.status)" [severity]="statusSeverity(d.status)" /></p></div>
         <div><label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Subtotal</label><p class="text-sm mt-1 font-medium text-surface-900 dark:text-surface-100">{{ d.subtotal | currency:'USD':'symbol' }}</p></div>
-        <div><label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Fecha</label><p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.createdAt | date:'dd/MM/yyyy HH:mm' }}</p></div>
+        <div><label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Fecha</label><p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.createdAt | date:'dd/MM/yy HH:mm' }}</p></div>
       </div>
       @if (d.notes) { <div><label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Notas</label><p class="text-sm mt-1 text-surface-700 dark:text-surface-300">{{ d.notes }}</p></div> }
       <div>
@@ -210,7 +210,7 @@
     </div>
     <div class="flex flex-col gap-1">
       <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Fecha de pago</label>
-      <p-datepicker [(ngModel)]="payDate" dateFormat="yy-mm-dd" styleClass="w-full" />
+      <p-datepicker [(ngModel)]="payDate" dateFormat="dd/mm/yy" placeholder="DD/MM/AA" styleClass="w-full" />
     </div>
     <div class="flex flex-col gap-1">
       <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Referencia</label>
@@ -245,7 +245,7 @@
     </div>
     <div class="flex flex-col gap-1">
       <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Fecha de pago *</label>
-      <p-datepicker [(ngModel)]="payAllDate" dateFormat="yy-mm-dd" styleClass="w-full" />
+      <p-datepicker [(ngModel)]="payAllDate" dateFormat="dd/mm/yy" placeholder="DD/MM/AA" styleClass="w-full" />
     </div>
     <div class="flex flex-col gap-1">
       <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Referencia</label>

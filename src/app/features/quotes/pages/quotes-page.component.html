@@ -33,12 +33,12 @@
             <div class="flex flex-col gap-1">
               <label class="text-xs font-medium text-surface-500">Desde</label>
               <p-datepicker [ngModel]="dateFromDate()" (ngModelChange)="onDateFromChange($event)"
-                dateFormat="yy-mm-dd" styleClass="w-full" />
+                dateFormat="dd/mm/yy" placeholder="DD/MM/AA" styleClass="w-full" />
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-xs font-medium text-surface-500">Hasta</label>
               <p-datepicker [ngModel]="dateToDate()" (ngModelChange)="onDateToChange($event)"
-                dateFormat="yy-mm-dd" styleClass="w-full" />
+                dateFormat="dd/mm/yy" placeholder="DD/MM/AA" styleClass="w-full" />
             </div>
           </div>
         </p-popover>
@@ -78,11 +78,11 @@
         <ng-template pTemplate="body" let-quote>
           <tr class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors">
             <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">{{ quote.quoteNumber }}</td>
-            <td class="px-4 py-3 text-sm text-surface-500">{{ quote.createdAt | date:'dd/MM/yyyy' }}</td>
+            <td class="px-4 py-3 text-sm text-surface-500">{{ quote.createdAt | date:'dd/MM/yy' }}</td>
             <td class="px-4 py-3">
               <p-tag [value]="getStatusLabel(quote.status)" [severity]="statusSeverity(quote.status)" />
             </td>
-            <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ quote.expiryDate | date:'dd/MM/yyyy' }}</td>
+            <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ quote.expiryDate | date:'dd/MM/yy' }}</td>
             <td class="px-4 py-3 text-right font-medium tabular-nums">{{ quote.subtotal | currency:'USD':'symbol' }}</td>
             <td class="px-4 py-3 text-center">
               <div class="flex items-center justify-center gap-1">
@@ -142,7 +142,7 @@
         </div>
         <div>
           <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Vence</label>
-          <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.expiryDate | date:'dd/MM/yyyy' }}</p>
+          <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.expiryDate | date:'dd/MM/yy' }}</p>
         </div>
         <div>
           <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Creado por</label>
@@ -150,7 +150,7 @@
         </div>
         <div>
           <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Creada</label>
-          <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+          <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.createdAt | date:'dd/MM/yy HH:mm' }}</p>
         </div>
         @if (d.orderNumber) {
           <div>

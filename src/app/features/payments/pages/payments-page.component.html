@@ -32,12 +32,12 @@
             <div class="flex flex-col gap-1">
               <label class="text-xs font-medium text-surface-500">Desde</label>
               <p-datepicker [ngModel]="dateFromDate()" (ngModelChange)="onDateFromChange($event)"
-                dateFormat="yy-mm-dd" styleClass="w-full" />
+                dateFormat="dd/mm/yy" placeholder="DD/MM/AA" styleClass="w-full" />
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-xs font-medium text-surface-500">Hasta</label>
               <p-datepicker [ngModel]="dateToDate()" (ngModelChange)="onDateToChange($event)"
-                dateFormat="yy-mm-dd" styleClass="w-full" />
+                dateFormat="dd/mm/yy" placeholder="DD/MM/AA" styleClass="w-full" />
             </div>
           </div>
         </p-popover>
@@ -80,7 +80,7 @@
             class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors"
           >
             <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">{{ payment.paymentNumber }}</td>
-            <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ payment.paymentDate | date:'dd/MM/yyyy' }}</td>
+            <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ payment.paymentDate | date:'dd/MM/yy' }}</td>
             <td class="px-4 py-3 text-right font-medium tabular-nums">{{ payment.amount | currency:'USD':'symbol' }}</td>
             <td class="px-4 py-3 text-right text-sm tabular-nums">{{ payment.appliedAmount | currency:'USD':'symbol' }}</td>
             <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ payment.referenceNumber || '-' }}</td>
@@ -141,11 +141,11 @@
         </div>
         <div>
           <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Fecha de Pago</label>
-          <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.paymentDate | date:'dd/MM/yyyy' }}</p>
+          <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.paymentDate | date:'dd/MM/yy' }}</p>
         </div>
         <div>
           <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Creado</label>
-          <p class="text-sm mt-1 text-surface-600 dark:text-surface-400">{{ d.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+          <p class="text-sm mt-1 text-surface-600 dark:text-surface-400">{{ d.createdAt | date:'dd/MM/yy HH:mm' }}</p>
         </div>
       </div>
       @if (d.notes) {
