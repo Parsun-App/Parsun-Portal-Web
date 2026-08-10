@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { MessageService } from 'primeng/api';
-import { catchError, of, tap } from 'rxjs';
+import { Subject, catchError, of, tap } from 'rxjs';
 import { OrdersApiService, CreateOrderRequest, UpdateOrderRequest } from '@features/orders/services/api/orders-api.service';
 import { PortalOrderList, PortalOrderDetail } from '@features/orders/models';
 import { ORDERS_MESSAGES } from '@features/orders/messages/orders.messages';
@@ -20,6 +20,8 @@ export class OrdersService {
   readonly detail = signal<PortalOrderDetail | null>(null);
   readonly detailDialogVisible = signal(false);
   readonly createDialogVisible = signal(false);
+  readonly createDialogRequested$ = new Subject<void>();
+  readonly created$ = new Subject<void>();
   readonly searchTerm = signal('');
   readonly filterStatus = signal<string | undefined>(undefined);
   readonly dateFrom = signal('');
@@ -103,6 +105,10 @@ export class OrdersService {
     this.createDialogVisible.set(true);
   }
 
+  requestCreateDialog(): void {
+    this.createDialogRequested$.next();
+  }
+
   closeCreateDialog(): void {
     if (this.creating()) return;
     this.createDialogVisible.set(false);
@@ -124,6 +130,7 @@ export class OrdersService {
         this.createDialogVisible.set(false);
         this.messageService.add(ORDERS_MESSAGES.createSuccess);
         this.load();
+        this.created$.next();
       }),
       catchError(() => {
         this.creating.set(false);

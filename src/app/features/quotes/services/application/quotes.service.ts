@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { MessageService } from 'primeng/api';
-import { catchError, of, tap } from 'rxjs';
+import { Subject, catchError, of, takeUntil, tap } from 'rxjs';
 import { QuotesApiService, CreateQuoteRequest, UpdateQuoteRequest } from '@features/quotes/services/api/quotes-api.service';
 import { PortalQuoteList, PortalQuoteDetail } from '@features/quotes/models';
 import { QUOTES_MESSAGES } from '@features/quotes/messages/quotes.messages';
@@ -19,6 +19,8 @@ export class QuotesService {
   readonly detail = signal<PortalQuoteDetail | null>(null);
   readonly detailDialogVisible = signal(false);
   readonly createDialogVisible = signal(false);
+  readonly createDialogRequested$ = new Subject<void>();
+  readonly created$ = new Subject<void>();
   readonly searchTerm = signal('');
   readonly filterStatus = signal<string | undefined>(undefined);
   readonly dateFrom = signal('');
@@ -110,6 +112,10 @@ export class QuotesService {
     this.createDialogVisible.set(true);
   }
 
+  requestCreateDialog(): void {
+    this.createDialogRequested$.next();
+  }
+
   closeCreateDialog(): void {
     if (this.creating()) return;
     this.createDialogVisible.set(false);
@@ -127,6 +133,7 @@ export class QuotesService {
         this.createDialogVisible.set(false);
         this.messageService.add(QUOTES_MESSAGES.createSuccess);
         this.load();
+        this.created$.next();
       }),
       catchError(() => {
         this.creating.set(false);

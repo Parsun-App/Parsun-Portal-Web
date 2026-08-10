@@ -1,4 +1,4 @@
-import { Component, inject, computed, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, computed, signal, ChangeDetectionStrategy, OnInit, OnDestroy } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
@@ -17,6 +17,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { PopoverModule } from 'primeng/popover';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ConfirmationService } from 'primeng/api';
+import { Subject, takeUntil } from 'rxjs';
 import { QuotesService } from '@features/quotes/services/application/quotes.service';
 import { ProductsApiService } from '@features/products/services/api/products-api.service';
 import { PortalProduct } from '@features/products/models';
@@ -42,10 +43,17 @@ interface FormLine {
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './quotes-page.component.html',
 })
-export class QuotesPageComponent {
+export class QuotesPageComponent implements OnInit {
+  private readonly destroy$ = new Subject<void>();
   private readonly quotesService = inject(QuotesService);
   private readonly productsApi = inject(ProductsApiService);
   private readonly confirmationService = inject(ConfirmationService);
+
+  ngOnInit(): void {
+    this.quotesService.createDialogRequested$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.openCreateDialog());
+  }
 
   readonly loading = this.quotesService.loading;
   readonly creating = this.quotesService.creating;

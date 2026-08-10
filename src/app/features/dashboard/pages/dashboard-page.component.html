@@ -13,7 +13,7 @@
         </p>
       </div>
       <div class="flex flex-col sm:flex-row gap-3 shrink-0">
-        <p-button label="Nuevo Presupuesto" icon="pi pi-plus" (click)="quotesService.openCreateDialog()" styleClass="w-full sm:w-auto bg-white text-zinc-900 border-white hover:bg-zinc-100 font-medium px-5" />
+        <p-button label="Nuevo Presupuesto" icon="pi pi-plus" (click)="quotesService.requestCreateDialog()" styleClass="w-full sm:w-auto bg-white text-zinc-900 border-white hover:bg-zinc-100 font-medium px-5" />
         <a routerLink="/products" class="w-full sm:w-auto">
           <p-button label="Ver Productos" icon="pi pi-box" [outlined]="true" styleClass="w-full sm:w-auto border-white/30 text-white hover:bg-white/10 font-medium px-5" />
         </a>
@@ -145,7 +145,7 @@
   }
 </div>
 
-<div hidden>
+<div class="absolute w-0 h-0 overflow-hidden opacity-0 pointer-events-none">
   <app-quotes-page />
   <app-orders-page />
 </div>

@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy, computed, signal } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, computed, signal, OnInit, OnDestroy } from '@angular/core';
 import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { TagModule } from 'primeng/tag';
 import { RouterLink } from '@angular/router';
@@ -11,6 +11,7 @@ import { OrdersService } from '@features/orders/services/application/orders.serv
 import { ProductsApiService } from '@features/products/services/api/products-api.service';
 import { QuotesPageComponent } from '@features/quotes/pages/quotes-page.component';
 import { OrdersPageComponent } from '@features/orders/pages/orders-page.component';
+import { merge, Subject, takeUntil } from 'rxjs';
 import { PortalDashboard } from '@features/dashboard/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
@@ -47,12 +48,22 @@ const THOUSAND = 1000;
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dashboard-page.component.html',
 })
-export class DashboardPageComponent {
+export class DashboardPageComponent implements OnInit {
+  private readonly destroy$ = new Subject<void>();
   private readonly dashboardService = inject(DashboardService);
   private readonly authService = inject(AuthService);
   readonly quotesService = inject(QuotesService);
   readonly ordersService = inject(OrdersService);
   private readonly productsApi = inject(ProductsApiService);
+
+  ngOnInit(): void {
+    merge(
+      this.quotesService.created$,
+      this.ordersService.created$
+    ).pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.dashboardService.load();
+    });
+  }
 
   readonly loading = this.dashboardService.loading;
   readonly dashboard = this.dashboardService.dashboard;
@@ -62,8 +73,8 @@ export class DashboardPageComponent {
   readonly getStatusLabel = getStatusLabel;
 
   readonly quickActions: QuickAction[] = [
-    { label: 'Agregar Presupuesto', desc: 'Crear nuevo presupuesto', icon: 'pi pi-file-edit', bg: 'rgba(59,130,246,0.1)', color: '#3b82f6', action: () => this.quotesService.openCreateDialog() },
-    { label: 'Agregar Pedido', desc: 'Crear nuevo pedido', icon: 'pi pi-shopping-cart', bg: 'rgba(34,197,94,0.1)', color: '#22c55e', action: () => this.ordersService.openCreateDialog() },
+    { label: 'Agregar Presupuesto', desc: 'Crear nuevo presupuesto', icon: 'pi pi-file-edit', bg: 'rgba(59,130,246,0.1)', color: '#3b82f6', action: () => this.quotesService.requestCreateDialog() },
+    { label: 'Agregar Pedido', desc: 'Crear nuevo pedido', icon: 'pi pi-shopping-cart', bg: 'rgba(34,197,94,0.1)', color: '#22c55e', action: () => this.ordersService.requestCreateDialog() },
     { label: 'Agregar Pago', desc: 'Registrar un pago', icon: 'pi pi-credit-card', bg: 'rgba(245,158,11,0.1)', color: '#f59e0b', link: '/payments' },
     { label: 'Ver Perfil', desc: 'Datos de cuenta', icon: 'pi pi-user', bg: 'rgba(139,92,246,0.1)', color: '#8b5cf6', link: '/profile' },
     { label: 'Ver Pagos Pendientes', desc: 'Facturas por pagar', icon: 'pi pi-receipt', bg: 'rgba(239,68,68,0.1)', color: '#ef4444', link: '/invoices' },

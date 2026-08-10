@@ -1,4 +1,4 @@
-import { Component, inject, computed, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, computed, signal, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
@@ -17,6 +17,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { PopoverModule } from 'primeng/popover';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ConfirmationService } from 'primeng/api';
+import { Subject, takeUntil } from 'rxjs';
 import { OrdersService } from '@features/orders/services/application/orders.service';
 import { ProductsApiService } from '@features/products/services/api/products-api.service';
 import { PortalProduct } from '@features/products/models';
@@ -46,10 +47,17 @@ interface FormLine {
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './orders-page.component.html',
 })
-export class OrdersPageComponent {
-  readonly ordersService = inject(OrdersService);
+export class OrdersPageComponent implements OnInit {
+  private readonly destroy$ = new Subject<void>();
+  private readonly ordersService = inject(OrdersService);
   private readonly productsApi = inject(ProductsApiService);
   private readonly confirmationService = inject(ConfirmationService);
+
+  ngOnInit(): void {
+    this.ordersService.createDialogRequested$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.openCreateDialog());
+  }
 
   readonly loading = this.ordersService.loading;
   readonly creating = this.ordersService.creating;
