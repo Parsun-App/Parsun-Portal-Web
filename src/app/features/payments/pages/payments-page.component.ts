@@ -1,4 +1,4 @@
-import { Component, inject, computed, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, computed, signal, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
@@ -9,10 +9,15 @@ import { TooltipModule } from 'primeng/tooltip';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
+import { FileUploadModule } from 'primeng/fileupload';
 import { PopoverModule } from 'primeng/popover';
+import { MessageService } from 'primeng/api';
 import { PaymentsService } from '@features/payments/services/application/payments.service';
+import { PaymentsApiService, PaymentMethod } from '@features/payments/services/api/payments-api.service';
 import { getStatusLabel } from '@shared/utils/status-labels';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 
@@ -21,12 +26,14 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
 @Component({
   selector: 'app-payments-page',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, SelectModule, DatePickerModule, PopoverModule, EmptyStateComponent],
+  imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, InputNumberModule, TextareaModule, SelectModule, DatePickerModule, FileUploadModule, PopoverModule, EmptyStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './payments-page.component.html',
 })
-export class PaymentsPageComponent {
+export class PaymentsPageComponent implements OnInit {
   private readonly paymentsService = inject(PaymentsService);
+  private readonly paymentsApi = inject(PaymentsApiService);
+  private readonly messageService = inject(MessageService);
 
   readonly loading = this.paymentsService.loading;
   readonly payments = this.paymentsService.payments;
@@ -38,6 +45,24 @@ export class PaymentsPageComponent {
   readonly dateTo = this.paymentsService.dateTo;
   readonly dateFromDate = signal<Date | null>(null);
   readonly dateToDate = signal<Date | null>(null);
+
+  readonly registerDialogVisible = signal(false);
+  readonly registering = signal(false);
+  readonly paymentMethods = signal<PaymentMethod[]>([]);
+
+  readonly registerAmount = signal<number>(0);
+  readonly registerMethodId = signal<string | null>(null);
+  readonly registerDate = signal<Date | null>(null);
+  readonly registerReference = signal('');
+  readonly registerNotes = signal('');
+  readonly registerFile = signal<File | null>(null);
+
+  readonly canSubmitRegister = computed(() =>
+    this.registerAmount() > 0 &&
+    this.registerMethodId() !== null &&
+    this.registerDate() !== null &&
+    (this.registerReference().trim().length > 0 || this.registerFile() !== null)
+  );
 
   readonly activeFilterCount = computed(() => {
     let count = 0;
@@ -72,6 +97,68 @@ export class PaymentsPageComponent {
   ];
 
   readonly getStatusLabel = getStatusLabel;
+
+  ngOnInit(): void {
+    this.loadPaymentMethods();
+  }
+
+  loadPaymentMethods(): void {
+    this.paymentsApi.getPaymentMethods().subscribe({
+      next: (methods) => this.paymentMethods.set(methods),
+    });
+  }
+
+  openRegisterDialog(): void {
+    this.registerAmount.set(0);
+    this.registerMethodId.set(null);
+    this.registerDate.set(null);
+    this.registerReference.set('');
+    this.registerNotes.set('');
+    this.registerFile.set(null);
+    this.registerDialogVisible.set(true);
+  }
+
+  onRegisterFileSelected(event: { files: File[] }): void {
+    this.registerFile.set(event.files[0] ?? null);
+  }
+
+  onRegisterFileCleared(): void {
+    this.registerFile.set(null);
+  }
+
+  submitRegister(): void {
+    if (!this.canSubmitRegister()) return;
+
+    this.registering.set(true);
+    const formData = new FormData();
+
+    const request = {
+      amount: this.registerAmount(),
+      paymentMethodId: this.registerMethodId()!,
+      paymentDate: this.formatDate(this.registerDate()!),
+      referenceNumber: this.registerReference().trim() || undefined,
+      notes: this.registerNotes().trim() || undefined,
+    };
+    formData.append('request', new Blob([JSON.stringify(request)], { type: 'application/json' }));
+
+    const file = this.registerFile();
+    if (file) {
+      formData.append('justificante', file);
+    }
+
+    this.paymentsApi.registerPayment(formData).subscribe({
+      next: () => {
+        this.registering.set(false);
+        this.registerDialogVisible.set(false);
+        this.messageService.add({ severity: 'success', summary: 'Pago registrado', detail: 'El pago se registró correctamente.' });
+        this.paymentsService.load();
+      },
+      error: () => {
+        this.registering.set(false);
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo registrar el pago.' });
+      },
+    });
+  }
 
   onSearch(value: string): void {
     this.paymentsService.onSearch(value);
@@ -113,14 +200,14 @@ export class PaymentsPageComponent {
     return map[status] ?? 'info';
   }
 
+  parseDate(dateStr: string): Date {
+    return new Date(dateStr + 'T00:00:00');
+  }
+
   private formatDate(date: Date): string {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, '0');
     const d = String(date.getDate()).padStart(2, '0');
     return `${y}-${m}-${d}`;
-  }
-
-  parseDate(dateStr: string): Date {
-    return new Date(dateStr + 'T00:00:00');
   }
 }

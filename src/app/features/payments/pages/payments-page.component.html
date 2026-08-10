@@ -4,6 +4,7 @@
       <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Pagos</h1>
       <p class="text-surface-500 mt-1">Registro y seguimiento de tus pagos realizados.</p>
     </div>
+    <p-button label="Registrar Pago" icon="pi pi-plus" (click)="openRegisterDialog()" />
   </div>
 
   <div class="rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-4 shadow-2xl mb-6">
@@ -158,5 +159,60 @@
   }
   <ng-template pTemplate="footer">
     <p-button label="Cerrar" (click)="detailDialogVisible.set(false)" severity="secondary" [text]="true" />
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  [(visible)]="registerDialogVisible"
+  header="Registrar Pago"
+  [modal]="true"
+  [style]="{ width: '28rem' }"
+  [draggable]="false"
+>
+  <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Monto *</label>
+      <p-inputNumber [(ngModel)]="registerAmount" [min]="0" mode="currency" currency="USD" locale="en-US" styleClass="w-full" inputStyleClass="w-full" />
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Método de pago *</label>
+      <p-select [options]="paymentMethods()" [(ngModel)]="registerMethodId" optionLabel="name" optionValue="id" placeholder="Seleccionar..." styleClass="w-full" />
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Fecha de pago *</label>
+      <p-datepicker [(ngModel)]="registerDate" dateFormat="yy-mm-dd" styleClass="w-full" />
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Referencia</label>
+      <input pInputText [(ngModel)]="registerReference" placeholder="N° de transferencia o comprobante" class="w-full" />
+      <small class="text-surface-500">Requerida si no adjunta un justificante.</small>
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Justificante</label>
+      <p-fileupload
+        mode="basic"
+        name="justificante"
+        accept="image/*,.pdf"
+        [maxFileSize]="10000000"
+        (onSelect)="onRegisterFileSelected($event)"
+        (onClear)="onRegisterFileCleared()"
+        chooseLabel="Seleccionar archivo"
+      />
+      <small class="text-surface-500">Requerido si no ingresa una referencia.</small>
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Notas</label>
+      <textarea pTextarea [(ngModel)]="registerNotes" rows="2" class="w-full" placeholder="Notas adicionales (opcional)"></textarea>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" severity="secondary" [text]="true" (click)="registerDialogVisible.set(false)" [disabled]="registering()" />
+    <p-button
+      label="Registrar"
+      icon="pi pi-check"
+      [loading]="registering()"
+      [disabled]="!canSubmitRegister()"
+      (click)="submitRegister()"
+    />
   </ng-template>
 </p-dialog>

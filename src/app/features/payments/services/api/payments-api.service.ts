@@ -4,6 +4,14 @@ import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
 import { PortalPaymentList, PortalPaymentDetail } from '@features/payments/models';
 
+export interface PaymentMethod {
+  id: string;
+  code: string;
+  name: string;
+  description: string;
+  active: boolean;
+}
+
 export interface PayInvoiceRequest {
   amount: number;
   paymentMethodId: string;
@@ -58,5 +66,13 @@ export class PaymentsApiService {
 
   payPartialDebt(request: PayPartialDebtRequest): Observable<void> {
     return this.http.post<void>(`${this.portalBaseUrl}/debt/pay-partial`, request);
+  }
+
+  getPaymentMethods(): Observable<PaymentMethod[]> {
+    return this.http.get<PaymentMethod[]>(`${this.portalBaseUrl}/payment-methods`);
+  }
+
+  registerPayment(formData: FormData): Observable<PortalPaymentDetail> {
+    return this.http.post<PortalPaymentDetail>(`${this.portalBaseUrl}/payments/register`, formData);
   }
 }

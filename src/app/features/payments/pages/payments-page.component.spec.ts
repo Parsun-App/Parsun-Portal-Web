@@ -3,8 +3,11 @@ import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
+import { of } from 'rxjs';
+import { MessageService } from 'primeng/api';
 import { PaymentsPageComponent } from './payments-page.component';
 import { PaymentsService } from '@features/payments/services/application/payments.service';
+import { PaymentsApiService } from '@features/payments/services/api/payments-api.service';
 import { PortalPaymentList } from '@features/payments/models';
 
 const PAYMENTS: PortalPaymentList[] = [
@@ -33,12 +36,14 @@ describe('PaymentsPageComponent', () => {
     dateFrom: ReturnType<typeof signal<string>>;
     dateTo: ReturnType<typeof signal<string>>;
     filterStatus: ReturnType<typeof signal<string | undefined>>;
+    load: ReturnType<typeof vi.fn>;
     onSearch: ReturnType<typeof vi.fn>;
     onDateFilterChange: ReturnType<typeof vi.fn>;
     onStatusFilterChange: ReturnType<typeof vi.fn>;
     clearFilters: ReturnType<typeof vi.fn>;
     openDetail: ReturnType<typeof vi.fn>;
   };
+  let apiMock: { getPaymentMethods: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     serviceMock = {
@@ -50,6 +55,7 @@ describe('PaymentsPageComponent', () => {
       dateFrom: signal(''),
       dateTo: signal(''),
       filterStatus: signal<string | undefined>(undefined),
+      load: vi.fn(),
       onSearch: vi.fn(),
       onDateFilterChange: vi.fn(),
       onStatusFilterChange: vi.fn(),
@@ -57,12 +63,16 @@ describe('PaymentsPageComponent', () => {
       openDetail: vi.fn(),
     };
 
+    apiMock = { getPaymentMethods: vi.fn(() => of([])) };
+
     await TestBed.configureTestingModule({
       imports: [PaymentsPageComponent],
       providers: [
         provideHttpClient(),
         provideRouter([]),
         { provide: PaymentsService, useValue: serviceMock },
+        { provide: PaymentsApiService, useValue: apiMock },
+        MessageService,
       ],
     }).compileComponents();
 
