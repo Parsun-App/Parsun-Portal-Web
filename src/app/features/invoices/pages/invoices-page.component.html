@@ -4,7 +4,6 @@
       <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Facturas</h1>
       <p class="text-surface-500 mt-1">Consulta, paga y descarga tus facturas electrónicas.</p>
     </div>
-    <p-button label="Registrar Pago" icon="pi pi-plus" (click)="openRegisterDialog()" />
   </div>
 
   @if (summaryLoading()) {
@@ -62,7 +61,7 @@
 
   @if (pendingCount() > 0) {
     <div class="flex justify-end">
-      <button pButton label="Pagar Toda la Deuda" icon="pi pi-credit-card" severity="danger" (click)="openPayAll()" class="font-medium"></button>
+      <p-button label="Pagar Toda la Deuda" icon="pi pi-dollar" severity="secondary" (click)="openPayAll()" />
     </div>
   }
 
@@ -201,13 +200,9 @@
       <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Monto a pagar</label>
       <p-inputNumber [(ngModel)]="payAmount" [min]="0.01" [max]="payFullAmount()" mode="currency" currency="USD" locale="en-US" styleClass="w-full" inputStyleClass="w-full" />
     </div>
-    <div class="flex gap-2">
-      <button pButton label="Total" size="small" severity="secondary" [outlined]="true" (click)="setPayFull()" class="flex-1 text-xs"></button>
-      <button pButton label="Mitad" size="small" severity="secondary" [outlined]="true" (click)="setPayHalf()" class="flex-1 text-xs"></button>
-    </div>
     @if (isPayPartial()) {
       <div class="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg p-2">
-        Pago parcial. Quedarán {{ remaining() | currency:'USD':'symbol' }} pendientes.
+        Pago parcial. Quedarán {{ payFullAmount() - payAmount() | currency:'USD':'symbol' }} pendientes.
       </div>
     }
     <div class="flex flex-col gap-1">
@@ -232,41 +227,6 @@
   <ng-template pTemplate="footer">
     <p-button label="Cancelar" severity="secondary" [text]="true" (click)="payDialogVisible.set(false)" [disabled]="paying()" />
     <p-button label="Pagar" icon="pi pi-check" [loading]="paying()" [disabled]="!canSubmitPay()" (click)="submitPay()" />
-  </ng-template>
-</p-dialog>
-
-<p-dialog [(visible)]="registerDialogVisible" header="Registrar Pago" [modal]="true" [style]="{ width: '28rem' }" [draggable]="false">
-  <div class="flex flex-col gap-4">
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Monto *</label>
-      <p-inputNumber [(ngModel)]="registerAmount" [min]="0" mode="currency" currency="USD" locale="en-US" styleClass="w-full" inputStyleClass="w-full" />
-    </div>
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Método de pago *</label>
-      <p-select [options]="paymentMethods()" [(ngModel)]="registerMethodId" optionLabel="name" optionValue="id" placeholder="Seleccionar..." styleClass="w-full" />
-    </div>
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Fecha de pago *</label>
-      <p-datepicker [(ngModel)]="registerDate" dateFormat="yy-mm-dd" styleClass="w-full" />
-    </div>
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Referencia</label>
-      <input pInputText [(ngModel)]="registerReference" placeholder="N° de transferencia o comprobante" class="w-full" />
-      <small class="text-surface-500">Requerida si no adjunta un justificante.</small>
-    </div>
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Justificante</label>
-      <p-fileupload mode="basic" accept="image/*,.pdf" [maxFileSize]="10000000" (onSelect)="onRegisterFileSelected($event)" chooseLabel="Seleccionar archivo" />
-      <small class="text-surface-500">Requerido si no ingresa una referencia.</small>
-    </div>
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Notas</label>
-      <textarea pTextarea [(ngModel)]="registerNotes" rows="2" class="w-full" placeholder="Notas adicionales (opcional)"></textarea>
-    </div>
-  </div>
-  <ng-template pTemplate="footer">
-    <p-button label="Cancelar" severity="secondary" [text]="true" (click)="registerDialogVisible.set(false)" [disabled]="registering()" />
-    <p-button label="Registrar" icon="pi pi-check" [loading]="registering()" [disabled]="!canSubmitRegister()" (click)="submitRegister()" />
   </ng-template>
 </p-dialog>
 

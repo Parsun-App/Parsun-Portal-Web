@@ -65,18 +65,6 @@ export class InvoicesPageComponent implements OnInit {
   readonly payFile = signal<File | null>(null);
   readonly paymentMethods = signal<PaymentMethod[]>([]);
 
-  readonly registerDialogVisible = signal(false);
-  readonly registering = signal(false);
-  readonly registerAmount = signal(0);
-  readonly registerMethodId = signal<string | null>(null);
-  readonly registerDate = signal<Date | null>(new Date());
-  readonly registerReference = signal('');
-  readonly registerNotes = signal('');
-  readonly registerFile = signal<File | null>(null);
-
-  readonly isPayPartial = computed(() => this.payAmount() < this.payFullAmount());
-  readonly remaining = computed(() => this.payFullAmount() - this.payAmount());
-
   readonly payAllDialogVisible = signal(false);
   readonly payingAll = signal(false);
   readonly payAllAmount = signal(0);
@@ -90,14 +78,11 @@ export class InvoicesPageComponent implements OnInit {
     (this.payAllReference().trim().length > 0 || this.payAllFile() !== null)
   );
 
+  readonly isPayPartial = computed(() => this.payAmount() < this.payFullAmount());
+
   readonly canSubmitPay = computed(() =>
     this.payAmount() > 0 && this.payMethodId() !== null &&
     (this.payReference().trim().length > 0 || this.payFile() !== null)
-  );
-
-  readonly canSubmitRegister = computed(() =>
-    this.registerAmount() > 0 && this.registerMethodId() !== null && this.registerDate() !== null &&
-    (this.registerReference().trim().length > 0 || this.registerFile() !== null)
   );
 
   readonly activeFilterCount = computed(() => {
@@ -160,30 +145,19 @@ export class InvoicesPageComponent implements OnInit {
     this.payFile.set(event.files[0] ?? null);
   }
 
-  setPayFull(): void {
-    this.payAmount.set(this.payFullAmount());
-  }
-
-  setPayHalf(): void {
-    this.payAmount.set(Math.round(this.payFullAmount() / 2 * 100) / 100);
-  }
-
   submitPay(): void {
     if (!this.canSubmitPay() || !this.payInvoiceId()) return;
     this.paying.set(true);
-    const request = {
+    this.paymentsApi.payInvoice(this.payInvoiceId()!, {
       amount: this.payAmount(),
       paymentMethodId: this.payMethodId()!,
       paymentDate: this.formatDate(this.payDate()!),
       referenceNumber: this.payReference().trim() || undefined,
-    };
-    this.paymentsApi.payInvoice(this.payInvoiceId()!, request).subscribe({
+    }).subscribe({
       next: () => {
-        this.paying.set(false);
-        this.payDialogVisible.set(false);
+        this.paying.set(false); this.payDialogVisible.set(false);
         this.messageService.add({ severity: 'success', summary: 'Pago realizado', detail: 'La factura se pagó correctamente.' });
-        this.invoicesService.load();
-        this.loadSummary();
+        this.invoicesService.load(); this.loadSummary();
       },
       error: () => {
         this.paying.set(false);
@@ -209,85 +183,27 @@ export class InvoicesPageComponent implements OnInit {
     if (!this.canSubmitPayAll()) return;
     this.payingAll.set(true);
     const useFull = this.payAllAmount() >= this.totalDebt();
-
-    if (useFull) {
-      this.paymentsApi.payAllDebt({
-        paymentMethodId: this.payAllMethodId()!,
-        referenceNumber: this.payAllReference().trim() || undefined,
-        paymentDate: this.formatDate(this.payAllDate()!),
-      }).subscribe({
-        next: () => this.handlePayAllSuccess(),
-        error: () => this.handlePayAllError(),
-      });
-    } else {
-      this.paymentsApi.payPartialDebt({
-        amount: this.payAllAmount(),
-        paymentMethodId: this.payAllMethodId()!,
-        referenceNumber: this.payAllReference().trim() || undefined,
-        paymentDate: this.formatDate(this.payAllDate()!),
-      }).subscribe({
-        next: () => this.handlePayAllSuccess(),
-        error: () => this.handlePayAllError(),
-      });
-    }
-  }
-
-  private handlePayAllSuccess(): void {
-    this.payingAll.set(false);
-    this.payAllDialogVisible.set(false);
-    this.messageService.add({ severity: 'success', summary: 'Pago realizado', detail: 'El pago se registró correctamente.' });
-    this.invoicesService.load();
-    this.loadSummary();
-  }
-
-  private handlePayAllError(): void {
-    this.payingAll.set(false);
-    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo procesar el pago.' });
-  }
-
-  openRegisterDialog(): void {
-    this.registerAmount.set(0);
-    this.registerMethodId.set(null);
-    this.registerDate.set(new Date());
-    this.registerReference.set('');
-    this.registerNotes.set('');
-    this.registerFile.set(null);
-    this.registerDialogVisible.set(true);
-  }
-
-  onRegisterFileSelected(event: { files: File[] }): void {
-    this.registerFile.set(event.files[0] ?? null);
-  }
-
-  submitRegister(): void {
-    if (!this.canSubmitRegister()) return;
-    this.registering.set(true);
-    const formData = new FormData();
     const req = {
-      amount: this.registerAmount(),
-      paymentMethodId: this.registerMethodId()!,
-      paymentDate: this.formatDate(this.registerDate()!),
-      referenceNumber: this.registerReference().trim() || undefined,
-      notes: this.registerNotes().trim() || undefined,
+      paymentMethodId: this.payAllMethodId()!,
+      referenceNumber: this.payAllReference().trim() || undefined,
+      paymentDate: this.formatDate(this.payAllDate()!),
     };
-    formData.append('request', new Blob([JSON.stringify(req)], { type: 'application/json' }));
-    const file = this.registerFile();
-    if (file) formData.append('justificante', file);
-    this.paymentsApi.registerPayment(formData).subscribe({
+    const apiCall = useFull
+      ? this.paymentsApi.payAllDebt(req)
+      : this.paymentsApi.payPartialDebt({ ...req, amount: this.payAllAmount() });
+    apiCall.subscribe({
       next: () => {
-        this.registering.set(false);
-        this.registerDialogVisible.set(false);
-        this.messageService.add({ severity: 'success', summary: 'Pago registrado', detail: 'El pago se registró correctamente.' });
-        this.loadSummary();
+        this.payingAll.set(false); this.payAllDialogVisible.set(false);
+        this.messageService.add({ severity: 'success', summary: 'Pago realizado', detail: 'El pago se registró correctamente.' });
+        this.invoicesService.load(); this.loadSummary();
       },
       error: () => {
-        this.registering.set(false);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo registrar el pago.' });
+        this.payingAll.set(false);
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo procesar el pago.' });
       },
     });
   }
 
-  // existing methods
   onSearch(value: string): void { this.invoicesService.onSearch(value); }
   onStatusFilterChange(value: string | null): void { this.invoicesService.onStatusFilterChange(value); }
 
@@ -295,19 +211,12 @@ export class InvoicesPageComponent implements OnInit {
     this.dateFromDate.set(value);
     this.invoicesService.onDateFilterChange(value ? this.formatDate(value) : '', this.dateTo());
   }
-
   onDateToChange(value: Date | null): void {
     this.dateToDate.set(value);
     this.invoicesService.onDateFilterChange(this.dateFrom(), value ? this.formatDate(value) : '');
   }
-
-  clearFilters(): void {
-    this.dateFromDate.set(null); this.dateToDate.set(null);
-    this.invoicesService.clearFilters();
-  }
-
+  clearFilters(): void { this.dateFromDate.set(null); this.dateToDate.set(null); this.invoicesService.clearFilters(); }
   openDetail(id: string): void { this.invoicesService.openDetail(id); }
-
   parseDate(dateStr: string): Date { return new Date(dateStr + 'T00:00:00'); }
 
   isPending(invoice: PortalInvoiceList): boolean {
@@ -320,9 +229,7 @@ export class InvoicesPageComponent implements OnInit {
   }
 
   private formatDate(date: Date): string {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
+    const y = date.getFullYear(); const m = String(date.getMonth() + 1).padStart(2, '0'); const d = String(date.getDate()).padStart(2, '0');
     return `${y}-${m}-${d}`;
   }
 }
