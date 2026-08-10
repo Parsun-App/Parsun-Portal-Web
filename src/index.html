@@ -10,6 +10,13 @@
       rel="stylesheet"
       href="https://unpkg.com/primeicons@7.0.0/primeicons.css"
     />
+    <script>
+      (function() {
+        if (localStorage.getItem('darkMode') === 'true') {
+          document.documentElement.classList.add('my-app-dark');
+        }
+      })();
+    </script>
   </head>
   <body>
     <app-root></app-root>

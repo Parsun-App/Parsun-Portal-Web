@@ -24,7 +24,11 @@ export class HeaderComponent {
 
   constructor() {
     afterNextRender(() => {
-      this.isDarkMode.set(this.readStoredDarkMode());
+      const dark = this.readStoredDarkMode();
+      this.isDarkMode.set(dark);
+      if (this.isBrowser) {
+        document.documentElement.classList.toggle(DARK_MODE_CLASS, dark);
+      }
     });
   }
 
