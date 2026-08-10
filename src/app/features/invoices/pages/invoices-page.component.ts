@@ -76,6 +76,19 @@ export class InvoicesPageComponent implements OnInit {
   readonly isPayPartial = computed(() => this.payAmount() < this.payFullAmount());
   readonly remaining = computed(() => this.payFullAmount() - this.payAmount());
 
+  readonly payAllDialogVisible = signal(false);
+  readonly payingAll = signal(false);
+  readonly payAllAmount = signal(0);
+  readonly payAllMethodId = signal<string | null>(null);
+  readonly payAllDate = signal<Date | null>(new Date());
+  readonly payAllReference = signal('');
+  readonly payAllFile = signal<File | null>(null);
+
+  readonly canSubmitPayAll = computed(() =>
+    this.payAllAmount() > 0 && this.payAllMethodId() !== null && this.payAllDate() !== null &&
+    (this.payAllReference().trim().length > 0 || this.payAllFile() !== null)
+  );
+
   readonly canSubmitPay = computed(() =>
     this.payAmount() > 0 && this.payMethodId() !== null
   );
@@ -172,23 +185,57 @@ export class InvoicesPageComponent implements OnInit {
     });
   }
 
-  payAllDebt(): void {
-    this.paying.set(true);
-    this.paymentsApi.payAllDebt({
-      paymentMethodId: this.paymentMethods()[0]?.id ?? '',
-      paymentDate: this.formatDate(new Date()),
-    }).subscribe({
-      next: () => {
-        this.paying.set(false);
-        this.messageService.add({ severity: 'success', summary: 'Pago realizado', detail: 'Toda la deuda se pagó correctamente.' });
-        this.invoicesService.load();
-        this.loadSummary();
-      },
-      error: () => {
-        this.paying.set(false);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo procesar el pago total.' });
-      },
-    });
+  openPayAll(): void {
+    this.payAllAmount.set(this.totalDebt());
+    this.payAllMethodId.set(null);
+    this.payAllDate.set(new Date());
+    this.payAllReference.set('');
+    this.payAllFile.set(null);
+    this.payAllDialogVisible.set(true);
+  }
+
+  onPayAllFileSelected(event: { files: File[] }): void {
+    this.payAllFile.set(event.files[0] ?? null);
+  }
+
+  submitPayAll(): void {
+    if (!this.canSubmitPayAll()) return;
+    this.payingAll.set(true);
+    const useFull = this.payAllAmount() >= this.totalDebt();
+
+    if (useFull) {
+      this.paymentsApi.payAllDebt({
+        paymentMethodId: this.payAllMethodId()!,
+        referenceNumber: this.payAllReference().trim() || undefined,
+        paymentDate: this.formatDate(this.payAllDate()!),
+      }).subscribe({
+        next: () => this.handlePayAllSuccess(),
+        error: () => this.handlePayAllError(),
+      });
+    } else {
+      this.paymentsApi.payPartialDebt({
+        amount: this.payAllAmount(),
+        paymentMethodId: this.payAllMethodId()!,
+        referenceNumber: this.payAllReference().trim() || undefined,
+        paymentDate: this.formatDate(this.payAllDate()!),
+      }).subscribe({
+        next: () => this.handlePayAllSuccess(),
+        error: () => this.handlePayAllError(),
+      });
+    }
+  }
+
+  private handlePayAllSuccess(): void {
+    this.payingAll.set(false);
+    this.payAllDialogVisible.set(false);
+    this.messageService.add({ severity: 'success', summary: 'Pago realizado', detail: 'El pago se registró correctamente.' });
+    this.invoicesService.load();
+    this.loadSummary();
+  }
+
+  private handlePayAllError(): void {
+    this.payingAll.set(false);
+    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo procesar el pago.' });
   }
 
   openRegisterDialog(): void {
