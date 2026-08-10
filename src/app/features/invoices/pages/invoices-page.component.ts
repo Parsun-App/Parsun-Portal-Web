@@ -62,6 +62,7 @@ export class InvoicesPageComponent implements OnInit {
   readonly payMethodId = signal<string | null>(null);
   readonly payDate = signal<Date | null>(new Date());
   readonly payReference = signal('');
+  readonly payFile = signal<File | null>(null);
   readonly paymentMethods = signal<PaymentMethod[]>([]);
 
   readonly registerDialogVisible = signal(false);
@@ -90,7 +91,8 @@ export class InvoicesPageComponent implements OnInit {
   );
 
   readonly canSubmitPay = computed(() =>
-    this.payAmount() > 0 && this.payMethodId() !== null
+    this.payAmount() > 0 && this.payMethodId() !== null &&
+    (this.payReference().trim().length > 0 || this.payFile() !== null)
   );
 
   readonly canSubmitRegister = computed(() =>
@@ -150,7 +152,12 @@ export class InvoicesPageComponent implements OnInit {
     this.payMethodId.set(null);
     this.payDate.set(new Date());
     this.payReference.set('');
+    this.payFile.set(null);
     this.payDialogVisible.set(true);
+  }
+
+  onPayFileSelected(event: { files: File[] }): void {
+    this.payFile.set(event.files[0] ?? null);
   }
 
   setPayFull(): void {

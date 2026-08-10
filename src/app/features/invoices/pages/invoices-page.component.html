@@ -220,7 +220,13 @@
     </div>
     <div class="flex flex-col gap-1">
       <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Referencia</label>
-      <input pInputText [(ngModel)]="payReference" placeholder="Opcional" class="w-full" />
+      <input pInputText [(ngModel)]="payReference" placeholder="N° de transferencia o comprobante" class="w-full" />
+      <small class="text-surface-500">Requerida si no adjunta un justificante.</small>
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Justificante</label>
+      <p-fileupload mode="basic" accept="image/*,.pdf" [maxFileSize]="10000000" (onSelect)="onPayFileSelected($event)" chooseLabel="Seleccionar archivo" />
+      <small class="text-surface-500">Requerido si no ingresa una referencia.</small>
     </div>
   </div>
   <ng-template pTemplate="footer">
