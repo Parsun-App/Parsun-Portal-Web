@@ -3,6 +3,7 @@ import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
+import { Subject, of } from 'rxjs';
 import { DashboardPageComponent } from './dashboard-page.component';
 import { DashboardService } from '@features/dashboard/services/application/dashboard.service';
 import { AuthService } from '@features/auth/services/application/auth.service';
@@ -33,6 +34,9 @@ function createMockService() {
     load: vi.fn(),
     cancelQuote: vi.fn(),
     cancelOrder: vi.fn(),
+    createDialogRequested$: new Subject<void>(),
+    created$: new Subject<void>(),
+    requestCreateDialog: vi.fn(),
   };
 }
 

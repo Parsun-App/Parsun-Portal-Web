@@ -3,7 +3,7 @@ import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
-import { of } from 'rxjs';
+import { Subject, of } from 'rxjs';
 import { ConfirmationService } from 'primeng/api';
 import { OrdersPageComponent } from './orders-page.component';
 import { OrdersService } from '@features/orders/services/application/orders.service';
@@ -28,9 +28,11 @@ describe('OrdersPageComponent', () => {
   let component: OrdersPageComponent;
   let serviceMock: {
     loading: ReturnType<typeof signal<boolean>>;
+    creating: ReturnType<typeof signal<boolean>>;
     orders: ReturnType<typeof signal<PortalOrderList[]>>;
     detail: ReturnType<typeof signal<unknown | null>>;
     detailDialogVisible: ReturnType<typeof signal<boolean>>;
+    createDialogVisible: ReturnType<typeof signal<boolean>>;
     searchTerm: ReturnType<typeof signal<string>>;
     dateFrom: ReturnType<typeof signal<string>>;
     dateTo: ReturnType<typeof signal<string>>;
@@ -42,15 +44,19 @@ describe('OrdersPageComponent', () => {
     openDetail: ReturnType<typeof vi.fn>;
     confirmOrder: ReturnType<typeof vi.fn>;
     cancelOrder: ReturnType<typeof vi.fn>;
+    createDialogRequested$: Subject<void>;
+    notify: ReturnType<typeof vi.fn>;
   };
   let confirmationMock: { confirm: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     serviceMock = {
       loading: signal(false),
+      creating: signal(false),
       orders: signal<PortalOrderList[]>(ORDERS),
       detail: signal(null),
       detailDialogVisible: signal(false),
+      createDialogVisible: signal(false),
       searchTerm: signal(''),
       dateFrom: signal(''),
       dateTo: signal(''),
@@ -62,6 +68,8 @@ describe('OrdersPageComponent', () => {
       openDetail: vi.fn(),
       confirmOrder: vi.fn(),
       cancelOrder: vi.fn(),
+      createDialogRequested$: new Subject<void>(),
+      notify: vi.fn(),
     };
     confirmationMock = { confirm: vi.fn(), requireConfirmation$: of(null) };
 

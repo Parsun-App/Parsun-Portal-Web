@@ -3,7 +3,7 @@ import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
-import { of } from 'rxjs';
+import { Subject, of } from 'rxjs';
 import { QuotesPageComponent } from './quotes-page.component';
 import { QuotesService } from '@features/quotes/services/application/quotes.service';
 import { ProductsApiService } from '@features/products/services/api/products-api.service';
@@ -76,6 +76,7 @@ describe('QuotesPageComponent', () => {
     closeCreateDialog: ReturnType<typeof vi.fn>;
     create: ReturnType<typeof vi.fn>;
     notify: ReturnType<typeof vi.fn>;
+    createDialogRequested$: Subject<void>;
   };
   let productsApiMock: { list: ReturnType<typeof vi.fn> };
 
@@ -100,6 +101,7 @@ describe('QuotesPageComponent', () => {
       closeCreateDialog: vi.fn(),
       create: vi.fn(),
       notify: vi.fn(),
+      createDialogRequested$: new Subject<void>(),
     };
     productsApiMock = { list: vi.fn().mockReturnValue(of({ content: PRODUCTS, totalElements: 1, totalPages: 1, size: 100, number: 0, first: true, last: true, empty: false })) };
 
