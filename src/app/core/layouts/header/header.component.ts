@@ -2,7 +2,6 @@ import { Component, ChangeDetectionStrategy, inject, signal, afterNextRender } f
 import { isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
 import { AuthService } from '../../../features/auth/services/application/auth.service';
-import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { NotificationBellComponent } from '../../notifications/components/notification-bell/notification-bell.component';
 
@@ -12,7 +11,7 @@ const DARK_MODE_KEY = 'darkMode';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [ButtonModule, TooltipModule, NotificationBellComponent],
+  imports: [TooltipModule, NotificationBellComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './header.component.html',
 })
