@@ -16,6 +16,8 @@ import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
 import { PopoverModule } from 'primeng/popover';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { PaginatorModule } from 'primeng/paginator';
+import type { PaginatorState } from 'primeng/paginator';
 import { ConfirmationService } from 'primeng/api';
 import { Subject, takeUntil } from 'rxjs';
 import { QuotesService } from '@features/quotes/services/application/quotes.service';
@@ -38,7 +40,7 @@ interface FormLine {
   standalone: true,
   imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule,
             ConfirmDialogModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, InputNumberModule,
-            TextareaModule, SelectModule, DatePickerModule, PopoverModule, AutoCompleteModule, EmptyStateComponent],
+            TextareaModule, SelectModule, DatePickerModule, PopoverModule, AutoCompleteModule, PaginatorModule, EmptyStateComponent],
   providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './quotes-page.component.html',
@@ -71,6 +73,13 @@ export class QuotesPageComponent implements OnInit {
   readonly dateTo = this.quotesService.dateTo;
   readonly dateFromDate = signal<Date | null>(null);
   readonly dateToDate = signal<Date | null>(null);
+
+  readonly mobileFirst = signal(0);
+  readonly mobileRows = 10;
+  readonly mobileQuotes = computed(() => {
+    const start = this.mobileFirst();
+    return this.quotes().slice(start, start + this.mobileRows);
+  });
 
   readonly products = signal<PortalProduct[]>([]);
   readonly filteredSuggestions = signal<PortalProduct[]>([]);
@@ -317,6 +326,10 @@ export class QuotesPageComponent implements OnInit {
     this.dateFromDate.set(null);
     this.dateToDate.set(null);
     this.quotesService.clearFilters();
+  }
+
+  onMobilePageChange(event: PaginatorState): void {
+    this.mobileFirst.set(event.first ?? 0);
   }
 
   parseDate(dateStr: string): Date {

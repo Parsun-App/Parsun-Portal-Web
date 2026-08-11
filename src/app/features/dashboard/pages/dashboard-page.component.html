@@ -44,8 +44,8 @@
             <div class="flex items-start justify-between">
               <div>
                 <p class="text-2xl font-bold text-surface-900 dark:text-surface-100 tracking-tight">
-                  @if (card.format) {
-                    {{ card.prefix }}{{ card.value | number:card.format }}{{ card.suffix }}
+                  @if (card.isCurrency) {
+                    {{ card.value | currency:'USD':'symbol':'1.2-2' }}
                   } @else {
                     {{ card.value }}
                   }
@@ -95,7 +95,7 @@
                   <td class="px-4 md:px-6 py-3">
                     <p-tag [value]="getStatusLabel(item.status)" [severity]="activityStatusSeverity(item.status)" [rounded]="true" styleClass="text-xs px-2 py-0.5" />
                   </td>
-                  <td class="px-4 md:px-6 py-3 text-right text-sm font-semibold text-surface-900 dark:text-surface-100 tabular-nums whitespace-nowrap">{{ item.amount | currency:'USD':'symbol':'1.0-0' }}</td>
+                  <td class="px-4 md:px-6 py-3 text-right text-sm font-semibold text-surface-900 dark:text-surface-100 tabular-nums whitespace-nowrap">{{ item.amount | currency:'USD':'symbol':'1.2-2' }}</td>
                 </tr>
               } @empty {
                 <tr>

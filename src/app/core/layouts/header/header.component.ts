@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, afterNextRender } from '@angular/core';
+import { Component, inject, signal, afterNextRender } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
 import { AuthService } from '../../../features/auth/services/application/auth.service';
@@ -12,7 +12,6 @@ const DARK_MODE_KEY = 'darkMode';
   selector: 'app-header',
   standalone: true,
   imports: [TooltipModule, NotificationBellComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './header.component.html',
 })
 export class HeaderComponent {

@@ -15,6 +15,8 @@ import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FileUploadModule } from 'primeng/fileupload';
 import { PopoverModule } from 'primeng/popover';
+import { PaginatorModule } from 'primeng/paginator';
+import type { PaginatorState } from 'primeng/paginator';
 import { MessageService } from 'primeng/api';
 import { PaymentsService } from '@features/payments/services/application/payments.service';
 import { PaymentsApiService, PaymentMethod } from '@features/payments/services/api/payments-api.service';
@@ -26,7 +28,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
 @Component({
   selector: 'app-payments-page',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, InputNumberModule, TextareaModule, SelectModule, DatePickerModule, FileUploadModule, PopoverModule, EmptyStateComponent],
+  imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, InputNumberModule, TextareaModule, SelectModule, DatePickerModule, FileUploadModule, PopoverModule, PaginatorModule, EmptyStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './payments-page.component.html',
 })
@@ -45,6 +47,13 @@ export class PaymentsPageComponent implements OnInit {
   readonly dateTo = this.paymentsService.dateTo;
   readonly dateFromDate = signal<Date | null>(null);
   readonly dateToDate = signal<Date | null>(null);
+
+  readonly mobileFirst = signal(0);
+  readonly mobileRows = 10;
+  readonly mobilePayments = computed(() => {
+    const start = this.mobileFirst();
+    return this.payments().slice(start, start + this.mobileRows);
+  });
 
   readonly totalPayments = computed(() => this.payments().length);
   readonly appliedTotal = computed(() => this.payments().filter(p => p.status === 'APPLIED').reduce((s, p) => s + p.amount, 0));
@@ -188,6 +197,10 @@ export class PaymentsPageComponent implements OnInit {
     this.dateFromDate.set(null);
     this.dateToDate.set(null);
     this.paymentsService.clearFilters();
+  }
+
+  onMobilePageChange(event: PaginatorState): void {
+    this.mobileFirst.set(event.first ?? 0);
   }
 
   openDetail(id: string): void {

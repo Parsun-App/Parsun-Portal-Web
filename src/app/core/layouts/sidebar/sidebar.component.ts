@@ -26,7 +26,7 @@ export class SidebarComponent {
     { label: 'Presupuestos', icon: 'pi pi-file-edit', route: '/quotes' },
     { label: 'Pedidos', icon: 'pi pi-shopping-cart', route: '/orders' },
     { label: 'Facturas', icon: 'pi pi-receipt', route: '/invoices' },
-    { label: 'Pagos', icon: 'pi pi-credit-card', route: '/payments' },
+    { label: 'Historial de pagos', icon: 'pi pi-credit-card', route: '/payments' },
     { label: 'Mi Perfil', icon: 'pi pi-user', route: '/profile' },
   ];
 }

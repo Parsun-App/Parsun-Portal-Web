@@ -16,6 +16,8 @@ import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
 import { PopoverModule } from 'primeng/popover';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { PaginatorModule } from 'primeng/paginator';
+import type { PaginatorState } from 'primeng/paginator';
 import { ConfirmationService } from 'primeng/api';
 import { Subject, takeUntil } from 'rxjs';
 import { OrdersService } from '@features/orders/services/application/orders.service';
@@ -41,7 +43,7 @@ interface FormLine {
     TableModule, TagModule, DialogModule, ButtonModule,
     ConfirmDialogModule, TooltipModule, IconFieldModule, InputIconModule,
     InputTextModule, InputNumberModule, TextareaModule,
-    SelectModule, DatePickerModule, PopoverModule, AutoCompleteModule, EmptyStateComponent,
+    SelectModule, DatePickerModule, PopoverModule, AutoCompleteModule, PaginatorModule, EmptyStateComponent,
   ],
   providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -75,6 +77,13 @@ export class OrdersPageComponent implements OnInit {
   readonly dateTo = this.ordersService.dateTo;
   readonly dateFromDate = signal<Date | null>(null);
   readonly dateToDate = signal<Date | null>(null);
+
+  readonly mobileFirst = signal(0);
+  readonly mobileRows = 10;
+  readonly mobileOrders = computed(() => {
+    const start = this.mobileFirst();
+    return this.orders().slice(start, start + this.mobileRows);
+  });
 
   readonly products = signal<PortalProduct[]>([]);
   readonly filteredSuggestions = signal<PortalProduct[]>([]);
@@ -319,6 +328,10 @@ export class OrdersPageComponent implements OnInit {
     this.dateFromDate.set(null);
     this.dateToDate.set(null);
     this.ordersService.clearFilters();
+  }
+
+  onMobilePageChange(event: PaginatorState): void {
+    this.mobileFirst.set(event.first ?? 0);
   }
 
   parseDate(dateStr: string): Date {

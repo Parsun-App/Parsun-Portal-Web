@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, ChangeDetectionStrategy, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
@@ -36,7 +36,7 @@ const VIEW_MODE_STORAGE_KEY = 'parsun-products-view-mode';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './products-page.component.html',
 })
-export class ProductsPageComponent implements OnInit {
+export class ProductsPageComponent implements OnInit, OnDestroy {
   private readonly productsService = inject(ProductsService);
   private readonly messageService = inject(MessageService);
 
@@ -54,8 +54,11 @@ export class ProductsPageComponent implements OnInit {
   readonly viewMode = signal<ViewMode>('grid');
   readonly downloadingCatalog = signal(false);
 
+  readonly isMobile = signal(false);
+  private readonly mediaQuery = window.matchMedia('(max-width: 767px)');
+
   readonly hasActiveFilters = computed(() => Boolean(this.searchTerm()) || Boolean(this.selectedCategory()));
-  readonly isGridView = computed(() => this.viewMode() === 'grid');
+  readonly isGridView = computed(() => this.isMobile() ? true : this.viewMode() === 'grid');
 
   readonly emptyConfig = computed(() => {
     if (this.hasActiveFilters()) {
@@ -77,7 +80,17 @@ export class ProductsPageComponent implements OnInit {
     if (stored === 'grid' || stored === 'table') {
       this.viewMode.set(stored);
     }
+    this.isMobile.set(this.mediaQuery.matches);
+    this.mediaQuery.addEventListener('change', this.onMediaChange);
   }
+
+  ngOnDestroy(): void {
+    this.mediaQuery.removeEventListener('change', this.onMediaChange);
+  }
+
+  private readonly onMediaChange = (e: MediaQueryListEvent): void => {
+    this.isMobile.set(e.matches);
+  };
 
   buildPhotoUrl(photo: string | null): string | null {
     if (!photo) return null;

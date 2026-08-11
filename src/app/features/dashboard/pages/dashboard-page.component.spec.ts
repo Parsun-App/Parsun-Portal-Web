@@ -81,29 +81,27 @@ describe('DashboardPageComponent', () => {
   it('should render the pending amount card with full amount when below one thousand', () => {
     const card = component.buildStats(PORTAL_DASHBOARD).find((c) => c.label === 'Monto Pendiente');
     expect(card?.value).toBe(400);
-    expect(card?.suffix).toBeUndefined();
+    expect(card?.isCurrency).toBe(true);
   });
 
-  it('should render the pending amount card in thousands when at least one thousand', () => {
+  it('should render the pending amount card with full amount when at least one thousand', () => {
     const card = component.buildStats({ ...PORTAL_DASHBOARD, pendingAmount: 1200 }).find((c) => c.label === 'Monto Pendiente');
-    expect(card?.value).toBe(1.2);
-    expect(card?.format).toBe('1.0-1');
-    expect(card?.suffix).toBe('k');
+    expect(card?.value).toBe(1200);
+    expect(card?.isCurrency).toBe(true);
   });
 
-  it('should display the pending amount as $400 in the template', () => {
+  it('should display the pending amount as $400.00 in the template', () => {
     const cards = fixture.nativeElement.querySelectorAll('a');
     const pendingCard = Array.from(cards).find((card: Element) => card.textContent.includes('Monto Pendiente'));
-    expect(pendingCard.textContent).toContain('$400');
-    expect(pendingCard.textContent).not.toContain('k');
+    expect(pendingCard.textContent).toContain('$400.00');
   });
 
-  it('should display the pending amount in thousands format in the template', () => {
+  it('should display the full pending amount in the template', () => {
     component.dashboard.set({ ...PORTAL_DASHBOARD, pendingAmount: 1200 });
     fixture.detectChanges();
 
     const cards = fixture.nativeElement.querySelectorAll('a');
     const pendingCard = Array.from(cards).find((card: Element) => card.textContent.includes('Monto Pendiente'));
-    expect(pendingCard.textContent).toContain('$1.2k');
+    expect(pendingCard.textContent).toContain('$1,200.00');
   });
 });

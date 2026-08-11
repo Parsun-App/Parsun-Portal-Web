@@ -15,6 +15,8 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { FileUploadModule } from 'primeng/fileupload';
 import { PopoverModule } from 'primeng/popover';
 import { SkeletonModule } from 'primeng/skeleton';
+import { PaginatorModule } from 'primeng/paginator';
+import type { PaginatorState } from 'primeng/paginator';
 import { MessageService } from 'primeng/api';
 import { InvoicesService } from '@features/invoices/services/application/invoices.service';
 import { InvoicesApiService } from '@features/invoices/services/api/invoices-api.service';
@@ -28,7 +30,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
 @Component({
   selector: 'app-invoices-page',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, InputNumberModule, SelectModule, DatePickerModule, FileUploadModule, PopoverModule, SkeletonModule, EmptyStateComponent],
+  imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, InputNumberModule, SelectModule, DatePickerModule, FileUploadModule, PopoverModule, SkeletonModule, PaginatorModule, EmptyStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './invoices-page.component.html',
 })
@@ -48,6 +50,13 @@ export class InvoicesPageComponent implements OnInit {
   readonly dateTo = this.invoicesService.dateTo;
   readonly dateFromDate = signal<Date | null>(null);
   readonly dateToDate = signal<Date | null>(null);
+
+  readonly mobileFirst = signal(0);
+  readonly mobileRows = 10;
+  readonly mobileInvoices = computed(() => {
+    const start = this.mobileFirst();
+    return this.invoices().slice(start, start + this.mobileRows);
+  });
 
   readonly summaryLoading = signal(false);
   readonly totalDebt = signal(0);
@@ -217,6 +226,11 @@ export class InvoicesPageComponent implements OnInit {
     this.invoicesService.onDateFilterChange(this.dateFrom(), value ? this.formatDate(value) : '');
   }
   clearFilters(): void { this.dateFromDate.set(null); this.dateToDate.set(null); this.invoicesService.clearFilters(); }
+
+  onMobilePageChange(event: PaginatorState): void {
+    this.mobileFirst.set(event.first ?? 0);
+  }
+
   openDetail(id: string): void { this.invoicesService.openDetail(id); }
   parseDate(dateStr: string): Date { return new Date(dateStr + 'T00:00:00'); }
 

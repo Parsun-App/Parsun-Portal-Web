@@ -1,5 +1,5 @@
 <div class="flex flex-col gap-6">
-  <div class="flex items-center justify-between">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
     <div>
       <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Mi Perfil</h1>
       <p class="text-surface-500 mt-1">Información de tu cuenta y datos registrados.</p>
@@ -12,7 +12,7 @@
     </div>
   } @else if (profile(); as p) {
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <p-card>
+      <p-card styleClass="shadow-2xl">
         <ng-template pTemplate="header">
           <div class="px-6 pt-5">
             <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100">Datos Generales</h2>
@@ -42,7 +42,7 @@
         </div>
       </p-card>
 
-      <p-card>
+      <p-card styleClass="shadow-2xl">
         <ng-template pTemplate="header">
           <div class="px-6 pt-5">
             <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100">Información de Crédito</h2>
@@ -72,7 +72,7 @@
         </div>
       </p-card>
 
-      <p-card>
+      <p-card styleClass="shadow-2xl">
         <ng-template pTemplate="header">
           <div class="px-6 pt-5">
             <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100">Contacto</h2>
@@ -102,7 +102,7 @@
         </div>
       </p-card>
 
-      <p-card>
+      <p-card styleClass="shadow-2xl">
         <ng-template pTemplate="header">
           <div class="px-6 pt-5">
             <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100">Direcciones</h2>
@@ -126,7 +126,7 @@
         </div>
       </p-card>
 
-      <p-card>
+      <p-card styleClass="shadow-2xl">
         <ng-template pTemplate="header">
           <div class="px-6 pt-5">
             <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100">Seguridad</h2>

@@ -1,5 +1,5 @@
 <div class="flex flex-col gap-6">
-  <div class="flex items-center justify-between">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
     <div>
       <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Pedidos</h1>
       <p class="text-surface-500 mt-1">Historial y seguimiento de tus pedidos de compra</p>
@@ -93,6 +93,48 @@
     @let empty = emptyConfig();
     <app-empty-state [icon]="empty.icon" [title]="empty.title" [message]="empty.message" />
   } @else {
+    <div class="md:hidden">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+        @for (order of mobileOrders(); track order.id) {
+          <div class="rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-4 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-3">
+              <span class="font-mono text-sm font-semibold text-surface-900 dark:text-surface-100">#{{ order.orderNumber }}</span>
+              <p-tag [value]="getStatusLabel(order.status)" [severity]="statusSeverity(order.status)" [rounded]="true" styleClass="text-xs" />
+            </div>
+            <div class="flex flex-col gap-1.5 text-sm mb-4">
+              <div class="flex justify-between">
+                <span class="text-surface-500 dark:text-surface-400">Fecha</span>
+                <span class="text-surface-900 dark:text-surface-100">{{ order.createdAt | date:'dd/MM/yy' }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-surface-500 dark:text-surface-400">Subtotal</span>
+                <span class="text-surface-900 dark:text-surface-100 font-medium tabular-nums">{{ order.subtotal | currency:'USD':'symbol' }}</span>
+              </div>
+            </div>
+            <div class="flex gap-1 pt-3 border-t border-surface-100 dark:border-surface-700">
+              <p-button icon="pi pi-eye" (onClick)="openDetail(order.id)" severity="secondary" [text]="true" [rounded]="true" pTooltip="Ver detalle" size="small" />
+              @if (isDraft(order.status)) {
+                <p-button icon="pi pi-pencil" (onClick)="editOrder(order.id)" severity="info" [text]="true" [rounded]="true" pTooltip="Editar" size="small" />
+                <p-button icon="pi pi-trash" (onClick)="cancelOrder(order.id)" severity="danger" [text]="true" [rounded]="true" pTooltip="Cancelar" size="small" />
+              }
+            </div>
+          </div>
+        }
+      </div>
+      @if (orders().length > mobileRows) {
+        <div class="rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden bg-surface-0 dark:bg-surface-900 shadow-2xl">
+          <p-paginator
+            [rows]="mobileRows"
+            [totalRecords]="orders().length"
+            [first]="mobileFirst()"
+            (onPageChange)="onMobilePageChange($event)"
+            [rowsPerPageOptions]="[10, 20, 50]"
+          />
+        </div>
+      }
+    </div>
+
+    <div class="hidden md:block">
     <div class="rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden bg-surface-0 dark:bg-surface-900 shadow-2xl">
       <p-table
         [value]="orders()"
@@ -154,6 +196,7 @@
           </tr>
         </ng-template>
       </p-table>
+    </div>
     </div>
   }
 </div>

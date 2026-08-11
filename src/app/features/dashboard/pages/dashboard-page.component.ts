@@ -1,5 +1,5 @@
 import { Component, inject, ChangeDetectionStrategy, computed, signal, OnInit, OnDestroy } from '@angular/core';
-import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { TagModule } from 'primeng/tag';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -24,9 +24,7 @@ interface StatCard {
   icon: string;
   route: string;
   gradient: string;
-  format?: string;
-  prefix?: string;
-  suffix?: string;
+  isCurrency?: boolean;
 }
 
 interface QuickAction {
@@ -39,12 +37,10 @@ interface QuickAction {
   action?: () => void;
 }
 
-const THOUSAND = 1000;
-
 @Component({
   selector: 'app-dashboard-page',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, DecimalPipe, TagModule, RouterLink, ButtonModule, SkeletonModule, EmptyStateComponent, QuotesPageComponent, OrdersPageComponent],
+  imports: [CurrencyPipe, DatePipe, TagModule, RouterLink, ButtonModule, SkeletonModule, EmptyStateComponent, QuotesPageComponent, OrdersPageComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dashboard-page.component.html',
 })
@@ -111,15 +107,9 @@ export class DashboardPageComponent implements OnInit {
   }
 
   private pendingAmountCard(amount: number): StatCard {
-    if (amount >= THOUSAND) {
-      return {
-        label: 'Monto Pendiente', value: amount / THOUSAND, icon: 'pi pi-dollar', route: '/invoices',
-        gradient: 'linear-gradient(135deg, #ef4444, #dc2626)', format: '1.0-1', prefix: '$', suffix: 'k',
-      };
-    }
     return {
       label: 'Monto Pendiente', value: amount, icon: 'pi pi-dollar', route: '/invoices',
-      gradient: 'linear-gradient(135deg, #ef4444, #dc2626)', format: '1.0-0', prefix: '$',
+      gradient: 'linear-gradient(135deg, #ef4444, #dc2626)', isCurrency: true,
     };
   }
 

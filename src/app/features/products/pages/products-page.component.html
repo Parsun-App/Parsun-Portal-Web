@@ -1,5 +1,5 @@
 <div class="flex flex-col gap-6">
-  <div class="flex items-center justify-between">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
     <div>
       <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Productos</h1>
       <p class="text-surface-500 mt-1">Catálogo de productos disponibles.</p>
@@ -28,7 +28,7 @@
         class="w-full sm:w-56"
         [showClear]="true"
       />
-      <div class="flex gap-2 ml-auto">
+      <div class="hidden md:flex gap-2 ml-auto">
         <button
           pButton
           type="button"

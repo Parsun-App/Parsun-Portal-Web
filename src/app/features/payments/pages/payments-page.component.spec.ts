@@ -121,6 +121,6 @@ describe('PaymentsPageComponent', () => {
 
   it('should render the page title', () => {
     const h1 = fixture.nativeElement.querySelector('h1');
-    expect(h1.textContent.trim()).toBe('Historial de Pagos');
+    expect(h1.textContent.trim()).toBe('Historial de pagos');
   });
 });
