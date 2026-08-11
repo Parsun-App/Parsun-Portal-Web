@@ -53,6 +53,7 @@ export class InvoicesPageComponent implements OnInit {
   readonly totalDebt = signal(0);
   readonly pendingCount = signal(0);
   readonly paidThisMonth = signal(0);
+  readonly pendingApprovalAmount = signal(0);
 
   readonly payDialogVisible = signal(false);
   readonly paying = signal(false);
@@ -118,7 +119,7 @@ export class InvoicesPageComponent implements OnInit {
   loadSummary(): void {
     this.summaryLoading.set(true);
     this.invoicesApi.getSummary().subscribe({
-      next: (s) => { this.totalDebt.set(s.totalDebt); this.pendingCount.set(s.pendingCount); this.paidThisMonth.set(s.paidThisMonth); this.summaryLoading.set(false); },
+      next: (s) => { this.totalDebt.set(s.totalDebt); this.pendingCount.set(s.pendingCount); this.paidThisMonth.set(s.paidThisMonth); this.pendingApprovalAmount.set(s.pendingApprovalAmount); this.summaryLoading.set(false); },
       error: () => this.summaryLoading.set(false),
     });
   }

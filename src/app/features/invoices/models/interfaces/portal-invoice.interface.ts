@@ -9,6 +9,7 @@ export interface PortalInvoiceList {
   subtotal: number;
   total: number;
   paidAmount: number;
+  pendingApprovalAmount: number;
   lineCount: number;
   createdAt: string;
 }

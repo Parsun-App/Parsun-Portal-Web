@@ -8,6 +8,7 @@ export interface PortalInvoiceSummary {
   totalDebt: number;
   pendingCount: number;
   paidThisMonth: number;
+  pendingApprovalAmount: number;
 }
 
 @Injectable({ providedIn: 'root' })
