@@ -1,8 +1,13 @@
 <div class="flex flex-col gap-6">
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-    <div>
-      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Pedidos</h1>
-      <p class="text-surface-500 mt-1">Historial y seguimiento de tus pedidos de compra</p>
+    <div class="flex items-center gap-3">
+      <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface-900 text-white dark:bg-surface-100 dark:text-surface-900">
+        <i class="pi pi-shopping-cart text-lg"></i>
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Pedidos</h1>
+        <p class="text-surface-500 mt-1">Historial y seguimiento de tus pedidos de compra</p>
+      </div>
     </div>
     <p-button label="Nuevo pedido" icon="pi pi-plus" (click)="openCreateDialog()" />
   </div>
@@ -11,7 +16,7 @@
     <div class="group relative overflow-hidden rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-5 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200">
       <div class="absolute top-0 right-0 w-20 h-20 opacity-5 group-hover:opacity-10 transition-opacity rounded-full -translate-y-1/3 translate-x-1/3" style="background: linear-gradient(135deg, #f59e0b, #d97706)"></div>
       <div class="flex items-start justify-between">
-        <div class="rounded-xl border border-surface-200 bg-surface-50 p-3 dark:border-surface-700 dark:bg-surface-800">
+        <div>
           <p class="text-2xl font-bold text-surface-900 dark:text-surface-100 tracking-tight">{{ pendingOrders() }}</p>
           <p class="text-xs text-surface-500 mt-1 font-medium">Pedidos Pendientes</p>
         </div>
@@ -23,7 +28,7 @@
     <div class="group relative overflow-hidden rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-5 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200">
       <div class="absolute top-0 right-0 w-20 h-20 opacity-5 group-hover:opacity-10 transition-opacity rounded-full -translate-y-1/3 translate-x-1/3" style="background: linear-gradient(135deg, #22c55e, #16a34a)"></div>
       <div class="flex items-start justify-between">
-        <div class="rounded-xl border border-surface-200 bg-surface-50 p-3 dark:border-surface-700 dark:bg-surface-800">
+        <div>
           <p class="text-2xl font-bold text-surface-900 dark:text-surface-100 tracking-tight">{{ confirmedOrders() }}</p>
           <p class="text-xs text-surface-500 mt-1 font-medium">Pedidos Confirmados</p>
         </div>
@@ -234,13 +239,13 @@
       </div>
 
       @if (d.notes) {
-      <div class="overflow-hidden rounded-xl border border-surface-200 bg-surface-50 p-4 dark:border-surface-700 dark:bg-surface-800">
+        <div>
           <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Notas</label>
           <p class="text-sm mt-1 text-surface-700 dark:text-surface-300">{{ d.notes }}</p>
         </div>
       }
 
-          <div class="rounded-xl border border-surface-200 bg-surface-50 p-3 dark:border-surface-700 dark:bg-surface-800">
+      <div>
         <label class="text-xs font-medium text-surface-500 uppercase tracking-wider mb-2 block">Líneas</label>
         <p-table [value]="d.lines" styleClass="w-full" dataKey="id">
           <ng-template pTemplate="header">
