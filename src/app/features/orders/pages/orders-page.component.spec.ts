@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { signal } from '@angular/core';
 import { Subject, of } from 'rxjs';
 import { ConfirmationService } from 'primeng/api';
@@ -48,6 +48,7 @@ describe('OrdersPageComponent', () => {
     notify: ReturnType<typeof vi.fn>;
   };
   let confirmationMock: { confirm: ReturnType<typeof vi.fn> };
+  let router: Router;
 
   beforeEach(async () => {
     serviceMock = {
@@ -88,6 +89,7 @@ describe('OrdersPageComponent', () => {
 
     fixture = TestBed.createComponent(OrdersPageComponent);
     component = fixture.componentInstance;
+    router = TestBed.inject(Router);
     fixture.detectChanges();
   });
 
@@ -121,6 +123,32 @@ describe('OrdersPageComponent', () => {
   it('should delegate opening a detail to the service', () => {
     component.openDetail('o1');
     expect(serviceMock.openDetail).toHaveBeenCalledWith('o1');
+  });
+
+  it('should consume focus once and preserve the collection when opening a detail', async () => {
+    await router.navigateByUrl('/?focus=o1');
+
+    expect(serviceMock.openDetail).toHaveBeenCalledWith('o1');
+  });
+
+  it('should clear focus with replaceUrl while preserving unrelated query parameters', async () => {
+    const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(false);
+
+    await expect(component.clearFocus()).resolves.toBeUndefined();
+
+    expect(navigate).toHaveBeenCalledWith([], expect.objectContaining({
+      queryParams: { focus: null }, queryParamsHandling: 'merge', replaceUrl: true,
+    }));
+  });
+
+  it('should close the detail and safely absorb a rejected focus cleanup', async () => {
+    vi.spyOn(router, 'navigate').mockRejectedValue(new Error('navigation failed'));
+    component.detailDialogVisible.set(true);
+
+    await expect(component.clearFocus()).resolves.toBeUndefined();
+    component.closeDetail();
+
+    expect(component.detailDialogVisible()).toBe(false);
   });
 
   it('should ask for confirmation before cancelling an order and delegate on accept', () => {

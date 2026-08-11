@@ -1,5 +1,5 @@
 import { Component, inject, computed, signal, ChangeDetectionStrategy, OnInit, OnDestroy } from '@angular/core';
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
@@ -20,12 +20,14 @@ import { PaginatorModule } from 'primeng/paginator';
 import type { PaginatorState } from 'primeng/paginator';
 import { ConfirmationService } from 'primeng/api';
 import { Subject, takeUntil } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 import { QuotesService } from '@features/quotes/services/application/quotes.service';
 import { ProductsApiService } from '@features/products/services/api/products-api.service';
 import { PortalProduct } from '@features/products/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 import { QUOTES_MESSAGES } from '@features/quotes/messages/quotes.messages';
+import { clearNotificationFocusFromUrl } from '@shared/utils/notification-focus-url';
 
 type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'contrast';
 
@@ -50,11 +52,16 @@ export class QuotesPageComponent implements OnInit {
   private readonly quotesService = inject(QuotesService);
   private readonly productsApi = inject(ProductsApiService);
   private readonly confirmationService = inject(ConfirmationService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly location = inject(Location);
+  private focusedId: string | null = null;
 
   ngOnInit(): void {
     this.quotesService.createDialogRequested$
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.openCreateDialog());
+    this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe((params) => this.consumeFocus(params.get('focus')));
   }
 
   readonly loading = this.quotesService.loading;
@@ -274,6 +281,51 @@ export class QuotesPageComponent implements OnInit {
 
   openDetail(id: string): void {
     this.quotesService.openDetail(id);
+  }
+
+  closeDetail(): void {
+    this.detailDialogVisible.set(false);
+    void this.clearFocus();
+  }
+
+  private consumeFocus(focus: string | null): void {
+    if (!focus) {
+      this.focusedId = null;
+      return;
+    }
+    if (focus === this.focusedId) return;
+    this.focusedId = focus;
+    this.openDetail(focus);
+    void this.clearFocus();
+  }
+
+  async clearFocus(): Promise<void> {
+    try {
+      const cleared = await this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { focus: null },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+      if (!cleared) await this.reconcileFocusCleanup();
+    } catch {
+      await this.reconcileFocusCleanup();
+    }
+  }
+
+  private async reconcileFocusCleanup(): Promise<void> {
+    await Promise.resolve();
+    const cleanupTree = this.router.createUrlTree([], {
+      relativeTo: this.route,
+      queryParams: { focus: null },
+      queryParamsHandling: 'merge',
+    });
+    try {
+      const reconciled = await this.router.navigateByUrl(cleanupTree, { replaceUrl: true });
+      if (!reconciled) clearNotificationFocusFromUrl(this.location);
+    } catch {
+      clearNotificationFocusFromUrl(this.location);
+    }
   }
 
   isDraft(status: string): boolean {

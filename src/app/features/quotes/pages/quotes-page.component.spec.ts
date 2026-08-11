@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { signal } from '@angular/core';
 import { Subject, of } from 'rxjs';
 import { QuotesPageComponent } from './quotes-page.component';
@@ -79,6 +79,7 @@ describe('QuotesPageComponent', () => {
     createDialogRequested$: Subject<void>;
   };
   let productsApiMock: { list: ReturnType<typeof vi.fn> };
+  let router: Router;
 
   beforeEach(async () => {
     serviceMock = {
@@ -117,6 +118,7 @@ describe('QuotesPageComponent', () => {
 
     fixture = TestBed.createComponent(QuotesPageComponent);
     component = fixture.componentInstance;
+    router = TestBed.inject(Router);
     fixture.detectChanges();
   });
 
@@ -150,6 +152,44 @@ describe('QuotesPageComponent', () => {
   it('should delegate opening a detail to the service', () => {
     component.openDetail('q1');
     expect(serviceMock.openDetail).toHaveBeenCalledWith('q1');
+  });
+
+  it('should consume focus once and preserve the collection when opening a detail', async () => {
+    await router.navigateByUrl('/?focus=q1');
+
+    expect(serviceMock.openDetail).toHaveBeenCalledWith('q1');
+  });
+
+  it('should not reopen while cleanup runs and should reopen for a later focus link', async () => {
+    await router.navigateByUrl('/?focus=q1');
+    await fixture.whenStable();
+
+    expect(serviceMock.openDetail).toHaveBeenCalledTimes(1);
+
+    await router.navigateByUrl('/?focus=q1');
+    await fixture.whenStable();
+
+    expect(serviceMock.openDetail).toHaveBeenCalledTimes(2);
+  });
+
+  it('should clear focus with replaceUrl while preserving unrelated query parameters', async () => {
+    const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(false);
+
+    await expect(component.clearFocus()).resolves.toBeUndefined();
+
+    expect(navigate).toHaveBeenCalledWith([], expect.objectContaining({
+      queryParams: { focus: null }, queryParamsHandling: 'merge', replaceUrl: true,
+    }));
+  });
+
+  it('should close the detail and safely absorb a rejected focus cleanup', async () => {
+    vi.spyOn(router, 'navigate').mockRejectedValue(new Error('navigation failed'));
+    component.detailDialogVisible.set(true);
+
+    await expect(component.clearFocus()).resolves.toBeUndefined();
+    component.closeDetail();
+
+    expect(component.detailDialogVisible()).toBe(false);
   });
 
   it('should use the filtered empty state when filters are active', () => {

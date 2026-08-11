@@ -1,5 +1,6 @@
 import { Component, inject, computed, signal, ChangeDetectionStrategy, OnInit } from '@angular/core';
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CurrencyPipe, DatePipe, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
@@ -22,6 +23,7 @@ import { PaymentsService } from '@features/payments/services/application/payment
 import { PaymentsApiService, PaymentMethod } from '@features/payments/services/api/payments-api.service';
 import { getStatusLabel } from '@shared/utils/status-labels';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
+import { clearNotificationFocusFromUrl } from '@shared/utils/notification-focus-url';
 
 type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'contrast';
 
@@ -36,6 +38,10 @@ export class PaymentsPageComponent implements OnInit {
   private readonly paymentsService = inject(PaymentsService);
   private readonly paymentsApi = inject(PaymentsApiService);
   private readonly messageService = inject(MessageService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly location = inject(Location);
+  private focusedId: string | null = null;
 
   readonly loading = this.paymentsService.loading;
   readonly payments = this.paymentsService.payments;
@@ -113,6 +119,7 @@ export class PaymentsPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadPaymentMethods();
+    this.route.queryParamMap.subscribe((params) => this.consumeFocus(params.get('focus')));
   }
 
   loadPaymentMethods(): void {
@@ -205,6 +212,47 @@ export class PaymentsPageComponent implements OnInit {
 
   openDetail(id: string): void {
     this.paymentsService.openDetail(id);
+  }
+
+  closeDetail(): void {
+    this.detailDialogVisible.set(false);
+    void this.clearFocus();
+  }
+
+  private consumeFocus(focus: string | null): void {
+    if (!focus) {
+      this.focusedId = null;
+      return;
+    }
+    if (focus === this.focusedId) return;
+    this.focusedId = focus;
+    this.openDetail(focus);
+    void this.clearFocus();
+  }
+
+  async clearFocus(): Promise<void> {
+    try {
+      const cleared = await this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { focus: null },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+      if (!cleared) await this.reconcileFocusCleanup();
+    } catch {
+      await this.reconcileFocusCleanup();
+    }
+  }
+
+  private async reconcileFocusCleanup(): Promise<void> {
+    await Promise.resolve();
+    const cleanupTree = this.router.createUrlTree([], { relativeTo: this.route, queryParams: { focus: null }, queryParamsHandling: 'merge' });
+    try {
+      const reconciled = await this.router.navigateByUrl(cleanupTree, { replaceUrl: true });
+      if (!reconciled) clearNotificationFocusFromUrl(this.location);
+    } catch {
+      clearNotificationFocusFromUrl(this.location);
+    }
   }
 
   statusSeverity(status: string): StatusSeverity {

@@ -197,6 +197,7 @@
 
 <p-dialog
   [(visible)]="detailDialogVisible"
+  (onHide)="clearFocus()"
   [style]="{ width: 'min(38rem, calc(100vw - 2rem))' }"
   [modal]="true"
   [closable]="true"
@@ -249,6 +250,6 @@
     </div>
   }
   <ng-template pTemplate="footer">
-    <p-button label="Cerrar" (click)="detailDialogVisible.set(false)" severity="secondary" [outlined]="true" />
+    <p-button label="Cerrar" (click)="closeDetail()" severity="secondary" [outlined]="true" />
   </ng-template>
 </p-dialog>
