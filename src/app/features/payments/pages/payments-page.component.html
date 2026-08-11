@@ -192,50 +192,51 @@
 
 <p-dialog
   [(visible)]="detailDialogVisible"
-  [style]="{ width: '32rem' }"
+  [style]="{ width: 'min(38rem, calc(100vw - 2rem))' }"
   [modal]="true"
   [closable]="true"
+  [draggable]="false"
 >
   <ng-template pTemplate="header">
     <div class="flex items-center gap-3">
-      <i class="pi pi-credit-card text-xl text-surface-500"></i>
-      <span class="text-lg font-semibold text-surface-900 dark:text-surface-100">Pago {{ detail()?.paymentNumber }}</span>
+      <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-100 text-surface-700 dark:bg-surface-800 dark:text-surface-200"><i class="pi pi-credit-card"></i></div>
+      <div><h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100">Pago {{ detail()?.paymentNumber }}</h2><p class="mt-0.5 text-xs text-surface-500">Detalle del movimiento y aplicación</p></div>
     </div>
   </ng-template>
   @if (detail(); as d) {
     <div class="flex flex-col gap-4">
-      <div class="grid grid-cols-2 gap-4">
-        <div>
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div class="rounded-xl border border-surface-200 bg-surface-50 p-3 dark:border-surface-700 dark:bg-surface-800">
           <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">N° Pago</label>
           <p class="text-sm font-mono mt-1 text-surface-900 dark:text-surface-100">{{ d.paymentNumber }}</p>
         </div>
-        <div>
+        <div class="rounded-xl border border-surface-200 bg-surface-50 p-3 dark:border-surface-700 dark:bg-surface-800">
           <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Estado</label>
           <p class="text-sm mt-1"><p-tag [value]="getStatusLabel(d.status)" [severity]="statusSeverity(d.status)" /></p>
         </div>
-        <div>
+        <div class="rounded-xl border border-surface-200 bg-surface-50 p-3 dark:border-surface-700 dark:bg-surface-800">
           <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Monto</label>
           <p class="text-sm font-medium mt-1 text-surface-900 dark:text-surface-100">{{ d.amount | currency:'USD':'symbol' }}</p>
         </div>
-        <div>
+        <div class="rounded-xl border border-surface-200 bg-surface-50 p-3 dark:border-surface-700 dark:bg-surface-800">
           <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Monto Aplicado</label>
           <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.appliedAmount | currency:'USD':'symbol' }}</p>
         </div>
-        <div>
+        <div class="rounded-xl border border-surface-200 bg-surface-50 p-3 dark:border-surface-700 dark:bg-surface-800">
           <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Referencia</label>
           <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.referenceNumber || '-' }}</p>
         </div>
-        <div>
+        <div class="rounded-xl border border-surface-200 bg-surface-50 p-3 dark:border-surface-700 dark:bg-surface-800">
           <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Fecha de Pago</label>
           <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.paymentDate | date:'dd/MM/yy' }}</p>
         </div>
-        <div>
+        <div class="rounded-xl border border-surface-200 bg-surface-50 p-3 dark:border-surface-700 dark:bg-surface-800">
           <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Creado</label>
           <p class="text-sm mt-1 text-surface-600 dark:text-surface-400">{{ d.createdAt | date:'dd/MM/yy HH:mm' }}</p>
         </div>
       </div>
       @if (d.notes) {
-        <div>
+        <div class="rounded-xl border border-surface-200 bg-surface-50 p-4 dark:border-surface-700 dark:bg-surface-800">
           <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Notas</label>
           <p class="text-sm mt-1 text-surface-700 dark:text-surface-300">{{ d.notes }}</p>
         </div>
@@ -243,6 +244,6 @@
     </div>
   }
   <ng-template pTemplate="footer">
-    <p-button label="Cerrar" (click)="detailDialogVisible.set(false)" severity="secondary" [text]="true" />
+    <p-button label="Cerrar" (click)="detailDialogVisible.set(false)" severity="secondary" [outlined]="true" />
   </ng-template>
 </p-dialog>

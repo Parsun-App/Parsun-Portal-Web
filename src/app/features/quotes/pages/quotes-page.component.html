@@ -209,37 +209,38 @@
 
 <p-dialog
   [(visible)]="detailDialogVisible"
-  [style]="{ width: '48rem' }"
+  [style]="{ width: 'min(52rem, calc(100vw - 2rem))' }"
   [modal]="true"
   [closable]="true"
+  [draggable]="false"
 >
   <ng-template pTemplate="header">
     <div class="flex items-center gap-3">
-      <i class="pi pi-file-edit text-xl text-surface-500"></i>
-      <span class="text-lg font-semibold text-surface-900 dark:text-surface-100">Presupuesto {{ detail()?.quoteNumber }}</span>
+      <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-100 text-surface-700 dark:bg-surface-800 dark:text-surface-200"><i class="pi pi-file-edit"></i></div>
+      <div><h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100">Presupuesto {{ detail()?.quoteNumber }}</h2><p class="mt-0.5 text-xs text-surface-500">Detalle y vigencia del presupuesto</p></div>
     </div>
   </ng-template>
   @if (detail(); as d) {
     <div class="flex flex-col gap-6">
-      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <div>
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div class="rounded-xl border border-surface-200 bg-surface-50 p-3 dark:border-surface-700 dark:bg-surface-800">
           <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Estado</label>
           <p class="text-sm mt-1"><p-tag [value]="getStatusLabel(d.status)" [severity]="statusSeverity(d.status)" /></p>
         </div>
-        <div>
+        <div class="rounded-xl border border-surface-200 bg-surface-50 p-3 dark:border-surface-700 dark:bg-surface-800">
           <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Vence</label>
           <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.expiryDate | date:'dd/MM/yy' }}</p>
         </div>
-        <div>
+        <div class="rounded-xl border border-surface-200 bg-surface-50 p-3 dark:border-surface-700 dark:bg-surface-800">
           <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Creado por</label>
           <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.createdByName }}</p>
         </div>
-        <div>
+        <div class="rounded-xl border border-surface-200 bg-surface-50 p-3 dark:border-surface-700 dark:bg-surface-800">
           <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Creada</label>
           <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.createdAt | date:'dd/MM/yy HH:mm' }}</p>
         </div>
         @if (d.orderNumber) {
-          <div>
+          <div class="rounded-xl border border-surface-200 bg-surface-50 p-3 dark:border-surface-700 dark:bg-surface-800">
             <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Pedido asociado</label>
             <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.orderNumber }}</p>
           </div>
@@ -247,13 +248,13 @@
       </div>
 
       @if (d.notes) {
-        <div>
+        <div class="rounded-xl border border-surface-200 bg-surface-50 p-4 dark:border-surface-700 dark:bg-surface-800">
           <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Notas</label>
           <p class="text-sm mt-1 text-surface-700 dark:text-surface-300">{{ d.notes }}</p>
         </div>
       }
 
-      <div>
+      <div class="overflow-hidden rounded-xl border border-surface-200 bg-surface-50 p-4 dark:border-surface-700 dark:bg-surface-800">
         <label class="text-xs font-medium text-surface-500 uppercase tracking-wider mb-2 block">Líneas</label>
         <p-table [value]="d.lines" styleClass="w-full" dataKey="id">
           <ng-template pTemplate="header">
@@ -292,7 +293,7 @@
           }
         }
       </div>
-      <p-button label="Cerrar" (click)="detailDialogVisible.set(false)" severity="secondary" [text]="true" />
+      <p-button label="Cerrar" (click)="detailDialogVisible.set(false)" severity="secondary" [outlined]="true" />
     </div>
   </ng-template>
 </p-dialog>

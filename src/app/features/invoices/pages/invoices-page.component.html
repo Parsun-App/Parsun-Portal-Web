@@ -214,19 +214,19 @@
   }
 </div>
 
-<p-dialog [(visible)]="detailDialogVisible" [style]="{ width: '48rem' }" [modal]="true" [closable]="true">
+<p-dialog [(visible)]="detailDialogVisible" [style]="{ width: 'min(52rem, calc(100vw - 2rem))' }" [modal]="true" [closable]="true" [draggable]="false">
   <ng-template pTemplate="header">
     <div class="flex items-center gap-3">
-      <i class="pi pi-file-invoice text-xl text-surface-500"></i>
-      <span class="text-lg font-semibold text-surface-900 dark:text-surface-100">Factura {{ detail()?.invoiceNumber }}</span>
+      <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-100 text-surface-700 dark:bg-surface-800 dark:text-surface-200"><i class="pi pi-file-invoice"></i></div>
+      <div><h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100">Factura {{ detail()?.invoiceNumber }}</h2><p class="mt-0.5 text-xs text-surface-500">Detalle y líneas de la factura</p></div>
     </div>
   </ng-template>
   @if (detail(); as d) {
     <div class="flex flex-col gap-6">
-      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <div><label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Estado</label><p class="text-sm mt-1"><p-tag [value]="getStatusLabel(d.status)" [severity]="statusSeverity(d.status)" /></p></div>
-        <div><label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Subtotal</label><p class="text-sm mt-1 font-medium text-surface-900 dark:text-surface-100">{{ d.subtotal | currency:'USD':'symbol' }}</p></div>
-        <div><label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Fecha</label><p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.createdAt | date:'dd/MM/yy HH:mm' }}</p></div>
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div class="rounded-xl border border-surface-200 bg-surface-50 p-3 dark:border-surface-700 dark:bg-surface-800"><label class="text-xs font-medium uppercase tracking-wide text-surface-500">Estado</label><p class="mt-2"><p-tag [value]="getStatusLabel(d.status)" [severity]="statusSeverity(d.status)" /></p></div>
+        <div class="rounded-xl border border-surface-200 bg-surface-50 p-3 dark:border-surface-700 dark:bg-surface-800"><label class="text-xs font-medium uppercase tracking-wide text-surface-500">Subtotal</label><p class="mt-2 text-lg font-semibold tabular-nums text-surface-900 dark:text-surface-100">{{ d.subtotal | currency:'USD':'symbol' }}</p></div>
+        <div class="rounded-xl border border-surface-200 bg-surface-50 p-3 dark:border-surface-700 dark:bg-surface-800"><label class="text-xs font-medium uppercase tracking-wide text-surface-500">Fecha</label><p class="mt-2 text-sm text-surface-900 dark:text-surface-100">{{ d.createdAt | date:'dd/MM/yy HH:mm' }}</p></div>
       </div>
       @if (d.notes) { <div><label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Notas</label><p class="text-sm mt-1 text-surface-700 dark:text-surface-300">{{ d.notes }}</p></div> }
       <div>
@@ -258,77 +258,151 @@
   </ng-template>
 </p-dialog>
 
-<p-dialog [(visible)]="payDialogVisible" header="Pagar Factura" [modal]="true" [style]="{ width: '24rem' }" [draggable]="false">
-  <div class="flex flex-col gap-4">
-    <div class="bg-surface-100 dark:bg-surface-800 rounded-lg p-3 flex items-center justify-between">
-      <span class="text-sm text-surface-500">Saldo pendiente</span>
-      <span class="text-lg font-bold text-surface-900 dark:text-surface-100">{{ payFullAmount() | currency:'USD':'symbol' }}</span>
-    </div>
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Monto a pagar</label>
-      <p-inputNumber [(ngModel)]="payAmount" [min]="0.01" [max]="payFullAmount()" mode="currency" currency="USD" locale="en-US" styleClass="w-full" inputStyleClass="w-full" />
-    </div>
-    @if (isPayPartial()) {
-      <div class="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg p-2">
-        Pago parcial. Quedarán {{ payFullAmount() - payAmount() | currency:'USD':'symbol' }} pendientes.
+<p-dialog [(visible)]="payDialogVisible" [modal]="true" [style]="{ width: 'min(34rem, calc(100vw - 2rem))' }" [draggable]="false" [closable]="!paying()">
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-3">
+      <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-900 text-white dark:bg-surface-100 dark:text-surface-900">
+        <i class="pi pi-credit-card"></i>
       </div>
-    }
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Método de pago</label>
-      <p-select [options]="paymentMethods()" [(ngModel)]="payMethodId" optionLabel="name" optionValue="id" placeholder="Seleccionar..." styleClass="w-full" />
+      <div>
+        <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100">Pagar factura</h2>
+        <p class="mt-0.5 text-xs text-surface-500">Registra el pago y adjunta su comprobante</p>
+      </div>
     </div>
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Fecha de pago</label>
-      <p-datepicker [(ngModel)]="payDate" dateFormat="dd/mm/yy" placeholder="DD/MM/AA" styleClass="w-full" />
+  </ng-template>
+
+  <div class="flex flex-col gap-6">
+    <div class="rounded-xl border border-surface-200 bg-surface-50 p-4 dark:border-surface-700 dark:bg-surface-800/70">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <p class="text-xs font-medium uppercase tracking-wide text-surface-500">Saldo pendiente</p>
+          <p class="mt-1 text-2xl font-bold tracking-tight text-surface-900 dark:text-surface-100">
+            {{ payFullAmount() | currency:'USD':'symbol' }}
+          </p>
+        </div>
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+          <i class="pi pi-clock text-xs"></i>
+          Pendiente
+        </span>
+      </div>
+      @if (isPayPartial()) {
+        <div class="mt-4 flex items-start gap-2 border-t border-surface-200 pt-3 text-xs text-amber-700 dark:border-surface-700 dark:text-amber-300">
+          <i class="pi pi-info-circle mt-0.5"></i>
+          <span>Después de este pago quedarán {{ payFullAmount() - payAmount() | currency:'USD':'symbol' }} pendientes.</span>
+        </div>
+      }
     </div>
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Referencia</label>
-      <input pInputText [(ngModel)]="payReference" placeholder="N° de transferencia o comprobante" class="w-full" />
-      <small class="text-surface-500">Requerida si no adjunta un justificante.</small>
+
+    <div class="flex flex-col gap-4">
+      <div class="flex items-center gap-2 border-b border-surface-200 pb-2 dark:border-surface-700">
+        <i class="pi pi-wallet text-sm text-surface-500"></i>
+        <h3 class="text-sm font-semibold text-surface-900 dark:text-surface-100">Datos del pago</h3>
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Monto a pagar</label>
+        <p-inputNumber [(ngModel)]="payAmount" [min]="0.01" [max]="payFullAmount()" mode="currency" currency="USD" locale="en-US" styleClass="w-full" inputStyleClass="w-full" />
+        <small class="text-xs text-surface-500">Puedes pagar el saldo completo o registrar un pago parcial.</small>
+      </div>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Método de pago</label>
+          <p-select [options]="paymentMethods()" [(ngModel)]="payMethodId" optionLabel="name" optionValue="id" placeholder="Seleccionar método" styleClass="w-full" />
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Fecha de pago</label>
+          <p-datepicker [(ngModel)]="payDate" dateFormat="dd/mm/yy" placeholder="DD/MM/AA" styleClass="w-full" />
+        </div>
+      </div>
     </div>
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Justificante</label>
-      <p-fileupload mode="basic" accept="image/*,.pdf" [maxFileSize]="10000000" (onSelect)="onPayFileSelected($event)" chooseLabel="Seleccionar archivo" />
-      <small class="text-surface-500">Requerido si no ingresa una referencia.</small>
+
+    <div class="flex flex-col gap-4">
+      <div class="flex items-center gap-2 border-b border-surface-200 pb-2 dark:border-surface-700">
+        <i class="pi pi-paperclip text-sm text-surface-500"></i>
+        <div>
+          <h3 class="text-sm font-semibold text-surface-900 dark:text-surface-100">Comprobante</h3>
+          <p class="text-xs text-surface-500">Elige una referencia o adjunta un archivo</p>
+        </div>
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Referencia</label>
+        <input pInputText [(ngModel)]="payReference" placeholder="N° de transferencia o comprobante" class="w-full" />
+        <small class="text-xs text-surface-500">Requerida si no adjuntas un justificante.</small>
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Archivo</label>
+        <p-fileupload mode="basic" accept="image/*,.pdf" [maxFileSize]="10000000" (onSelect)="onPayFileSelected($event)" chooseLabel="Adjuntar comprobante" />
+        <small class="text-xs text-surface-500">PDF o imagen, máximo 10 MB. Requerido si no ingresas una referencia.</small>
+      </div>
     </div>
   </div>
+
   <ng-template pTemplate="footer">
-    <p-button label="Cancelar" severity="secondary" [text]="true" (click)="payDialogVisible.set(false)" [disabled]="paying()" />
-    <p-button label="Pagar" icon="pi pi-check" [loading]="paying()" [disabled]="!canSubmitPay()" (click)="submitPay()" />
+    <div class="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+      <p-button label="Cancelar" severity="secondary" [outlined]="true" (click)="payDialogVisible.set(false)" [disabled]="paying()" />
+      <p-button label="Registrar pago" icon="pi pi-check" [loading]="paying()" [disabled]="!canSubmitPay()" (click)="submitPay()" />
+    </div>
   </ng-template>
 </p-dialog>
 
-<p-dialog [(visible)]="payAllDialogVisible" header="Pagar Deuda Total" [modal]="true" [style]="{ width: '28rem' }" [draggable]="false">
-  <div class="flex flex-col gap-4">
-    <div class="bg-red-50 dark:bg-red-900/20 rounded-lg p-3 flex items-center justify-between">
-      <span class="text-sm text-surface-500">Deuda total</span>
-      <span class="text-lg font-bold text-red-600 dark:text-red-400">{{ totalDebt() | currency:'USD':'symbol' }}</span>
+<p-dialog [(visible)]="payAllDialogVisible" [modal]="true" [style]="{ width: 'min(34rem, calc(100vw - 2rem))' }" [draggable]="false" [closable]="!payingAll()">
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-3">
+      <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-900 text-white dark:bg-surface-100 dark:text-surface-900">
+        <i class="pi pi-wallet"></i>
+      </div>
+      <div>
+        <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100">Pagar deuda total</h2>
+        <p class="mt-0.5 text-xs text-surface-500">Aplica un pago a tu saldo pendiente</p>
+      </div>
     </div>
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Monto a pagar</label>
-      <p-inputNumber [(ngModel)]="payAllAmount" [min]="0.01" [max]="totalDebt()" mode="currency" currency="USD" locale="en-US" styleClass="w-full" inputStyleClass="w-full" />
+  </ng-template>
+  <div class="flex flex-col gap-6">
+    <div class="rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-900/50 dark:bg-red-900/20">
+      <p class="text-xs font-medium uppercase tracking-wide text-red-700 dark:text-red-300">Deuda total</p>
+      <p class="mt-1 text-2xl font-bold tracking-tight text-red-700 dark:text-red-300">{{ totalDebt() | currency:'USD':'symbol' }}</p>
+      <p class="mt-1 text-xs text-red-600 dark:text-red-400">Puedes pagar el total o registrar un pago parcial.</p>
     </div>
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Método de pago *</label>
-      <p-select [options]="paymentMethods()" [(ngModel)]="payAllMethodId" optionLabel="name" optionValue="id" placeholder="Seleccionar..." styleClass="w-full" />
+    <div class="flex flex-col gap-4">
+      <div class="flex items-center gap-2 border-b border-surface-200 pb-2 dark:border-surface-700">
+        <i class="pi pi-wallet text-sm text-surface-500"></i>
+        <h3 class="text-sm font-semibold text-surface-900 dark:text-surface-100">Datos del pago</h3>
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Monto a pagar</label>
+        <p-inputNumber [(ngModel)]="payAllAmount" [min]="0.01" [max]="totalDebt()" mode="currency" currency="USD" locale="en-US" styleClass="w-full" inputStyleClass="w-full" />
+      </div>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Método de pago</label>
+          <p-select [options]="paymentMethods()" [(ngModel)]="payAllMethodId" optionLabel="name" optionValue="id" placeholder="Seleccionar método" styleClass="w-full" />
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Fecha de pago</label>
+          <p-datepicker [(ngModel)]="payAllDate" dateFormat="dd/mm/yy" placeholder="DD/MM/AA" styleClass="w-full" />
+        </div>
+      </div>
     </div>
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Fecha de pago *</label>
-      <p-datepicker [(ngModel)]="payAllDate" dateFormat="dd/mm/yy" placeholder="DD/MM/AA" styleClass="w-full" />
-    </div>
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Referencia</label>
-      <input pInputText [(ngModel)]="payAllReference" placeholder="N° de transferencia o comprobante" class="w-full" />
-      <small class="text-surface-500">Requerida si no adjunta un justificante.</small>
-    </div>
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Justificante</label>
-      <p-fileupload mode="basic" accept="image/*,.pdf" [maxFileSize]="10000000" (onSelect)="onPayAllFileSelected($event)" chooseLabel="Seleccionar archivo" />
-      <small class="text-surface-500">Requerido si no ingresa una referencia.</small>
+    <div class="flex flex-col gap-4">
+      <div class="flex items-center gap-2 border-b border-surface-200 pb-2 dark:border-surface-700">
+        <i class="pi pi-paperclip text-sm text-surface-500"></i>
+        <div><h3 class="text-sm font-semibold text-surface-900 dark:text-surface-100">Comprobante</h3><p class="text-xs text-surface-500">Referencia o archivo de respaldo</p></div>
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Referencia</label>
+        <input pInputText [(ngModel)]="payAllReference" placeholder="N° de transferencia o comprobante" class="w-full" />
+        <small class="text-xs text-surface-500">Requerida si no adjuntas un justificante.</small>
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Archivo</label>
+        <p-fileupload mode="basic" accept="image/*,.pdf" [maxFileSize]="10000000" (onSelect)="onPayAllFileSelected($event)" chooseLabel="Adjuntar comprobante" />
+        <small class="text-xs text-surface-500">PDF o imagen, máximo 10 MB.</small>
+      </div>
     </div>
   </div>
   <ng-template pTemplate="footer">
-    <p-button label="Cancelar" severity="secondary" [text]="true" (click)="payAllDialogVisible.set(false)" [disabled]="payingAll()" />
-    <p-button label="Pagar" icon="pi pi-check" [loading]="payingAll()" [disabled]="!canSubmitPayAll()" (click)="submitPayAll()" />
+    <div class="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+      <p-button label="Cancelar" severity="secondary" [outlined]="true" (click)="payAllDialogVisible.set(false)" [disabled]="payingAll()" />
+      <p-button label="Registrar pago" icon="pi pi-check" [loading]="payingAll()" [disabled]="!canSubmitPayAll()" (click)="submitPayAll()" />
+    </div>
   </ng-template>
 </p-dialog>
