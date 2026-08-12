@@ -5,7 +5,7 @@ import { provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
 import { of } from 'rxjs';
 import { MessageService } from 'primeng/api';
-import { InvoicesPageComponent } from './invoices-page.component';
+import { InvoicesPageComponent } from '@features/invoices/pages/invoices-page.component';
 import { InvoicesService } from '@features/invoices/services/application/invoices.service';
 import { InvoicesApiService } from '@features/invoices/services/api/invoices-api.service';
 import { PaymentsApiService } from '@features/payments/services/api/payments-api.service';

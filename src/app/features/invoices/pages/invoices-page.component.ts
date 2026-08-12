@@ -24,13 +24,17 @@ import { PaymentsApiService, PaymentMethod } from '@features/payments/services/a
 import { PortalInvoiceList } from '@features/invoices/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
+import { MetricCardComponent, PageHeaderComponent } from '@shared/components/ui';
+import { ListFiltersComponent } from '@shared/components/list';
+import { InvoiceDetailDialogComponent } from '@features/invoices/components/invoice-detail-dialog/invoice-detail-dialog.component';
+import { InvoicePaymentDialogComponent } from '@features/invoices/components/invoice-payment-dialog/invoice-payment-dialog.component';
 
 type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'contrast';
 
 @Component({
   selector: 'app-invoices-page',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, InputNumberModule, SelectModule, DatePickerModule, FileUploadModule, PopoverModule, SkeletonModule, PaginatorModule, EmptyStateComponent],
+  imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, InputNumberModule, SelectModule, DatePickerModule, FileUploadModule, PopoverModule, SkeletonModule, PaginatorModule, EmptyStateComponent, InvoiceDetailDialogComponent, InvoicePaymentDialogComponent, ListFiltersComponent, MetricCardComponent, PageHeaderComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './invoices-page.component.html',
 })

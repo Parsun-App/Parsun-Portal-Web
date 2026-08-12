@@ -1,1 +1,1 @@
-export type { PortalInvoiceList, PortalInvoiceDetail, PortalInvoiceLine } from './interfaces/portal-invoice.interface';
+export type { PortalInvoiceList, PortalInvoiceDetail, PortalInvoiceLine } from '@features/invoices/models/interfaces/portal-invoice.interface';

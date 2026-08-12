@@ -1,18 +1,9 @@
 <div class="flex flex-col gap-6">
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-    <div class="flex items-center gap-3">
-      <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface-900 text-white dark:bg-surface-100 dark:text-surface-900">
-        <i class="pi pi-receipt text-lg"></i>
-      </div>
-      <div>
-        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Facturas</h1>
-        <p class="text-surface-500 mt-1">Gestiona las facturas de clientes</p>
-      </div>
-    </div>
+  <app-page-header title="Facturas" subtitle="Gestiona las facturas de clientes" icon="pi pi-receipt">
     @if (pendingCount() > 0) {
       <p-button label="Pagar Deuda" icon="pi pi-dollar" severity="secondary" (click)="openPayAll()" />
     }
-  </div>
+  </app-page-header>
 
   @if (summaryLoading()) {
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -26,96 +17,17 @@
     </div>
   } @else {
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="group relative overflow-hidden rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-5 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200">
-        <div class="absolute top-0 right-0 w-20 h-20 opacity-5 group-hover:opacity-10 transition-opacity rounded-full -translate-y-1/3 translate-x-1/3" style="background: linear-gradient(135deg, #ef4444, #dc2626)"></div>
-        <div class="flex items-start justify-between">
-          <div>
-            <p class="text-2xl font-bold text-surface-900 dark:text-surface-100 tracking-tight">{{ totalDebt() | currency:'USD':'symbol':'1.2-2' }}</p>
-            <p class="text-xs text-surface-500 mt-1 font-medium">Deuda Total</p>
-          </div>
-          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-lg shrink-0" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white">
-            <i class="pi pi-dollar"></i>
-          </div>
-        </div>
-      </div>
-
-      <div class="group relative overflow-hidden rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-5 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200">
-        <div class="absolute top-0 right-0 w-20 h-20 opacity-5 group-hover:opacity-10 transition-opacity rounded-full -translate-y-1/3 translate-x-1/3" style="background: linear-gradient(135deg, #f59e0b, #d97706)"></div>
-        <div class="flex items-start justify-between">
-          <div>
-            <p class="text-2xl font-bold text-surface-900 dark:text-surface-100 tracking-tight">{{ pendingCount() }}</p>
-            <p class="text-xs text-surface-500 mt-1 font-medium">Facturas Pendientes</p>
-          </div>
-          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-lg shrink-0" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white">
-            <i class="pi pi-file"></i>
-          </div>
-        </div>
-      </div>
-
-      <div class="group relative overflow-hidden rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-5 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200">
-        <div class="absolute top-0 right-0 w-20 h-20 opacity-5 group-hover:opacity-10 transition-opacity rounded-full -translate-y-1/3 translate-x-1/3" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed)"></div>
-        <div class="flex items-start justify-between">
-          <div>
-            <p class="text-2xl font-bold text-surface-900 dark:text-surface-100 tracking-tight">{{ pendingApprovalAmount() | currency:'USD':'symbol':'1.2-2' }}</p>
-            <p class="text-xs text-surface-500 mt-1 font-medium">Pendiente de Aprobación</p>
-          </div>
-          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-lg shrink-0" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white">
-            <i class="pi pi-clock"></i>
-          </div>
-        </div>
-      </div>
-
-      <div class="group relative overflow-hidden rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-5 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200">
-        <div class="absolute top-0 right-0 w-20 h-20 opacity-5 group-hover:opacity-10 transition-opacity rounded-full -translate-y-1/3 translate-x-1/3" style="background: linear-gradient(135deg, #22c55e, #16a34a)"></div>
-        <div class="flex items-start justify-between">
-          <div>
-            <p class="text-2xl font-bold text-surface-900 dark:text-surface-100 tracking-tight">{{ paidThisMonth() | currency:'USD':'symbol':'1.2-2' }}</p>
-            <p class="text-xs text-surface-500 mt-1 font-medium">Pagado Este Mes</p>
-          </div>
-          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-lg shrink-0" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white">
-            <i class="pi pi-check-circle"></i>
-          </div>
-        </div>
-      </div>
+      <app-metric-card label="Deuda Total" [value]="totalDebt()" icon="pi pi-dollar" gradient="linear-gradient(135deg, #ef4444, #dc2626)" [currency]="true" />
+      <app-metric-card label="Facturas Pendientes" [value]="pendingCount()" icon="pi pi-file" gradient="linear-gradient(135deg, #f59e0b, #d97706)" />
+      <app-metric-card label="Pendiente de Aprobación" [value]="pendingApprovalAmount()" icon="pi pi-clock" gradient="linear-gradient(135deg, #8b5cf6, #7c3aed)" [currency]="true" />
+      <app-metric-card label="Pagado Este Mes" [value]="paidThisMonth()" icon="pi pi-check-circle" gradient="linear-gradient(135deg, #22c55e, #16a34a)" [currency]="true" />
     </div>
   }
 
-  <div class="rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-4 shadow-2xl">
-    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center justify-between">
-      <div class="flex gap-2 items-center w-full sm:w-auto">
-        <p-iconField iconPosition="left" class="flex-1 sm:flex-none sm:min-w-[280px]">
-          <p-inputIcon styleClass="pi pi-search" />
-          <input #searchInput pInputText type="text" [value]="searchTerm()" (input)="onSearch(searchInput.value)" placeholder="Buscar..." class="w-full" />
-        </p-iconField>
-        <p-button #filterBtn icon="pi pi-filter" [outlined]="true" severity="secondary"
-          (onClick)="filterPopover.toggle($event)" pTooltip="Filtros"
-          [badge]="activeFilterCount() > 0 ? activeFilterCount().toString() : ''" badgeSeverity="contrast" />
-        <p-popover #filterPopover>
-          <div class="flex flex-col gap-4 p-1 min-w-[280px]">
-            <div class="flex items-center justify-between">
-              <span class="font-semibold text-sm">Filtros</span>
-              @if (activeFilterCount() > 0) {
-                <p-button label="Limpiar" [text]="true" size="small" severity="secondary" (onClick)="clearFilters()" />
-              }
-            </div>
-            <div class="flex flex-col gap-1">
-              <label class="text-xs font-medium text-surface-500">Estado</label>
-              <p-select [options]="statusOptions" [ngModel]="filterStatus()" (ngModelChange)="onStatusFilterChange($event)"
-                optionLabel="label" optionValue="value" placeholder="Todos" styleClass="w-full" />
-            </div>
-            <div class="flex flex-col gap-1">
-              <label class="text-xs font-medium text-surface-500">Desde</label>
-              <p-datepicker [ngModel]="dateFromDate()" (ngModelChange)="onDateFromChange($event)" dateFormat="dd/mm/yy" placeholder="DD/MM/AA" styleClass="w-full" />
-            </div>
-            <div class="flex flex-col gap-1">
-              <label class="text-xs font-medium text-surface-500">Hasta</label>
-              <p-datepicker [ngModel]="dateToDate()" (ngModelChange)="onDateToChange($event)" dateFormat="dd/mm/yy" placeholder="DD/MM/AA" styleClass="w-full" />
-            </div>
-          </div>
-        </p-popover>
-      </div>
-    </div>
-  </div>
+  <app-list-filters [searchTerm]="searchTerm()" [status]="filterStatus()" [dateFrom]="dateFromDate()" [dateTo]="dateToDate()"
+    [activeFilterCount]="activeFilterCount()" [statusOptions]="statusOptions" (searchChanged)="onSearch($event)"
+    (statusChanged)="onStatusFilterChange($event)" (dateFromChanged)="onDateFromChange($event)"
+    (dateToChanged)="onDateToChange($event)" (filtersCleared)="clearFilters()" />
 
   @if (loading()) {
     <div class="flex items-center justify-center h-64">
@@ -219,195 +131,8 @@
   }
 </div>
 
-<p-dialog [(visible)]="detailDialogVisible" [style]="{ width: 'min(52rem, calc(100vw - 2rem))' }" [modal]="true" [closable]="true" [draggable]="false">
-  <ng-template pTemplate="header">
-    <div class="flex items-center gap-3">
-      <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-100 text-surface-700 dark:bg-surface-800 dark:text-surface-200"><i class="pi pi-receipt"></i></div>
-      <div><h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100">Factura {{ detail()?.invoiceNumber }}</h2><p class="mt-0.5 text-xs text-surface-500">Detalle y líneas de la factura</p></div>
-    </div>
-  </ng-template>
-  @if (detail(); as d) {
-    <div class="flex flex-col gap-6">
-      <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <div><label class="text-xs font-medium uppercase tracking-wide text-surface-500">Estado</label><p class="mt-2"><p-tag [value]="getStatusLabel(d.status)" [severity]="statusSeverity(d.status)" /></p></div>
-        <div><label class="text-xs font-medium uppercase tracking-wide text-surface-500">Subtotal</label><p class="mt-2 text-lg font-semibold tabular-nums text-surface-900 dark:text-surface-100">{{ d.subtotal | currency:'USD':'symbol' }}</p></div>
-        <div><label class="text-xs font-medium uppercase tracking-wide text-surface-500">Fecha</label><p class="mt-2 text-sm text-surface-900 dark:text-surface-100">{{ d.createdAt | date:'dd/MM/yy HH:mm' }}</p></div>
-      </div>
-      @if (d.notes) { <div><label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Notas</label><p class="text-sm mt-1 text-surface-700 dark:text-surface-300">{{ d.notes }}</p></div> }
-      <div>
-        <label class="text-xs font-medium text-surface-500 uppercase tracking-wider mb-2 block">Líneas</label>
-        <p-table [value]="d.lines" styleClass="w-full" dataKey="id">
-          <ng-template pTemplate="header">
-            <tr class="border-b border-surface-200 dark:border-surface-700">
-              <th class="text-left px-3 py-2 font-medium text-surface-500 text-xs">Producto</th>
-              <th class="text-right px-3 py-2 font-medium text-surface-500 text-xs">Cant.</th>
-              <th class="text-right px-3 py-2 font-medium text-surface-500 text-xs">Precio Unit.</th>
-              <th class="text-right px-3 py-2 font-medium text-surface-500 text-xs">Total</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-line>
-            <tr class="border-b border-surface-100 dark:border-surface-800">
-              <td class="px-3 py-2 text-sm"><span class="font-medium text-surface-900 dark:text-surface-100">{{ line.productName }}</span><span class="text-surface-400 ml-1 font-mono text-xs">({{ line.productCode }})</span></td>
-              <td class="px-3 py-2 text-right text-sm">{{ line.quantity }}</td>
-              <td class="px-3 py-2 text-right text-sm tabular-nums">{{ line.unitPrice | currency:'USD':'symbol' }}</td>
-              <td class="px-3 py-2 text-right text-sm font-medium tabular-nums">{{ line.lineTotal | currency:'USD':'symbol' }}</td>
-            </tr>
-          </ng-template>
-        </p-table>
-        <div class="flex justify-end mt-3"><span class="text-lg font-bold text-surface-900 dark:text-surface-100">{{ d.subtotal | currency:'USD':'symbol' }}</span></div>
-      </div>
-    </div>
-  }
-  <ng-template pTemplate="footer">
-    <p-button label="Cerrar" (click)="detailDialogVisible.set(false)" severity="secondary" [outlined]="true" />
-  </ng-template>
-</p-dialog>
+<app-invoice-detail-dialog [(visible)]="detailDialogVisible" [detail]="detail()" />
 
-<p-dialog [(visible)]="payDialogVisible" [modal]="true" [style]="{ width: 'min(34rem, calc(100vw - 2rem))' }" [draggable]="false" [closable]="!paying()">
-  <ng-template pTemplate="header">
-    <div class="flex items-center gap-3">
-      <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-900 text-white dark:bg-surface-100 dark:text-surface-900">
-        <i class="pi pi-credit-card"></i>
-      </div>
-      <div>
-        <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100">Pagar factura</h2>
-        <p class="mt-0.5 text-xs text-surface-500">Registra el pago y adjunta su comprobante</p>
-      </div>
-    </div>
-  </ng-template>
+<app-invoice-payment-dialog [(visible)]="payDialogVisible" [(amount)]="payAmount" [(methodId)]="payMethodId" [(paymentDate)]="payDate" [(reference)]="payReference" [fullAmount]="payFullAmount()" [paymentMethods]="paymentMethods()" [processing]="paying()" [valid]="canSubmitPay()" (fileSelected)="onPayFileSelected($event)" (submitted)="submitPay()" />
 
-  <div class="flex flex-col gap-6">
-    <div class="rounded-xl border border-surface-200 bg-surface-50 p-4 dark:border-surface-700 dark:bg-surface-800/70">
-      <div class="flex items-start justify-between gap-4">
-        <div>
-          <p class="text-xs font-medium uppercase tracking-wide text-surface-500">Saldo pendiente</p>
-          <p class="mt-1 text-2xl font-bold tracking-tight text-surface-900 dark:text-surface-100">
-            {{ payFullAmount() | currency:'USD':'symbol' }}
-          </p>
-        </div>
-        <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
-          <i class="pi pi-clock text-xs"></i>
-          Pendiente
-        </span>
-      </div>
-      @if (isPayPartial()) {
-        <div class="mt-4 flex items-start gap-2 border-t border-surface-200 pt-3 text-xs text-amber-700 dark:border-surface-700 dark:text-amber-300">
-          <i class="pi pi-info-circle mt-0.5"></i>
-          <span>Después de este pago quedarán {{ payFullAmount() - payAmount() | currency:'USD':'symbol' }} pendientes.</span>
-        </div>
-      }
-    </div>
-
-    <div class="flex flex-col gap-4">
-      <div class="flex items-center gap-2 border-b border-surface-200 pb-2 dark:border-surface-700">
-        <i class="pi pi-wallet text-sm text-surface-500"></i>
-        <h3 class="text-sm font-semibold text-surface-900 dark:text-surface-100">Datos del pago</h3>
-      </div>
-      <div class="flex flex-col gap-1.5">
-        <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Monto a pagar</label>
-        <p-inputNumber [(ngModel)]="payAmount" [min]="0.01" [max]="payFullAmount()" mode="currency" currency="USD" locale="en-US" styleClass="w-full" inputStyleClass="w-full" />
-        <small class="text-xs text-surface-500">Puedes pagar el saldo completo o registrar un pago parcial.</small>
-      </div>
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div class="flex flex-col gap-1.5">
-          <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Método de pago</label>
-          <p-select [options]="paymentMethods()" [(ngModel)]="payMethodId" optionLabel="name" optionValue="id" placeholder="Seleccionar método" styleClass="w-full" />
-        </div>
-        <div class="flex flex-col gap-1.5">
-          <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Fecha de pago</label>
-          <p-datepicker [(ngModel)]="payDate" dateFormat="dd/mm/yy" placeholder="DD/MM/AA" styleClass="w-full" />
-        </div>
-      </div>
-    </div>
-
-    <div class="flex flex-col gap-4">
-      <div class="flex items-center gap-2 border-b border-surface-200 pb-2 dark:border-surface-700">
-        <i class="pi pi-paperclip text-sm text-surface-500"></i>
-        <div>
-          <h3 class="text-sm font-semibold text-surface-900 dark:text-surface-100">Comprobante</h3>
-          <p class="text-xs text-surface-500">Elige una referencia o adjunta un archivo</p>
-        </div>
-      </div>
-      <div class="flex flex-col gap-1.5">
-        <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Referencia</label>
-        <input pInputText [(ngModel)]="payReference" placeholder="N° de transferencia o comprobante" class="w-full" />
-        <small class="text-xs text-surface-500">Requerida si no adjuntas un justificante.</small>
-      </div>
-      <div class="flex flex-col gap-1.5">
-        <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Archivo</label>
-        <p-fileupload mode="basic" accept="image/*,.pdf" [maxFileSize]="10000000" (onSelect)="onPayFileSelected($event)" chooseLabel="Adjuntar comprobante" />
-        <small class="text-xs text-surface-500">PDF o imagen, máximo 10 MB. Requerido si no ingresas una referencia.</small>
-      </div>
-    </div>
-  </div>
-
-  <ng-template pTemplate="footer">
-    <div class="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-      <p-button label="Cancelar" severity="secondary" [outlined]="true" (click)="payDialogVisible.set(false)" [disabled]="paying()" />
-      <p-button label="Registrar pago" icon="pi pi-check" [loading]="paying()" [disabled]="!canSubmitPay()" (click)="submitPay()" />
-    </div>
-  </ng-template>
-</p-dialog>
-
-<p-dialog [(visible)]="payAllDialogVisible" [modal]="true" [style]="{ width: 'min(34rem, calc(100vw - 2rem))' }" [draggable]="false" [closable]="!payingAll()">
-  <ng-template pTemplate="header">
-    <div class="flex items-center gap-3">
-      <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-900 text-white dark:bg-surface-100 dark:text-surface-900">
-        <i class="pi pi-wallet"></i>
-      </div>
-      <div>
-        <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100">Pagar deuda total</h2>
-        <p class="mt-0.5 text-xs text-surface-500">Aplica un pago a tu saldo pendiente</p>
-      </div>
-    </div>
-  </ng-template>
-  <div class="flex flex-col gap-6">
-    <div class="rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-900/50 dark:bg-red-900/20">
-      <p class="text-xs font-medium uppercase tracking-wide text-red-700 dark:text-red-300">Deuda total</p>
-      <p class="mt-1 text-2xl font-bold tracking-tight text-red-700 dark:text-red-300">{{ totalDebt() | currency:'USD':'symbol' }}</p>
-      <p class="mt-1 text-xs text-red-600 dark:text-red-400">Puedes pagar el total o registrar un pago parcial.</p>
-    </div>
-    <div class="flex flex-col gap-4">
-      <div class="flex items-center gap-2 border-b border-surface-200 pb-2 dark:border-surface-700">
-        <i class="pi pi-wallet text-sm text-surface-500"></i>
-        <h3 class="text-sm font-semibold text-surface-900 dark:text-surface-100">Datos del pago</h3>
-      </div>
-      <div class="flex flex-col gap-1.5">
-        <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Monto a pagar</label>
-        <p-inputNumber [(ngModel)]="payAllAmount" [min]="0.01" [max]="totalDebt()" mode="currency" currency="USD" locale="en-US" styleClass="w-full" inputStyleClass="w-full" />
-      </div>
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div class="flex flex-col gap-1.5">
-          <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Método de pago</label>
-          <p-select [options]="paymentMethods()" [(ngModel)]="payAllMethodId" optionLabel="name" optionValue="id" placeholder="Seleccionar método" styleClass="w-full" />
-        </div>
-        <div class="flex flex-col gap-1.5">
-          <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Fecha de pago</label>
-          <p-datepicker [(ngModel)]="payAllDate" dateFormat="dd/mm/yy" placeholder="DD/MM/AA" styleClass="w-full" />
-        </div>
-      </div>
-    </div>
-    <div class="flex flex-col gap-4">
-      <div class="flex items-center gap-2 border-b border-surface-200 pb-2 dark:border-surface-700">
-        <i class="pi pi-paperclip text-sm text-surface-500"></i>
-        <div><h3 class="text-sm font-semibold text-surface-900 dark:text-surface-100">Comprobante</h3><p class="text-xs text-surface-500">Referencia o archivo de respaldo</p></div>
-      </div>
-      <div class="flex flex-col gap-1.5">
-        <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Referencia</label>
-        <input pInputText [(ngModel)]="payAllReference" placeholder="N° de transferencia o comprobante" class="w-full" />
-        <small class="text-xs text-surface-500">Requerida si no adjuntas un justificante.</small>
-      </div>
-      <div class="flex flex-col gap-1.5">
-        <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Archivo</label>
-        <p-fileupload mode="basic" accept="image/*,.pdf" [maxFileSize]="10000000" (onSelect)="onPayAllFileSelected($event)" chooseLabel="Adjuntar comprobante" />
-        <small class="text-xs text-surface-500">PDF o imagen, máximo 10 MB.</small>
-      </div>
-    </div>
-  </div>
-  <ng-template pTemplate="footer">
-    <div class="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-      <p-button label="Cancelar" severity="secondary" [outlined]="true" (click)="payAllDialogVisible.set(false)" [disabled]="payingAll()" />
-      <p-button label="Registrar pago" icon="pi pi-check" [loading]="payingAll()" [disabled]="!canSubmitPayAll()" (click)="submitPayAll()" />
-    </div>
-  </ng-template>
-</p-dialog>
+<app-invoice-payment-dialog [(visible)]="payAllDialogVisible" [(amount)]="payAllAmount" [(methodId)]="payAllMethodId" [(paymentDate)]="payAllDate" [(reference)]="payAllReference" [fullAmount]="totalDebt()" [paymentMethods]="paymentMethods()" [processing]="payingAll()" [valid]="canSubmitPayAll()" [debtPayment]="true" (fileSelected)="onPayAllFileSelected($event)" (submitted)="submitPayAll()" />
