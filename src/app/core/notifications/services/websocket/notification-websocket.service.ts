@@ -2,7 +2,7 @@ import { Injectable, inject, signal, OnDestroy } from '@angular/core';
 import { Client, IMessage } from '@stomp/stompjs';
 import { Subject } from 'rxjs';
 import { AuthService } from '@features/auth/services/application/auth.service';
-import { AppNotification } from '../api/notification-api.service';
+import { AppNotification } from '@core/notifications/services/api/notification-api.service';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationWebSocketService implements OnDestroy {
@@ -36,12 +36,12 @@ export class NotificationWebSocketService implements OnDestroy {
     this.stompClient.onConnect = () => {
       this.connected.set(true);
       this.stompClient!.subscribe(
-        `/topic/notifications/customer/${customer.id}`,
+        `/topic@core/notifications/customer/${customer.id}`,
         (message: IMessage) => {
           try {
             const notification: AppNotification = JSON.parse(message.body);
             this.notification$.next(notification);
-          } catch { /* ignore */ }
+          } catch {}
         },
       );
     };

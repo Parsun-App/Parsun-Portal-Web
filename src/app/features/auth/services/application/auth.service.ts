@@ -4,8 +4,8 @@ import { PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { catchError, finalize, tap, Observable, of, throwError } from 'rxjs';
-import { AuthApiService } from '../api/auth-api.service';
-import { CustomerSummary, PortalAuthResponse, ChangePasswordRequest } from '../../models/interfaces/auth.interface';
+import { AuthApiService } from '@features/auth/services/api/auth-api.service';
+import { CustomerSummary, PortalAuthResponse, ChangePasswordRequest } from '@features/auth/models/interfaces/auth.interface';
 
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
@@ -61,7 +61,7 @@ export class AuthService {
       });
     }
     this.clearSession();
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['@features/auth/login']);
   }
 
   changePassword(request: ChangePasswordRequest): Observable<CustomerSummary> {

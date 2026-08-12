@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, Subject } from 'rxjs';
-import { NotificationBellComponent } from './notification-bell.component';
-import { AppNotification, NotificationApiService } from '../../services/api/notification-api.service';
-import { NotificationWebSocketService } from '../../services/websocket/notification-websocket.service';
-import { NotificationDestinationResolver } from '../../services/navigation/notification-destination.resolver';
+import { NotificationBellComponent } from '@core/notifications/components/notification-bell/notification-bell.component';
+import { AppNotification, NotificationApiService } from '@core/notifications/services/api/notification-api.service';
+import { NotificationWebSocketService } from '@core/notifications/services/websocket/notification-websocket.service';
+import { NotificationDestinationResolver } from '@core/notifications/services/navigation/notification-destination.resolver';
 
 const notification: AppNotification = { id: 'n1', type: 'PAYMENT_APPROVED', title: 'Pago', message: 'Aprobado', referenceType: 'PAYMENT', referenceId: 'p1', isRead: false, createdAt: '2026-08-11T12:00:00', readAt: null };
 

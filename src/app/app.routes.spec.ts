@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { routes } from './app.routes';
-import { authGuard } from './features/auth/guards/auth.guard';
+import { routes } from '@app/app.routes';
+import { authGuard } from '@features/auth/guards/auth.guard';
 
 describe('application routes', () => {
   it('protects the persistent portal shell with the auth guard', () => {

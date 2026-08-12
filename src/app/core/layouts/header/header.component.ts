@@ -1,9 +1,9 @@
 import { Component, inject, signal, afterNextRender } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
-import { AuthService } from '../../../features/auth/services/application/auth.service';
+import { AuthService } from '@features/auth/services/application/auth.service';
 import { TooltipModule } from 'primeng/tooltip';
-import { NotificationBellComponent } from '../../notifications/components/notification-bell/notification-bell.component';
+import { NotificationBellComponent } from '@core/notifications/components/notification-bell/notification-bell.component';
 
 const DARK_MODE_CLASS = 'my-app-dark';
 const DARK_MODE_KEY = 'darkMode';

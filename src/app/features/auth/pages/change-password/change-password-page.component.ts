@@ -5,11 +5,11 @@ import { CardModule } from 'primeng/card';
 import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
-import { AuthService } from '../../services/application/auth.service';
+import { AuthService } from '@features/auth/services/application/auth.service';
 import { ProfileService } from '@features/profile/services/application/profile.service';
-import { passwordsMatchValidator } from '../../validators/password-match.validator';
-import { passwordComplexityValidator } from '../../validators/password-complexity.validator';
-import { getPasswordError } from '../../validators/password-validation.helper';
+import { passwordsMatchValidator } from '@features/auth/validators/password-match.validator';
+import { passwordComplexityValidator } from '@features/auth/validators/password-complexity.validator';
+import { getPasswordError } from '@features/auth/validators/password-validation.helper';
 
 @Component({
   selector: 'app-change-password-page',

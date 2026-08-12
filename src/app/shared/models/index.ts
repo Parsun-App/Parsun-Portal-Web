@@ -1,1 +1,1 @@
-export type { PagedResponse } from './interfaces/paged-response.interface';
+export type { PagedResponse } from '@shared/models/interfaces/paged-response.interface';
