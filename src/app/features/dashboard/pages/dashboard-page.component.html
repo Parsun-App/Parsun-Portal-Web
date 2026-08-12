@@ -39,23 +39,8 @@
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         @for (card of buildStats(data); track card.label) {
-          <a [routerLink]="card.route" class="group relative overflow-hidden rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-5 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200">
-            <div class="absolute top-0 right-0 w-20 h-20 opacity-5 group-hover:opacity-10 transition-opacity rounded-full -translate-y-1/3 translate-x-1/3" [style.background]="card.gradient"></div>
-            <div class="flex items-start justify-between">
-              <div>
-                <p class="text-2xl font-bold text-surface-900 dark:text-surface-100 tracking-tight">
-                  @if (card.isCurrency) {
-                    {{ card.value | currency:'USD':'symbol':'1.2-2' }}
-                  } @else {
-                    {{ card.value }}
-                  }
-                </p>
-                <p class="text-xs text-surface-500 mt-1 font-medium">{{ card.label }}</p>
-              </div>
-              <div class="w-11 h-11 rounded-xl flex items-center justify-center text-lg" [style.background]="card.gradient" [style.color]="'white'">
-                <i [class]="card.icon"></i>
-              </div>
-            </div>
+          <a [routerLink]="card.route">
+            <app-metric-card [label]="card.label" [value]="card.value" [icon]="card.icon" [gradient]="card.gradient" [currency]="card.isCurrency ?? false" />
           </a>
         }
       </div>

@@ -15,6 +15,7 @@ import { merge, Subject, takeUntil } from 'rxjs';
 import { PortalDashboard } from '@features/dashboard/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
+import { MetricCardComponent } from '@shared/components/ui';
 
 type Severity = 'info' | 'success' | 'warn' | 'danger' | 'secondary' | 'contrast';
 
@@ -40,7 +41,7 @@ interface QuickAction {
 @Component({
   selector: 'app-dashboard-page',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, TagModule, RouterLink, ButtonModule, SkeletonModule, EmptyStateComponent, QuotesPageComponent, OrdersPageComponent],
+  imports: [CurrencyPipe, DatePipe, TagModule, RouterLink, ButtonModule, SkeletonModule, EmptyStateComponent, MetricCardComponent, QuotesPageComponent, OrdersPageComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dashboard-page.component.html',
 })

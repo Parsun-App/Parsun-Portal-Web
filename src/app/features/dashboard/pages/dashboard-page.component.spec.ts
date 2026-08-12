@@ -4,7 +4,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
 import { Subject, of } from 'rxjs';
-import { DashboardPageComponent } from './dashboard-page.component';
+import { DashboardPageComponent } from '@features/dashboard/pages/dashboard-page.component';
 import { DashboardService } from '@features/dashboard/services/application/dashboard.service';
 import { AuthService } from '@features/auth/services/application/auth.service';
 import { QuotesService } from '@features/quotes/services/application/quotes.service';
