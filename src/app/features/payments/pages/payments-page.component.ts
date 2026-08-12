@@ -23,6 +23,9 @@ import { PaymentsService } from '@features/payments/services/application/payment
 import { PaymentsApiService, PaymentMethod } from '@features/payments/services/api/payments-api.service';
 import { getStatusLabel } from '@shared/utils/status-labels';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
+import { MetricCardComponent, PageHeaderComponent } from '@shared/components/ui';
+import { ListFiltersComponent } from '@shared/components/list';
+import { PaymentDetailDialogComponent } from '@features/payments/components/payment-detail-dialog/payment-detail-dialog.component';
 import { clearNotificationFocusFromUrl } from '@shared/utils/notification-focus-url';
 
 type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'contrast';
@@ -30,7 +33,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
 @Component({
   selector: 'app-payments-page',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, InputNumberModule, TextareaModule, SelectModule, DatePickerModule, FileUploadModule, PopoverModule, PaginatorModule, EmptyStateComponent],
+  imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, InputNumberModule, TextareaModule, SelectModule, DatePickerModule, FileUploadModule, PopoverModule, PaginatorModule, EmptyStateComponent, ListFiltersComponent, MetricCardComponent, PageHeaderComponent, PaymentDetailDialogComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './payments-page.component.html',
 })

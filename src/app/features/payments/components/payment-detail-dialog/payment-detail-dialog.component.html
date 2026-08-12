@@ -1,0 +1,12 @@
+<p-dialog [(visible)]="visible" (onHide)="closed.emit()" [style]="{ width: 'min(38rem, calc(100vw - 2rem))' }" [modal]="true" [closable]="true" [draggable]="false">
+  <ng-template pTemplate="header"><div class="flex items-center gap-3"><i class="pi pi-credit-card"></i><div><h2 class="text-lg font-semibold">Pago {{ detail()?.paymentNumber }}</h2><p class="text-xs text-surface-500">Detalle del movimiento y aplicación</p></div></div></ng-template>
+  @if (detail(); as payment) {
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div><label class="text-xs font-medium uppercase text-surface-500">N° Pago</label><p class="mt-1 font-mono text-sm">{{ payment.paymentNumber }}</p></div><div><label class="text-xs font-medium uppercase text-surface-500">Estado</label><p class="mt-1"><p-tag [value]="getStatusLabel(payment.status)" [severity]="statusSeverity(payment.status)" /></p></div>
+      <div><label class="text-xs font-medium uppercase text-surface-500">Monto</label><p class="mt-1 text-sm font-medium">{{ payment.amount | currency:'USD':'symbol' }}</p></div><div><label class="text-xs font-medium uppercase text-surface-500">Monto Aplicado</label><p class="mt-1 text-sm">{{ payment.appliedAmount | currency:'USD':'symbol' }}</p></div>
+      <div><label class="text-xs font-medium uppercase text-surface-500">Referencia</label><p class="mt-1 text-sm">{{ payment.referenceNumber || '-' }}</p></div><div><label class="text-xs font-medium uppercase text-surface-500">Fecha de Pago</label><p class="mt-1 text-sm">{{ payment.paymentDate | date:'dd/MM/yy' }}</p></div>
+      <div><label class="text-xs font-medium uppercase text-surface-500">Creado</label><p class="mt-1 text-sm">{{ payment.createdAt | date:'dd/MM/yy HH:mm' }}</p></div>@if (payment.notes) { <div><label class="text-xs font-medium uppercase text-surface-500">Notas</label><p class="mt-1 text-sm">{{ payment.notes }}</p></div> }
+    </div>
+  }
+  <ng-template pTemplate="footer"><p-button label="Cerrar" (click)="visible.set(false)" severity="secondary" [outlined]="true" /></ng-template>
+</p-dialog>
