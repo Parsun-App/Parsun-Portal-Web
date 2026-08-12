@@ -1,1 +1,1 @@
-export type { PortalProfile, ProfileAddress } from './interfaces/portal-profile.interface';
+export type { PortalProfile, ProfileAddress } from '@features/profile/models/interfaces/portal-profile.interface';
