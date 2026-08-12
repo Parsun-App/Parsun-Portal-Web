@@ -5,7 +5,7 @@ import { provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
 import type { TablePageEvent, PaginatorState } from 'primeng/table';
 import { MessageService } from 'primeng/api';
-import { ProductsPageComponent } from './products-page.component';
+import { ProductsPageComponent } from '@features/products/pages/products-page.component';
 import { ProductsService } from '@features/products/services/application/products.service';
 import { PortalProduct } from '@features/products/models';
 

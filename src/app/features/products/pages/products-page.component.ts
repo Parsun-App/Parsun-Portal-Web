@@ -17,6 +17,8 @@ import { ProductsService } from '@features/products/services/application/product
 import { PortalProduct } from '@features/products/models';
 import { PRODUCTS_MESSAGES } from '@features/products/messages/products.messages';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
+import { PageHeaderComponent } from '@shared/components/ui';
+import { ProductDetailDialogComponent } from '@features/products/components/product-detail-dialog/product-detail-dialog.component';
 import { environment } from '@env/environment';
 
 type ViewMode = 'table' | 'grid';
@@ -31,7 +33,7 @@ const VIEW_MODE_STORAGE_KEY = 'parsun-products-view-mode';
     InputTextModule, IconFieldModule, InputIconModule,
     SelectModule, TableModule, TagModule, DialogModule, ButtonModule,
     ImageModule, TooltipModule, PaginatorModule,
-    EmptyStateComponent,
+    EmptyStateComponent, PageHeaderComponent, ProductDetailDialogComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './products-page.component.html',

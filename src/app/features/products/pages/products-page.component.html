@@ -1,15 +1,5 @@
 <div class="flex flex-col gap-6">
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-    <div class="flex items-center gap-3">
-      <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface-900 text-white dark:bg-surface-100 dark:text-surface-900">
-        <i class="pi pi-box text-lg"></i>
-      </div>
-      <div>
-        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Productos</h1>
-        <p class="text-surface-500 mt-1">Catálogo de productos disponibles.</p>
-      </div>
-    </div>
-  </div>
+  <app-page-header title="Productos" subtitle="Catálogo de productos disponibles." icon="pi pi-box" />
 
   <div class="rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-4 shadow-2xl">
     <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
@@ -195,84 +185,4 @@
   }
 </div>
 
-<p-dialog
-  [(visible)]="dialogVisible"
-  [style]="{ width: '32rem' }"
-  [modal]="true"
-  [closable]="true"
->
-  <ng-template pTemplate="header">
-    <div class="flex items-center gap-3">
-      <i class="pi pi-box text-xl text-surface-500"></i>
-      <span class="text-lg font-semibold text-surface-900 dark:text-surface-100">{{ selectedProduct()?.name }}</span>
-    </div>
-  </ng-template>
-  @if (selectedProduct(); as p) {
-    <div class="flex flex-col gap-4">
-      @if (buildPhotoUrl(p.photo); as photoUrl) {
-        <div class="aspect-video rounded-lg overflow-hidden bg-surface-100 dark:bg-surface-900">
-          <p-image
-            [src]="photoUrl"
-            [alt]="p.name"
-            [preview]="true"
-            class="w-full"
-            imageClass="w-full h-full object-cover"
-          >
-            <ng-template pTemplate="error">
-              <div class="flex items-center justify-center w-full h-48 bg-surface-100 dark:bg-surface-900 rounded-lg">
-                <i class="pi pi-image text-4xl text-surface-400"></i>
-              </div>
-            </ng-template>
-          </p-image>
-        </div>
-      } @else {
-        <div class="flex items-center justify-center w-full h-48 bg-surface-100 dark:bg-surface-900 rounded-lg">
-          <i class="pi pi-image text-4xl text-surface-400"></i>
-        </div>
-      }
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Código</label>
-          <p class="text-sm font-mono mt-1 text-surface-900 dark:text-surface-100">{{ p.code }}</p>
-        </div>
-        <div>
-          <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Categoría</label>
-          <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ p.categoryName }}</p>
-        </div>
-        <div>
-          <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Precio</label>
-          <p class="text-sm font-medium mt-1 text-surface-900 dark:text-surface-100">{{ p.price | currency:'USD':'symbol' }}</p>
-        </div>
-        <div>
-          <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Stock Disponible</label>
-          <p class="text-sm mt-1">
-            @if (p.availableStock > 0) {
-              <span class="text-green-600 dark:text-green-400 font-medium">{{ p.availableStock }} unidades</span>
-            } @else {
-              <span class="text-red-600 dark:text-red-400 font-medium">Agotado</span>
-            }
-          </p>
-        </div>
-      </div>
-      @if (p.description) {
-        <div>
-          <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Descripción</label>
-          <p class="text-sm mt-1 text-surface-700 dark:text-surface-300">{{ p.description }}</p>
-        </div>
-      }
-      <div>
-        <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Estado</label>
-        <p class="text-sm mt-1">
-          @if (p.active) {
-            <span class="text-green-600 dark:text-green-400">Activo</span>
-          } @else {
-            <span class="text-red-600 dark:text-red-400">Inactivo</span>
-          }
-        </p>
-      </div>
-    </div>
-  }
-  <ng-template pTemplate="footer">
-    <p-button label="Cerrar" (click)="dialogVisible.set(false)" severity="secondary" [text]="true" />
-  </ng-template>
-</p-dialog>
+<app-product-detail-dialog [(visible)]="dialogVisible" [product]="selectedProduct()" />
