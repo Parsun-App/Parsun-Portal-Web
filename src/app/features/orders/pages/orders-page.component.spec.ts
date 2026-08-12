@@ -5,7 +5,7 @@ import { provideRouter, Router } from '@angular/router';
 import { signal } from '@angular/core';
 import { Subject, of } from 'rxjs';
 import { ConfirmationService } from 'primeng/api';
-import { OrdersPageComponent } from './orders-page.component';
+import { OrdersPageComponent } from '@features/orders/pages/orders-page.component';
 import { OrdersService } from '@features/orders/services/application/orders.service';
 import { PortalOrderList } from '@features/orders/models';
 

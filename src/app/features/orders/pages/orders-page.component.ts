@@ -26,6 +26,10 @@ import { ProductsApiService } from '@features/products/services/api/products-api
 import { PortalProduct } from '@features/products/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
+import { MetricCardComponent, PageHeaderComponent } from '@shared/components/ui';
+import { ListFiltersComponent } from '@shared/components/list';
+import { OrderDetailDialogComponent } from '@features/orders/components/order-detail-dialog/order-detail-dialog.component';
+import { OrderFormDialogComponent } from '@features/orders/components/order-form-dialog/order-form-dialog.component';
 import { ORDERS_MESSAGES } from '@features/orders/messages/orders.messages';
 import { clearNotificationFocusFromUrl } from '@shared/utils/notification-focus-url';
 
@@ -46,6 +50,7 @@ interface FormLine {
     ConfirmDialogModule, TooltipModule, IconFieldModule, InputIconModule,
     InputTextModule, InputNumberModule, TextareaModule,
     SelectModule, DatePickerModule, PopoverModule, AutoCompleteModule, PaginatorModule, EmptyStateComponent,
+    ListFiltersComponent, MetricCardComponent, OrderDetailDialogComponent, OrderFormDialogComponent, PageHeaderComponent,
   ],
   providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
