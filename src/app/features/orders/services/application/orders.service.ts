@@ -1,7 +1,11 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { Subject, catchError, of, tap } from 'rxjs';
-import { OrdersApiService, CreateOrderRequest, UpdateOrderRequest } from '@features/orders/services/api/orders-api.service';
+import {
+  OrdersApiService,
+  CreateOrderRequest,
+  UpdateOrderRequest,
+} from '@features/orders/services/api/orders-api.service';
 import { PortalOrderList, PortalOrderDetail } from '@features/orders/models';
 import { ORDERS_MESSAGES } from '@features/orders/messages/orders.messages';
 
@@ -42,17 +46,20 @@ export class OrdersService {
     if (status) params.status = status;
     if (from) params.dateFrom = from;
     if (to) params.dateTo = to;
-    this.api.list(params).pipe(
-      tap(response => {
-        this.orders.set(response);
-        this.loading.set(false);
-      }),
-      catchError(() => {
-        this.loading.set(false);
-        this.messageService.add(ORDERS_MESSAGES.loadError);
-        return of([] as PortalOrderList[]);
-      }),
-    ).subscribe();
+    this.api
+      .list(params)
+      .pipe(
+        tap((response) => {
+          this.orders.set(response);
+          this.loading.set(false);
+        }),
+        catchError(() => {
+          this.loading.set(false);
+          this.messageService.add(ORDERS_MESSAGES.loadError);
+          return of([] as PortalOrderList[]);
+        }),
+      )
+      .subscribe();
   }
 
   scheduleLoad(): void {
@@ -85,16 +92,19 @@ export class OrdersService {
   }
 
   openDetail(id: string): void {
-    this.api.getById(id).pipe(
-      tap(detail => {
-        this.detail.set(detail);
-        this.detailDialogVisible.set(true);
-      }),
-      catchError(() => {
-        this.messageService.add(ORDERS_MESSAGES.detailError);
-        return of(null as unknown as PortalOrderDetail);
-      }),
-    ).subscribe();
+    this.api
+      .getById(id)
+      .pipe(
+        tap((detail) => {
+          this.detail.set(detail);
+          this.detailDialogVisible.set(true);
+        }),
+        catchError(() => {
+          this.messageService.add(ORDERS_MESSAGES.detailError);
+          return of(null as unknown as PortalOrderDetail);
+        }),
+      )
+      .subscribe();
   }
 
   closeDetail(): void {
@@ -124,62 +134,74 @@ export class OrdersService {
 
   create(request: CreateOrderRequest): void {
     this.creating.set(true);
-    this.api.create(request).pipe(
-      tap(() => {
-        this.creating.set(false);
-        this.createDialogVisible.set(false);
-        this.messageService.add(ORDERS_MESSAGES.createSuccess);
-        this.load();
-        this.created$.next();
-      }),
-      catchError(() => {
-        this.creating.set(false);
-        this.messageService.add(ORDERS_MESSAGES.createError);
-        return of(null);
-      }),
-    ).subscribe();
+    this.api
+      .create(request)
+      .pipe(
+        tap(() => {
+          this.creating.set(false);
+          this.createDialogVisible.set(false);
+          this.messageService.add(ORDERS_MESSAGES.createSuccess);
+          this.load();
+          this.created$.next();
+        }),
+        catchError(() => {
+          this.creating.set(false);
+          this.messageService.add(ORDERS_MESSAGES.createError);
+          return of(null);
+        }),
+      )
+      .subscribe();
   }
 
   updateOrder(id: string, request: UpdateOrderRequest): void {
     this.creating.set(true);
-    this.api.update(id, request).pipe(
-      tap(() => {
-        this.creating.set(false);
-        this.createDialogVisible.set(false);
-        this.messageService.add(ORDERS_MESSAGES.updateSuccess);
-        this.load();
-      }),
-      catchError(() => {
-        this.creating.set(false);
-        this.messageService.add(ORDERS_MESSAGES.updateError);
-        return of(null);
-      }),
-    ).subscribe();
+    this.api
+      .update(id, request)
+      .pipe(
+        tap(() => {
+          this.creating.set(false);
+          this.createDialogVisible.set(false);
+          this.messageService.add(ORDERS_MESSAGES.updateSuccess);
+          this.load();
+        }),
+        catchError(() => {
+          this.creating.set(false);
+          this.messageService.add(ORDERS_MESSAGES.updateError);
+          return of(null);
+        }),
+      )
+      .subscribe();
   }
 
   confirmOrder(id: string): void {
-    this.api.confirm(id).pipe(
-      tap(() => {
-        this.messageService.add(ORDERS_MESSAGES.confirmSuccess);
-        this.load();
-      }),
-      catchError(() => {
-        this.messageService.add(ORDERS_MESSAGES.confirmError);
-        return of(void 0);
-      }),
-    ).subscribe();
+    this.api
+      .confirm(id)
+      .pipe(
+        tap(() => {
+          this.messageService.add(ORDERS_MESSAGES.confirmSuccess);
+          this.load();
+        }),
+        catchError(() => {
+          this.messageService.add(ORDERS_MESSAGES.confirmError);
+          return of(void 0);
+        }),
+      )
+      .subscribe();
   }
 
   cancelOrder(id: string): void {
-    this.api.cancel(id, CANCEL_REASON).pipe(
-      tap(() => {
-        this.messageService.add(ORDERS_MESSAGES.cancelSuccess);
-        this.load();
-      }),
-      catchError(() => {
-        this.messageService.add(ORDERS_MESSAGES.cancelError);
-        return of(void 0);
-      }),
-    ).subscribe();
+    this.api
+      .cancel(id, CANCEL_REASON)
+      .pipe(
+        tap(() => {
+          this.messageService.add(ORDERS_MESSAGES.cancelSuccess);
+          this.load();
+        }),
+        catchError(() => {
+          this.messageService.add(ORDERS_MESSAGES.cancelError);
+          return of(void 0);
+        }),
+      )
+      .subscribe();
   }
 }

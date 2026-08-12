@@ -1,4 +1,12 @@
-import { Component, inject, signal, computed, ChangeDetectionStrategy, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  inject,
+  signal,
+  computed,
+  ChangeDetectionStrategy,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
@@ -29,11 +37,22 @@ const VIEW_MODE_STORAGE_KEY = 'parsun-products-view-mode';
   selector: 'app-products-page',
   standalone: true,
   imports: [
-    FormsModule, CurrencyPipe,
-    InputTextModule, IconFieldModule, InputIconModule,
-    SelectModule, TableModule, TagModule, DialogModule, ButtonModule,
-    ImageModule, TooltipModule, PaginatorModule,
-    EmptyStateComponent, PageHeaderComponent, ProductDetailDialogComponent,
+    FormsModule,
+    CurrencyPipe,
+    InputTextModule,
+    IconFieldModule,
+    InputIconModule,
+    SelectModule,
+    TableModule,
+    TagModule,
+    DialogModule,
+    ButtonModule,
+    ImageModule,
+    TooltipModule,
+    PaginatorModule,
+    EmptyStateComponent,
+    PageHeaderComponent,
+    ProductDetailDialogComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './products-page.component.html',
@@ -59,8 +78,10 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   readonly isMobile = signal(false);
   private readonly mediaQuery = window.matchMedia('(max-width: 767px)');
 
-  readonly hasActiveFilters = computed(() => Boolean(this.searchTerm()) || Boolean(this.selectedCategory()));
-  readonly isGridView = computed(() => this.isMobile() ? true : this.viewMode() === 'grid');
+  readonly hasActiveFilters = computed(
+    () => Boolean(this.searchTerm()) || Boolean(this.selectedCategory()),
+  );
+  readonly isGridView = computed(() => (this.isMobile() ? true : this.viewMode() === 'grid'));
 
   readonly emptyConfig = computed(() => {
     if (this.hasActiveFilters()) {

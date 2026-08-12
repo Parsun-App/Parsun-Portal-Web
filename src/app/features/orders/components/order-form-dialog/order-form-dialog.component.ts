@@ -9,12 +9,40 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 
-export interface OrderFormLine { product: PortalProduct | null; quantity: number; unitPrice: number }
-export interface ProductSearchRequest { event: { query: string }; lineIndex: number }
-export interface ProductSelectionChange { lineIndex: number; product: PortalProduct | null }
-export interface QuantityChange { lineIndex: number; quantity: number }
+export interface OrderFormLine {
+  product: PortalProduct | null;
+  quantity: number;
+  unitPrice: number;
+}
+export interface ProductSearchRequest {
+  event: { query: string };
+  lineIndex: number;
+}
+export interface ProductSelectionChange {
+  lineIndex: number;
+  product: PortalProduct | null;
+}
+export interface QuantityChange {
+  lineIndex: number;
+  quantity: number;
+}
 
-@Component({ selector: 'app-order-form-dialog', standalone: true, imports: [AutoCompleteModule, ButtonModule, CurrencyPipe, DialogModule, FormsModule, InputNumberModule, InputTextModule, TextareaModule], templateUrl: './order-form-dialog.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
+@Component({
+  selector: 'app-order-form-dialog',
+  standalone: true,
+  imports: [
+    AutoCompleteModule,
+    ButtonModule,
+    CurrencyPipe,
+    DialogModule,
+    FormsModule,
+    InputNumberModule,
+    InputTextModule,
+    TextareaModule,
+  ],
+  templateUrl: './order-form-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
 export class OrderFormDialogComponent {
   readonly visible = model(false);
   readonly notes = model('');

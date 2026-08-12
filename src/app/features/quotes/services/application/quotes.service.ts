@@ -1,7 +1,11 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { Subject, catchError, of, takeUntil, tap } from 'rxjs';
-import { QuotesApiService, CreateQuoteRequest, UpdateQuoteRequest } from '@features/quotes/services/api/quotes-api.service';
+import {
+  QuotesApiService,
+  CreateQuoteRequest,
+  UpdateQuoteRequest,
+} from '@features/quotes/services/api/quotes-api.service';
 import { PortalQuoteList, PortalQuoteDetail } from '@features/quotes/models';
 import { QUOTES_MESSAGES } from '@features/quotes/messages/quotes.messages';
 
@@ -41,17 +45,20 @@ export class QuotesService {
     if (status) params.status = status;
     if (from) params.dateFrom = from;
     if (to) params.dateTo = to;
-    this.api.list(params).pipe(
-      tap(response => {
-        this.quotes.set(response);
-        this.loading.set(false);
-      }),
-      catchError(() => {
-        this.loading.set(false);
-        this.messageService.add(QUOTES_MESSAGES.loadError);
-        return of([] as PortalQuoteList[]);
-      }),
-    ).subscribe();
+    this.api
+      .list(params)
+      .pipe(
+        tap((response) => {
+          this.quotes.set(response);
+          this.loading.set(false);
+        }),
+        catchError(() => {
+          this.loading.set(false);
+          this.messageService.add(QUOTES_MESSAGES.loadError);
+          return of([] as PortalQuoteList[]);
+        }),
+      )
+      .subscribe();
   }
 
   scheduleLoad(): void {
@@ -84,16 +91,19 @@ export class QuotesService {
   }
 
   openDetail(id: string): void {
-    this.api.getById(id).pipe(
-      tap(detail => {
-        this.detail.set(detail);
-        this.detailDialogVisible.set(true);
-      }),
-      catchError(() => {
-        this.messageService.add(QUOTES_MESSAGES.detailError);
-        return of(null as unknown as PortalQuoteDetail);
-      }),
-    ).subscribe();
+    this.api
+      .getById(id)
+      .pipe(
+        tap((detail) => {
+          this.detail.set(detail);
+          this.detailDialogVisible.set(true);
+        }),
+        catchError(() => {
+          this.messageService.add(QUOTES_MESSAGES.detailError);
+          return of(null as unknown as PortalQuoteDetail);
+        }),
+      )
+      .subscribe();
   }
 
   loadQuoteForEdit(id: string) {
@@ -127,50 +137,59 @@ export class QuotesService {
 
   create(request: CreateQuoteRequest): void {
     this.creating.set(true);
-    this.api.create(request).pipe(
-      tap(() => {
-        this.creating.set(false);
-        this.createDialogVisible.set(false);
-        this.messageService.add(QUOTES_MESSAGES.createSuccess);
-        this.load();
-        this.created$.next();
-      }),
-      catchError(() => {
-        this.creating.set(false);
-        this.messageService.add(QUOTES_MESSAGES.createError);
-        return of(null);
-      }),
-    ).subscribe();
+    this.api
+      .create(request)
+      .pipe(
+        tap(() => {
+          this.creating.set(false);
+          this.createDialogVisible.set(false);
+          this.messageService.add(QUOTES_MESSAGES.createSuccess);
+          this.load();
+          this.created$.next();
+        }),
+        catchError(() => {
+          this.creating.set(false);
+          this.messageService.add(QUOTES_MESSAGES.createError);
+          return of(null);
+        }),
+      )
+      .subscribe();
   }
 
   cancelQuote(id: string): void {
-    this.api.cancel(id, 'Cancelado por cliente').pipe(
-      tap(() => {
-        this.detailDialogVisible.set(false);
-        this.messageService.add(QUOTES_MESSAGES.cancelSuccess);
-        this.load();
-      }),
-      catchError(() => {
-        this.messageService.add(QUOTES_MESSAGES.cancelError);
-        return of(null);
-      }),
-    ).subscribe();
+    this.api
+      .cancel(id, 'Cancelado por cliente')
+      .pipe(
+        tap(() => {
+          this.detailDialogVisible.set(false);
+          this.messageService.add(QUOTES_MESSAGES.cancelSuccess);
+          this.load();
+        }),
+        catchError(() => {
+          this.messageService.add(QUOTES_MESSAGES.cancelError);
+          return of(null);
+        }),
+      )
+      .subscribe();
   }
 
   updateQuote(id: string, request: UpdateQuoteRequest): void {
     this.creating.set(true);
-    this.api.update(id, request).pipe(
-      tap(() => {
-        this.creating.set(false);
-        this.createDialogVisible.set(false);
-        this.messageService.add(QUOTES_MESSAGES.updateSuccess);
-        this.load();
-      }),
-      catchError(() => {
-        this.creating.set(false);
-        this.messageService.add(QUOTES_MESSAGES.updateError);
-        return of(null);
-      }),
-    ).subscribe();
+    this.api
+      .update(id, request)
+      .pipe(
+        tap(() => {
+          this.creating.set(false);
+          this.createDialogVisible.set(false);
+          this.messageService.add(QUOTES_MESSAGES.updateSuccess);
+          this.load();
+        }),
+        catchError(() => {
+          this.creating.set(false);
+          this.messageService.add(QUOTES_MESSAGES.updateError);
+          return of(null);
+        }),
+      )
+      .subscribe();
   }
 }

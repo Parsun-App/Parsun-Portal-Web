@@ -8,7 +8,20 @@ import { ProfileService } from '@features/profile/services/application/profile.s
 
 describe('ChangePasswordPageComponent', () => {
   it('creates its password form', () => {
-    TestBed.configureTestingModule({ imports: [ChangePasswordPageComponent], providers: [{ provide: AuthService, useValue: { loading: signal(false), error: signal(null), changePassword: vi.fn(() => of({})) } }, { provide: ProfileService, useValue: { profile: signal(null) } }] });
+    TestBed.configureTestingModule({
+      imports: [ChangePasswordPageComponent],
+      providers: [
+        {
+          provide: AuthService,
+          useValue: {
+            loading: signal(false),
+            error: signal(null),
+            changePassword: vi.fn(() => of({})),
+          },
+        },
+        { provide: ProfileService, useValue: { profile: signal(null) } },
+      ],
+    });
     const component = TestBed.createComponent(ChangePasswordPageComponent).componentInstance;
     expect(component.form).toBeTruthy();
   });

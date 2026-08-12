@@ -4,7 +4,12 @@ import { QuoteDetailDialogComponent } from '@features/quotes/components/quote-de
 
 describe('QuoteDetailDialogComponent', () => {
   let fixture: ComponentFixture<QuoteDetailDialogComponent>;
-  beforeEach(() => { TestBed.configureTestingModule({ imports: [QuoteDetailDialogComponent] }); fixture = TestBed.createComponent(QuoteDetailDialogComponent); fixture.detectChanges(); });
+  beforeEach(() => {
+    TestBed.configureTestingModule({ imports: [QuoteDetailDialogComponent] });
+    fixture = TestBed.createComponent(QuoteDetailDialogComponent);
+    fixture.detectChanges();
+  });
   it('creates the dialog', () => expect(fixture.componentInstance).toBeTruthy());
-  it('identifies drafts as editable', () => expect(fixture.componentInstance.isDraft('DRAFT')).toBe(true));
+  it('identifies drafts as editable', () =>
+    expect(fixture.componentInstance.isDraft('DRAFT')).toBe(true));
 });

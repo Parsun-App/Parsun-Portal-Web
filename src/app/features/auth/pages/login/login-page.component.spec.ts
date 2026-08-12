@@ -8,7 +8,21 @@ import { LoginPageComponent } from '@features/auth/pages/login/login-page.compon
 describe('LoginPageComponent', () => {
   it('does not submit empty credentials', async () => {
     const login = vi.fn();
-    TestBed.configureTestingModule({ imports: [LoginPageComponent], providers: [provideRouter([]), { provide: AuthService, useValue: { loading: signal(false), error: signal(null), isAuthenticated: signal(false), login } }] });
+    TestBed.configureTestingModule({
+      imports: [LoginPageComponent],
+      providers: [
+        provideRouter([]),
+        {
+          provide: AuthService,
+          useValue: {
+            loading: signal(false),
+            error: signal(null),
+            isAuthenticated: signal(false),
+            login,
+          },
+        },
+      ],
+    });
     const component = TestBed.createComponent(LoginPageComponent).componentInstance;
     await component.login();
     expect(login).not.toHaveBeenCalled();

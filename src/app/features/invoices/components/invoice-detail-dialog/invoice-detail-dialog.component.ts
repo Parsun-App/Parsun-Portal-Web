@@ -22,7 +22,13 @@ export class InvoiceDetailDialogComponent {
   readonly getStatusLabel = getStatusLabel;
 
   statusSeverity(status: string): StatusSeverity {
-    const map: Record<string, StatusSeverity> = { PAID: 'success', PENDING_PAYMENT: 'warn', PARTIALLY_PAID: 'info', CANCELLED: 'danger', OVERDUE: 'danger' };
+    const map: Record<string, StatusSeverity> = {
+      PAID: 'success',
+      PENDING_PAYMENT: 'warn',
+      PARTIALLY_PAID: 'info',
+      CANCELLED: 'danger',
+      OVERDUE: 'danger',
+    };
     return map[status] ?? 'info';
   }
 }

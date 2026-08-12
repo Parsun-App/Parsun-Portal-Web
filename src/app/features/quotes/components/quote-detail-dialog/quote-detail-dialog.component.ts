@@ -9,7 +9,13 @@ import { getStatusLabel } from '@shared/utils/status-labels';
 
 type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'contrast';
 
-@Component({ selector: 'app-quote-detail-dialog', standalone: true, imports: [ButtonModule, CurrencyPipe, DatePipe, DialogModule, TableModule, TagModule], templateUrl: './quote-detail-dialog.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
+@Component({
+  selector: 'app-quote-detail-dialog',
+  standalone: true,
+  imports: [ButtonModule, CurrencyPipe, DatePipe, DialogModule, TableModule, TagModule],
+  templateUrl: './quote-detail-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
 export class QuoteDetailDialogComponent {
   readonly visible = model(false);
   readonly detail = input<PortalQuoteDetail | null>(null);
@@ -23,7 +29,15 @@ export class QuoteDetailDialogComponent {
   }
 
   statusSeverity(status: string): StatusSeverity {
-    const map: Record<string, StatusSeverity> = { DRAFT: 'info', CUSTOMER_DRAFT: 'warn', CONVERTED_TO_ORDER: 'success', CONVERTED_TO_INVOICE: 'success', CONVERTED: 'success', EXPIRED: 'warn', CANCELLED: 'danger' };
+    const map: Record<string, StatusSeverity> = {
+      DRAFT: 'info',
+      CUSTOMER_DRAFT: 'warn',
+      CONVERTED_TO_ORDER: 'success',
+      CONVERTED_TO_INVOICE: 'success',
+      CONVERTED: 'success',
+      EXPIRED: 'warn',
+      CANCELLED: 'danger',
+    };
     return map[status] ?? 'info';
   }
 }

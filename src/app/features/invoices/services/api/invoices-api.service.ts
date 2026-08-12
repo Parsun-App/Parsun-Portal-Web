@@ -16,7 +16,12 @@ export class InvoicesApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/portal/invoices`;
 
-  list(params?: { search?: string; dateFrom?: string; dateTo?: string; status?: string }): Observable<PortalInvoiceList[]> {
+  list(params?: {
+    search?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    status?: string;
+  }): Observable<PortalInvoiceList[]> {
     let httpParams = new HttpParams();
     if (params?.search) httpParams = httpParams.set('search', params.search);
     if (params?.dateFrom) httpParams = httpParams.set('dateFrom', params.dateFrom);

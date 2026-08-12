@@ -34,16 +34,34 @@ const DETAIL: PortalOrderDetail = {
   invoiceNumber: null,
   createdAt: '2026-08-01',
   lines: [
-    { id: 'l1', productId: 'p1', productName: 'Mesa Roble', productCode: 'PROD-001', quantity: 1, unitPrice: 500, lineTotal: 500 },
+    {
+      id: 'l1',
+      productId: 'p1',
+      productName: 'Mesa Roble',
+      productCode: 'PROD-001',
+      quantity: 1,
+      unitPrice: 500,
+      lineTotal: 500,
+    },
   ],
 };
 
 describe('OrdersService', () => {
-  let apiMock: { list: ReturnType<typeof vi.fn>; getById: ReturnType<typeof vi.fn>; confirm: ReturnType<typeof vi.fn>; cancel: ReturnType<typeof vi.fn> };
+  let apiMock: {
+    list: ReturnType<typeof vi.fn>;
+    getById: ReturnType<typeof vi.fn>;
+    confirm: ReturnType<typeof vi.fn>;
+    cancel: ReturnType<typeof vi.fn>;
+  };
   let messageMock: { add: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
-    apiMock = { list: vi.fn().mockReturnValue(of([] as PortalOrderList[])), getById: vi.fn(), confirm: vi.fn(), cancel: vi.fn() };
+    apiMock = {
+      list: vi.fn().mockReturnValue(of([] as PortalOrderList[])),
+      getById: vi.fn(),
+      confirm: vi.fn(),
+      cancel: vi.fn(),
+    };
     messageMock = { add: vi.fn() };
   });
 

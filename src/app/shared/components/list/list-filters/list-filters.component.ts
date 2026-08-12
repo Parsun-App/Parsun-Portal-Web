@@ -17,7 +17,17 @@ export interface ListFilterOption {
 @Component({
   selector: 'app-list-filters',
   standalone: true,
-  imports: [FormsModule, ButtonModule, DatePickerModule, IconFieldModule, InputIconModule, InputTextModule, PopoverModule, SelectModule, TooltipModule],
+  imports: [
+    FormsModule,
+    ButtonModule,
+    DatePickerModule,
+    IconFieldModule,
+    InputIconModule,
+    InputTextModule,
+    PopoverModule,
+    SelectModule,
+    TooltipModule,
+  ],
   templateUrl: './list-filters.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

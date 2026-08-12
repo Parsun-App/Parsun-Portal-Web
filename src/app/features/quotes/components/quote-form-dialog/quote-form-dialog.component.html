@@ -1,1 +1,17 @@
-<app-order-form-dialog [(visible)]="visible" [(notes)]="notes" entityLabel="presupuesto" [editing]="editing()" [creating]="creating()" [lines]="lines()" [suggestions]="suggestions()" [total]="total()" [valid]="valid()" (lineAdded)="lineAdded.emit()" (lineRemoved)="lineRemoved.emit($event)" (productChanged)="productChanged.emit($event)" (quantityChanged)="quantityChanged.emit($event)" (productsSearched)="productsSearched.emit($event)" (submitted)="submitted.emit()" />
+<app-order-form-dialog
+  [(visible)]="visible"
+  [(notes)]="notes"
+  entityLabel="presupuesto"
+  [editing]="editing()"
+  [creating]="creating()"
+  [lines]="lines()"
+  [suggestions]="suggestions()"
+  [total]="total()"
+  [valid]="valid()"
+  (lineAdded)="lineAdded.emit()"
+  (lineRemoved)="lineRemoved.emit($event)"
+  (productChanged)="productChanged.emit($event)"
+  (quantityChanged)="quantityChanged.emit($event)"
+  (productsSearched)="productsSearched.emit($event)"
+  (submitted)="submitted.emit()"
+/>

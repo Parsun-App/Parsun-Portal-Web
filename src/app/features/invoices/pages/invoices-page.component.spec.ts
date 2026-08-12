@@ -72,7 +72,12 @@ describe('InvoicesPageComponent', () => {
         provideHttpClient(),
         provideRouter([]),
         { provide: InvoicesService, useValue: serviceMock },
-        { provide: InvoicesApiService, useValue: { getSummary: vi.fn(() => of({ totalDebt: 0, pendingCount: 0, paidThisMonth: 0 })) } },
+        {
+          provide: InvoicesApiService,
+          useValue: {
+            getSummary: vi.fn(() => of({ totalDebt: 0, pendingCount: 0, paidThisMonth: 0 })),
+          },
+        },
         { provide: PaymentsApiService, useValue: { getPaymentMethods: vi.fn(() => of([])) } },
         MessageService,
       ],

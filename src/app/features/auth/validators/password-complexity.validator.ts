@@ -12,7 +12,8 @@ export function passwordComplexityValidator(rifProvider: () => string | null): V
     if (!value) return null;
     const rif = rifProvider();
     if (rif && value === rif) return null;
-    if (value.length < PASSWORD_MIN_LENGTH) return { minlength: { requiredLength: PASSWORD_MIN_LENGTH } };
+    if (value.length < PASSWORD_MIN_LENGTH)
+      return { minlength: { requiredLength: PASSWORD_MIN_LENGTH } };
     if (!UPPERCASE_PATTERN.test(value)) return { pattern: { requiredPattern: 'uppercase' } };
     if (!LOWERCASE_PATTERN.test(value)) return { pattern: { requiredPattern: 'lowercase' } };
     if (!DIGIT_PATTERN.test(value)) return { pattern: { requiredPattern: 'digit' } };

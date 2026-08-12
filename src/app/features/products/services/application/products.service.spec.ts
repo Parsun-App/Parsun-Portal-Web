@@ -10,9 +10,42 @@ import { PRODUCTS_MESSAGES } from '@features/products/messages/products.messages
 import type { PagedResponse } from '@shared/models';
 
 const PRODUCTS: PortalProduct[] = [
-  { id: 'p1', code: 'PROD-001', name: 'Mesa Roble', description: 'Mesa de roble macizo', categoryId: 'c1', categoryName: 'Muebles', active: true, photo: null, price: 250, availableStock: 8 },
-  { id: 'p2', code: 'PROD-002', name: 'Silla Ergonómica', description: 'Silla de oficina', categoryId: 'c1', categoryName: 'Muebles', active: true, photo: null, price: 90, availableStock: 0 },
-  { id: 'p3', code: 'PROD-003', name: 'Lámpara LED', description: 'Lámpara de escritorio', categoryId: 'c2', categoryName: 'Iluminación', active: false, photo: null, price: 45, availableStock: 12 },
+  {
+    id: 'p1',
+    code: 'PROD-001',
+    name: 'Mesa Roble',
+    description: 'Mesa de roble macizo',
+    categoryId: 'c1',
+    categoryName: 'Muebles',
+    active: true,
+    photo: null,
+    price: 250,
+    availableStock: 8,
+  },
+  {
+    id: 'p2',
+    code: 'PROD-002',
+    name: 'Silla Ergonómica',
+    description: 'Silla de oficina',
+    categoryId: 'c1',
+    categoryName: 'Muebles',
+    active: true,
+    photo: null,
+    price: 90,
+    availableStock: 0,
+  },
+  {
+    id: 'p3',
+    code: 'PROD-003',
+    name: 'Lámpara LED',
+    description: 'Lámpara de escritorio',
+    categoryId: 'c2',
+    categoryName: 'Iluminación',
+    active: false,
+    photo: null,
+    price: 45,
+    availableStock: 12,
+  },
 ];
 
 const CATEGORY_PAGE: PagedResponse<PortalProduct> = {

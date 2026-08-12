@@ -136,9 +136,14 @@ describe('OrdersPageComponent', () => {
 
     await expect(component.clearFocus()).resolves.toBeUndefined();
 
-    expect(navigate).toHaveBeenCalledWith([], expect.objectContaining({
-      queryParams: { focus: null }, queryParamsHandling: 'merge', replaceUrl: true,
-    }));
+    expect(navigate).toHaveBeenCalledWith(
+      [],
+      expect.objectContaining({
+        queryParams: { focus: null },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      }),
+    );
   });
 
   it('should close the detail and safely absorb a rejected focus cleanup', async () => {

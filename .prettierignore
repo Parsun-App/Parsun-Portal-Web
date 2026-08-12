@@ -1,0 +1,7 @@
+dist
+node_modules
+.angular
+.opencode
+.playwright-mcp
+coverage
+bun.lock

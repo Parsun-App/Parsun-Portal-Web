@@ -4,7 +4,14 @@ import { ProductDetailDialogComponent } from '@features/products/components/prod
 
 describe('ProductDetailDialogComponent', () => {
   let fixture: ComponentFixture<ProductDetailDialogComponent>;
-  beforeEach(() => { TestBed.configureTestingModule({ imports: [ProductDetailDialogComponent] }); fixture = TestBed.createComponent(ProductDetailDialogComponent); fixture.detectChanges(); });
+  beforeEach(() => {
+    TestBed.configureTestingModule({ imports: [ProductDetailDialogComponent] });
+    fixture = TestBed.createComponent(ProductDetailDialogComponent);
+    fixture.detectChanges();
+  });
   it('creates the dialog', () => expect(fixture.componentInstance).toBeTruthy());
-  it('builds product photo URLs', () => expect(fixture.componentInstance.buildPhotoUrl('products/photo.jpg')).toBe('/api/files/products/photo.jpg'));
+  it('builds product photo URLs', () =>
+    expect(fixture.componentInstance.buildPhotoUrl('products/photo.jpg')).toBe(
+      '/api/files/products/photo.jpg',
+    ));
 });

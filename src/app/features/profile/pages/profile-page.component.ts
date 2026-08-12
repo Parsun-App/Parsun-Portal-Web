@@ -12,7 +12,16 @@ import { ChangePasswordDialogComponent } from '@features/profile/components/chan
 @Component({
   selector: 'app-profile-page',
   standalone: true,
-  imports: [CurrencyPipe, CardModule, TagModule, ButtonModule, ProgressSpinnerModule, ChangePasswordDialogComponent, EmptyStateComponent, PageHeaderComponent],
+  imports: [
+    CurrencyPipe,
+    CardModule,
+    TagModule,
+    ButtonModule,
+    ProgressSpinnerModule,
+    ChangePasswordDialogComponent,
+    EmptyStateComponent,
+    PageHeaderComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './profile-page.component.html',
 })

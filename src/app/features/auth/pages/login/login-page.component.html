@@ -10,9 +10,15 @@
         Gestiona tus presupuestos, pedidos, facturas y pagos desde un solo lugar.
       </p>
       <div class="flex gap-6 mt-8 text-zinc-400">
-        <div class="flex items-center gap-2"><i class="pi pi-check-circle text-green-500"></i><span class="text-sm">Presupuestos</span></div>
-        <div class="flex items-center gap-2"><i class="pi pi-check-circle text-green-500"></i><span class="text-sm">Pedidos</span></div>
-        <div class="flex items-center gap-2"><i class="pi pi-check-circle text-green-500"></i><span class="text-sm">Pagos</span></div>
+        <div class="flex items-center gap-2">
+          <i class="pi pi-check-circle text-green-500"></i><span class="text-sm">Presupuestos</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i class="pi pi-check-circle text-green-500"></i><span class="text-sm">Pedidos</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i class="pi pi-check-circle text-green-500"></i><span class="text-sm">Pagos</span>
+        </div>
       </div>
     </div>
   </div>
@@ -24,14 +30,18 @@
         <p class="text-surface-500 text-sm">Portal de Clientes</p>
       </div>
 
-      <div class="bg-surface-0 dark:bg-surface-800 rounded-2xl shadow-lg dark:shadow-2xl p-8 border border-surface-200 dark:border-surface-700">
+      <div
+        class="bg-surface-0 dark:bg-surface-800 rounded-2xl shadow-lg dark:shadow-2xl p-8 border border-surface-200 dark:border-surface-700"
+      >
         <div class="text-center mb-6">
           <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Iniciar Sesión</h1>
           <p class="text-surface-500 text-sm mt-1">Ingresa con tu RIF y contraseña</p>
         </div>
 
         @if (error()) {
-          <div class="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 text-sm flex items-center gap-2">
+          <div
+            class="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 text-sm flex items-center gap-2"
+          >
             <i class="pi pi-exclamation-triangle"></i>
             {{ error() }}
           </div>
@@ -39,9 +49,15 @@
 
         <div class="flex flex-col gap-5">
           <div>
-            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5" for="rif">RIF</label>
+            <label
+              class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5"
+              for="rif"
+              >RIF</label
+            >
             <div class="relative">
-              <i class="pi pi-id-card absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm"></i>
+              <i
+                class="pi pi-id-card absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm"
+              ></i>
               <input
                 id="rif"
                 pInputText
@@ -55,9 +71,15 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5" for="password">Contraseña</label>
+            <label
+              class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5"
+              for="password"
+              >Contraseña</label
+            >
             <div class="relative">
-              <i class="pi pi-lock absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm"></i>
+              <i
+                class="pi pi-lock absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm"
+              ></i>
               <input
                 id="password"
                 pInputText

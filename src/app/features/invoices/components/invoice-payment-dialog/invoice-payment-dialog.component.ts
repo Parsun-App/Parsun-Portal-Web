@@ -10,7 +10,23 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 
-@Component({ selector: 'app-invoice-payment-dialog', standalone: true, imports: [ButtonModule, CurrencyPipe, DatePickerModule, DialogModule, FileUploadModule, FormsModule, InputNumberModule, InputTextModule, SelectModule], templateUrl: './invoice-payment-dialog.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
+@Component({
+  selector: 'app-invoice-payment-dialog',
+  standalone: true,
+  imports: [
+    ButtonModule,
+    CurrencyPipe,
+    DatePickerModule,
+    DialogModule,
+    FileUploadModule,
+    FormsModule,
+    InputNumberModule,
+    InputTextModule,
+    SelectModule,
+  ],
+  templateUrl: './invoice-payment-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
 export class InvoicePaymentDialogComponent {
   readonly visible = model(false);
   readonly amount = model(0);
@@ -24,5 +40,4 @@ export class InvoicePaymentDialogComponent {
   readonly valid = input(false);
   readonly fileSelected = output<{ files: File[] }>();
   readonly submitted = output<void>();
-
 }

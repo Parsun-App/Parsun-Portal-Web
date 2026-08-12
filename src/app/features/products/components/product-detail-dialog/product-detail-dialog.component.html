@@ -1,12 +1,64 @@
-<p-dialog [(visible)]="visible" [style]="{ width: 'min(32rem, calc(100vw - 2rem))' }" [modal]="true" [closable]="true">
-  <ng-template pTemplate="header"><div class="flex items-center gap-3"><i class="pi pi-box text-xl text-surface-500"></i><span class="text-lg font-semibold">{{ product()?.name }}</span></div></ng-template>
+<p-dialog
+  [(visible)]="visible"
+  [style]="{ width: 'min(32rem, calc(100vw - 2rem))' }"
+  [modal]="true"
+  [closable]="true"
+>
+  <ng-template pTemplate="header"
+    ><div class="flex items-center gap-3">
+      <i class="pi pi-box text-xl text-surface-500"></i
+      ><span class="text-lg font-semibold">{{ product()?.name }}</span>
+    </div></ng-template
+  >
   @if (product(); as item) {
     <div class="flex flex-col gap-4">
-      @if (buildPhotoUrl(item.photo); as photoUrl) { <div class="aspect-video overflow-hidden rounded-lg bg-surface-100"><p-image [src]="photoUrl" [alt]="item.name" [preview]="true" imageClass="w-full h-full object-cover" /></div> } @else { <div class="flex h-48 items-center justify-center rounded-lg bg-surface-100"><i class="pi pi-image text-4xl text-surface-400"></i></div> }
-      <div class="grid grid-cols-2 gap-4"><div><label class="text-xs font-medium uppercase text-surface-500">Código</label><p class="mt-1 font-mono text-sm">{{ item.code }}</p></div><div><label class="text-xs font-medium uppercase text-surface-500">Categoría</label><p class="mt-1 text-sm">{{ item.categoryName }}</p></div><div><label class="text-xs font-medium uppercase text-surface-500">Precio</label><p class="mt-1 text-sm font-medium">{{ item.price | currency:'USD':'symbol' }}</p></div><div><label class="text-xs font-medium uppercase text-surface-500">Stock Disponible</label><p class="mt-1 text-sm">{{ item.availableStock > 0 ? item.availableStock + ' unidades' : 'Agotado' }}</p></div></div>
-      @if (item.description) { <div><label class="text-xs font-medium uppercase text-surface-500">Descripción</label><p class="mt-1 text-sm">{{ item.description }}</p></div> }
-      <div><label class="text-xs font-medium uppercase text-surface-500">Estado</label><p class="mt-1 text-sm">{{ item.active ? 'Activo' : 'Inactivo' }}</p></div>
+      @if (buildPhotoUrl(item.photo); as photoUrl) {
+        <div class="aspect-video overflow-hidden rounded-lg bg-surface-100">
+          <p-image
+            [src]="photoUrl"
+            [alt]="item.name"
+            [preview]="true"
+            imageClass="w-full h-full object-cover"
+          />
+        </div>
+      } @else {
+        <div class="flex h-48 items-center justify-center rounded-lg bg-surface-100">
+          <i class="pi pi-image text-4xl text-surface-400"></i>
+        </div>
+      }
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-xs font-medium uppercase text-surface-500">Código</label>
+          <p class="mt-1 font-mono text-sm">{{ item.code }}</p>
+        </div>
+        <div>
+          <label class="text-xs font-medium uppercase text-surface-500">Categoría</label>
+          <p class="mt-1 text-sm">{{ item.categoryName }}</p>
+        </div>
+        <div>
+          <label class="text-xs font-medium uppercase text-surface-500">Precio</label>
+          <p class="mt-1 text-sm font-medium">{{ item.price | currency: 'USD' : 'symbol' }}</p>
+        </div>
+        <div>
+          <label class="text-xs font-medium uppercase text-surface-500">Stock Disponible</label>
+          <p class="mt-1 text-sm">
+            {{ item.availableStock > 0 ? item.availableStock + ' unidades' : 'Agotado' }}
+          </p>
+        </div>
+      </div>
+      @if (item.description) {
+        <div>
+          <label class="text-xs font-medium uppercase text-surface-500">Descripción</label>
+          <p class="mt-1 text-sm">{{ item.description }}</p>
+        </div>
+      }
+      <div>
+        <label class="text-xs font-medium uppercase text-surface-500">Estado</label>
+        <p class="mt-1 text-sm">{{ item.active ? 'Activo' : 'Inactivo' }}</p>
+      </div>
     </div>
   }
-  <ng-template pTemplate="footer"><p-button label="Cerrar" (click)="visible.set(false)" severity="secondary" [text]="true" /></ng-template>
+  <ng-template pTemplate="footer"
+    ><p-button label="Cerrar" (click)="visible.set(false)" severity="secondary" [text]="true"
+  /></ng-template>
 </p-dialog>

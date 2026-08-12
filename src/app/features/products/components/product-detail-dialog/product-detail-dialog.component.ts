@@ -5,7 +5,13 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { ImageModule } from 'primeng/image';
 
-@Component({ selector: 'app-product-detail-dialog', standalone: true, imports: [ButtonModule, CurrencyPipe, DialogModule, ImageModule], templateUrl: './product-detail-dialog.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
+@Component({
+  selector: 'app-product-detail-dialog',
+  standalone: true,
+  imports: [ButtonModule, CurrencyPipe, DialogModule, ImageModule],
+  templateUrl: './product-detail-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
 export class ProductDetailDialogComponent {
   readonly visible = model(false);
   readonly product = input<PortalProduct | null>(null);

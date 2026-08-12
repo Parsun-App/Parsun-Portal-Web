@@ -104,7 +104,20 @@ describe('QuotesPageComponent', () => {
       notify: vi.fn(),
       createDialogRequested$: new Subject<void>(),
     };
-    productsApiMock = { list: vi.fn().mockReturnValue(of({ content: PRODUCTS, totalElements: 1, totalPages: 1, size: 100, number: 0, first: true, last: true, empty: false })) };
+    productsApiMock = {
+      list: vi.fn().mockReturnValue(
+        of({
+          content: PRODUCTS,
+          totalElements: 1,
+          totalPages: 1,
+          size: 100,
+          number: 0,
+          first: true,
+          last: true,
+          empty: false,
+        }),
+      ),
+    };
 
     await TestBed.configureTestingModule({
       imports: [QuotesPageComponent],
@@ -177,9 +190,14 @@ describe('QuotesPageComponent', () => {
 
     await expect(component.clearFocus()).resolves.toBeUndefined();
 
-    expect(navigate).toHaveBeenCalledWith([], expect.objectContaining({
-      queryParams: { focus: null }, queryParamsHandling: 'merge', replaceUrl: true,
-    }));
+    expect(navigate).toHaveBeenCalledWith(
+      [],
+      expect.objectContaining({
+        queryParams: { focus: null },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      }),
+    );
   });
 
   it('should close the detail and safely absorb a rejected focus cleanup', async () => {
@@ -277,9 +295,9 @@ describe('QuotesPageComponent', () => {
     component.updateLineProduct(0, PRODUCTS[0]);
     component.addLine();
     const availableForSecond = component.availableProductsForLine(1);
-    expect(availableForSecond.map(p => p.id)).toEqual(['p2']);
+    expect(availableForSecond.map((p) => p.id)).toEqual(['p2']);
     const availableForFirst = component.availableProductsForLine(0);
-    expect(availableForFirst.map(p => p.id)).toEqual(['p1', 'p2']);
+    expect(availableForFirst.map((p) => p.id)).toEqual(['p1', 'p2']);
   });
 
   it('should compute the draft total from the lines', () => {

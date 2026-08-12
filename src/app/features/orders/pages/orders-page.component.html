@@ -1,18 +1,47 @@
 <div class="flex flex-col gap-6">
-  <app-page-header title="Pedidos" subtitle="Historial y seguimiento de tus pedidos de compra" icon="pi pi-shopping-cart">
+  <app-page-header
+    title="Pedidos"
+    subtitle="Historial y seguimiento de tus pedidos de compra"
+    icon="pi pi-shopping-cart"
+  >
     <p-button label="Nuevo pedido" icon="pi pi-plus" (click)="openCreateDialog()" />
   </app-page-header>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-    <app-metric-card label="Pedidos Pendientes" [value]="pendingOrders()" icon="pi pi-clock" gradient="linear-gradient(135deg, #f59e0b, #d97706)" />
-    <app-metric-card label="Pedidos Confirmados" [value]="confirmedOrders()" icon="pi pi-check-circle" gradient="linear-gradient(135deg, #22c55e, #16a34a)" />
-    <app-metric-card label="Importe Total" [value]="ordersTotal()" icon="pi pi-dollar" gradient="linear-gradient(135deg, #3b82f6, #2563eb)" [currency]="true" />
+    <app-metric-card
+      label="Pedidos Pendientes"
+      [value]="pendingOrders()"
+      icon="pi pi-clock"
+      gradient="linear-gradient(135deg, #f59e0b, #d97706)"
+    />
+    <app-metric-card
+      label="Pedidos Confirmados"
+      [value]="confirmedOrders()"
+      icon="pi pi-check-circle"
+      gradient="linear-gradient(135deg, #22c55e, #16a34a)"
+    />
+    <app-metric-card
+      label="Importe Total"
+      [value]="ordersTotal()"
+      icon="pi pi-dollar"
+      gradient="linear-gradient(135deg, #3b82f6, #2563eb)"
+      [currency]="true"
+    />
   </div>
 
-  <app-list-filters [searchTerm]="searchTerm()" [status]="filterStatus()" [dateFrom]="dateFromDate()" [dateTo]="dateToDate()"
-    [activeFilterCount]="activeFilterCount()" [statusOptions]="statusOptions" (searchChanged)="onSearch($event)"
-    (statusChanged)="onStatusFilterChange($event)" (dateFromChanged)="onDateFromChange($event)"
-    (dateToChanged)="onDateToChange($event)" (filtersCleared)="clearFilters()" />
+  <app-list-filters
+    [searchTerm]="searchTerm()"
+    [status]="filterStatus()"
+    [dateFrom]="dateFromDate()"
+    [dateTo]="dateToDate()"
+    [activeFilterCount]="activeFilterCount()"
+    [statusOptions]="statusOptions"
+    (searchChanged)="onSearch($event)"
+    (statusChanged)="onStatusFilterChange($event)"
+    (dateFromChanged)="onDateFromChange($event)"
+    (dateToChanged)="onDateToChange($event)"
+    (filtersCleared)="clearFilters()"
+  />
 
   @if (loading()) {
     <div class="flex items-center justify-center h-64">
@@ -25,33 +54,72 @@
     <div class="md:hidden">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
         @for (order of mobileOrders(); track order.id) {
-          <div class="rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-4 shadow-sm hover:shadow-md transition-shadow">
+          <div
+            class="rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-4 shadow-sm hover:shadow-md transition-shadow"
+          >
             <div class="flex items-center justify-between mb-3">
-              <span class="font-mono text-sm font-semibold text-surface-900 dark:text-surface-100">#{{ order.orderNumber }}</span>
-              <p-tag [value]="getStatusLabel(order.status)" [severity]="statusSeverity(order.status)" [rounded]="true" styleClass="text-xs" />
+              <span class="font-mono text-sm font-semibold text-surface-900 dark:text-surface-100"
+                >#{{ order.orderNumber }}</span
+              >
+              <p-tag
+                [value]="getStatusLabel(order.status)"
+                [severity]="statusSeverity(order.status)"
+                [rounded]="true"
+                styleClass="text-xs"
+              />
             </div>
             <div class="flex flex-col gap-1.5 text-sm mb-4">
               <div class="flex justify-between">
                 <span class="text-surface-500 dark:text-surface-400">Fecha</span>
-                <span class="text-surface-900 dark:text-surface-100">{{ order.createdAt | date:'dd/MM/yy' }}</span>
+                <span class="text-surface-900 dark:text-surface-100">{{
+                  order.createdAt | date: 'dd/MM/yy'
+                }}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-surface-500 dark:text-surface-400">Subtotal</span>
-                <span class="text-surface-900 dark:text-surface-100 font-medium tabular-nums">{{ order.subtotal | currency:'USD':'symbol' }}</span>
+                <span class="text-surface-900 dark:text-surface-100 font-medium tabular-nums">{{
+                  order.subtotal | currency: 'USD' : 'symbol'
+                }}</span>
               </div>
             </div>
             <div class="flex gap-1 pt-3 border-t border-surface-100 dark:border-surface-700">
-              <p-button icon="pi pi-eye" (onClick)="openDetail(order.id)" severity="secondary" [text]="true" [rounded]="true" pTooltip="Ver detalle" size="small" />
+              <p-button
+                icon="pi pi-eye"
+                (onClick)="openDetail(order.id)"
+                severity="secondary"
+                [text]="true"
+                [rounded]="true"
+                pTooltip="Ver detalle"
+                size="small"
+              />
               @if (isDraft(order.status)) {
-                <p-button icon="pi pi-pencil" (onClick)="editOrder(order.id)" severity="info" [text]="true" [rounded]="true" pTooltip="Editar" size="small" />
-                <p-button icon="pi pi-trash" (onClick)="cancelOrder(order.id)" severity="danger" [text]="true" [rounded]="true" pTooltip="Cancelar" size="small" />
+                <p-button
+                  icon="pi pi-pencil"
+                  (onClick)="editOrder(order.id)"
+                  severity="info"
+                  [text]="true"
+                  [rounded]="true"
+                  pTooltip="Editar"
+                  size="small"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  (onClick)="cancelOrder(order.id)"
+                  severity="danger"
+                  [text]="true"
+                  [rounded]="true"
+                  pTooltip="Cancelar"
+                  size="small"
+                />
               }
             </div>
           </div>
         }
       </div>
       @if (orders().length > mobileRows) {
-        <div class="rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden bg-surface-0 dark:bg-surface-900 shadow-2xl">
+        <div
+          class="rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden bg-surface-0 dark:bg-surface-900 shadow-2xl"
+        >
           <p-paginator
             [rows]="mobileRows"
             [totalRecords]="orders().length"
@@ -64,74 +132,128 @@
     </div>
 
     <div class="hidden md:block">
-    <div class="rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden bg-surface-0 dark:bg-surface-900 shadow-2xl">
-      <p-table
-        [value]="orders()"
-        [paginator]="true"
-        [rows]="10"
-        [rowsPerPageOptions]="[10, 20, 50]"
-        [paginatorDropdownAppendTo]="'body'"
-        styleClass="w-full"
-        [rowHover]="true"
-        dataKey="id"
+      <div
+        class="rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden bg-surface-0 dark:bg-surface-900 shadow-2xl"
       >
-        <ng-template pTemplate="header">
-          <tr class="border-b border-surface-200 dark:border-surface-700">
-            <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">N° Pedido</th>
-            <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Fecha</th>
-            <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Estado</th>
-            <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Subtotal</th>
-            <th class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Acciones</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-order>
-          <tr class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors">
-            <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">{{ order.orderNumber }}</td>
-            <td class="px-4 py-3 text-sm text-surface-500">{{ order.createdAt | date:'dd/MM/yy' }}</td>
-            <td class="px-4 py-3">
-              <p-tag [value]="getStatusLabel(order.status)" [severity]="statusSeverity(order.status)" />
-            </td>
-            <td class="px-4 py-3 text-right font-medium tabular-nums">{{ order.subtotal | currency:'USD':'symbol' }}</td>
-            <td class="px-4 py-3 text-center">
-              <div class="flex items-center justify-center gap-1">
-                <p-button
-                  icon="pi pi-eye"
-                  (onClick)="openDetail(order.id)"
-                  severity="secondary"
-                  [text]="true"
-                  [rounded]="true"
-                  pTooltip="Ver detalle"
+        <p-table
+          [value]="orders()"
+          [paginator]="true"
+          [rows]="10"
+          [rowsPerPageOptions]="[10, 20, 50]"
+          [paginatorDropdownAppendTo]="'body'"
+          styleClass="w-full"
+          [rowHover]="true"
+          dataKey="id"
+        >
+          <ng-template pTemplate="header">
+            <tr class="border-b border-surface-200 dark:border-surface-700">
+              <th
+                class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
+              >
+                N° Pedido
+              </th>
+              <th
+                class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
+              >
+                Fecha
+              </th>
+              <th
+                class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
+              >
+                Estado
+              </th>
+              <th
+                class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
+              >
+                Subtotal
+              </th>
+              <th
+                class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
+              >
+                Acciones
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-order>
+            <tr
+              class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors"
+            >
+              <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">
+                {{ order.orderNumber }}
+              </td>
+              <td class="px-4 py-3 text-sm text-surface-500">
+                {{ order.createdAt | date: 'dd/MM/yy' }}
+              </td>
+              <td class="px-4 py-3">
+                <p-tag
+                  [value]="getStatusLabel(order.status)"
+                  [severity]="statusSeverity(order.status)"
                 />
-                @if (order.status === 'DRAFT' || order.status === 'CUSTOMER_DRAFT') {
+              </td>
+              <td class="px-4 py-3 text-right font-medium tabular-nums">
+                {{ order.subtotal | currency: 'USD' : 'symbol' }}
+              </td>
+              <td class="px-4 py-3 text-center">
+                <div class="flex items-center justify-center gap-1">
                   <p-button
-                    icon="pi pi-pencil"
-                    (onClick)="editOrder(order.id)"
-                    severity="info"
+                    icon="pi pi-eye"
+                    (onClick)="openDetail(order.id)"
+                    severity="secondary"
                     [text]="true"
                     [rounded]="true"
-                    pTooltip="Editar"
+                    pTooltip="Ver detalle"
                   />
-                  <p-button
-                    icon="pi pi-trash"
-                    (onClick)="cancelOrder(order.id)"
-                    severity="danger"
-                    [text]="true"
-                    [rounded]="true"
-                    pTooltip="Cancelar"
-                  />
-                }
-              </div>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </div>
+                  @if (order.status === 'DRAFT' || order.status === 'CUSTOMER_DRAFT') {
+                    <p-button
+                      icon="pi pi-pencil"
+                      (onClick)="editOrder(order.id)"
+                      severity="info"
+                      [text]="true"
+                      [rounded]="true"
+                      pTooltip="Editar"
+                    />
+                    <p-button
+                      icon="pi pi-trash"
+                      (onClick)="cancelOrder(order.id)"
+                      severity="danger"
+                      [text]="true"
+                      [rounded]="true"
+                      pTooltip="Cancelar"
+                    />
+                  }
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
     </div>
   }
 </div>
 
-<app-order-detail-dialog [(visible)]="detailDialogVisible" [detail]="detail()" (editRequested)="editOrder($event)" (cancelRequested)="cancelOrder($event)" (closed)="clearFocus()" />
+<app-order-detail-dialog
+  [(visible)]="detailDialogVisible"
+  [detail]="detail()"
+  (editRequested)="editOrder($event)"
+  (cancelRequested)="cancelOrder($event)"
+  (closed)="clearFocus()"
+/>
 
-<app-order-form-dialog [(visible)]="createDialogVisible" [(notes)]="notes" [editing]="isEditing()" [creating]="creating()" [lines]="lines()" [suggestions]="filteredSuggestions()" [total]="draftTotal()" [valid]="canSubmit()" (lineAdded)="addLine()" (lineRemoved)="removeLine($event)" (productChanged)="onLineProductChange($event.lineIndex, $event.product)" (quantityChanged)="updateLineQuantity($event.lineIndex, $event.quantity)" (productsSearched)="searchProducts($event.event, $event.lineIndex)" (submitted)="submit()" />
+<app-order-form-dialog
+  [(visible)]="createDialogVisible"
+  [(notes)]="notes"
+  [editing]="isEditing()"
+  [creating]="creating()"
+  [lines]="lines()"
+  [suggestions]="filteredSuggestions()"
+  [total]="draftTotal()"
+  [valid]="canSubmit()"
+  (lineAdded)="addLine()"
+  (lineRemoved)="removeLine($event)"
+  (productChanged)="onLineProductChange($event.lineIndex, $event.product)"
+  (quantityChanged)="updateLineQuantity($event.lineIndex, $event.quantity)"
+  (productsSearched)="searchProducts($event.event, $event.lineIndex)"
+  (submitted)="submit()"
+/>
 
 <p-confirmDialog />

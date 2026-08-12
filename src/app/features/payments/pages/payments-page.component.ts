@@ -1,4 +1,11 @@
-import { Component, inject, computed, signal, ChangeDetectionStrategy, OnInit } from '@angular/core';
+import {
+  Component,
+  inject,
+  computed,
+  signal,
+  ChangeDetectionStrategy,
+  OnInit,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CurrencyPipe, DatePipe, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -20,7 +27,10 @@ import { PaginatorModule } from 'primeng/paginator';
 import type { PaginatorState } from 'primeng/paginator';
 import { MessageService } from 'primeng/api';
 import { PaymentsService } from '@features/payments/services/application/payments.service';
-import { PaymentsApiService, PaymentMethod } from '@features/payments/services/api/payments-api.service';
+import {
+  PaymentsApiService,
+  PaymentMethod,
+} from '@features/payments/services/api/payments-api.service';
 import { getStatusLabel } from '@shared/utils/status-labels';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 import { MetricCardComponent, PageHeaderComponent } from '@shared/components/ui';
@@ -33,7 +43,31 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
 @Component({
   selector: 'app-payments-page',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, InputNumberModule, TextareaModule, SelectModule, DatePickerModule, FileUploadModule, PopoverModule, PaginatorModule, EmptyStateComponent, ListFiltersComponent, MetricCardComponent, PageHeaderComponent, PaymentDetailDialogComponent],
+  imports: [
+    CurrencyPipe,
+    DatePipe,
+    FormsModule,
+    TableModule,
+    TagModule,
+    DialogModule,
+    ButtonModule,
+    TooltipModule,
+    IconFieldModule,
+    InputIconModule,
+    InputTextModule,
+    InputNumberModule,
+    TextareaModule,
+    SelectModule,
+    DatePickerModule,
+    FileUploadModule,
+    PopoverModule,
+    PaginatorModule,
+    EmptyStateComponent,
+    ListFiltersComponent,
+    MetricCardComponent,
+    PageHeaderComponent,
+    PaymentDetailDialogComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './payments-page.component.html',
 })
@@ -65,8 +99,16 @@ export class PaymentsPageComponent implements OnInit {
   });
 
   readonly totalPayments = computed(() => this.payments().length);
-  readonly appliedTotal = computed(() => this.payments().filter(p => p.status === 'APPLIED').reduce((s, p) => s + p.amount, 0));
-  readonly pendingTotal = computed(() => this.payments().filter(p => p.status === 'PENDING').reduce((s, p) => s + p.amount, 0));
+  readonly appliedTotal = computed(() =>
+    this.payments()
+      .filter((p) => p.status === 'APPLIED')
+      .reduce((s, p) => s + p.amount, 0),
+  );
+  readonly pendingTotal = computed(() =>
+    this.payments()
+      .filter((p) => p.status === 'PENDING')
+      .reduce((s, p) => s + p.amount, 0),
+  );
 
   readonly registerDialogVisible = signal(false);
   readonly registering = signal(false);
@@ -79,11 +121,12 @@ export class PaymentsPageComponent implements OnInit {
   readonly registerNotes = signal('');
   readonly registerFile = signal<File | null>(null);
 
-  readonly canSubmitRegister = computed(() =>
-    this.registerAmount() > 0 &&
-    this.registerMethodId() !== null &&
-    this.registerDate() !== null &&
-    (this.registerReference().trim().length > 0 || this.registerFile() !== null)
+  readonly canSubmitRegister = computed(
+    () =>
+      this.registerAmount() > 0 &&
+      this.registerMethodId() !== null &&
+      this.registerDate() !== null &&
+      (this.registerReference().trim().length > 0 || this.registerFile() !== null),
   );
 
   readonly activeFilterCount = computed(() => {
@@ -94,7 +137,13 @@ export class PaymentsPageComponent implements OnInit {
     return count;
   });
 
-  readonly hasActiveFilters = computed(() => Boolean(this.searchTerm()) || Boolean(this.filterStatus()) || Boolean(this.dateFrom()) || Boolean(this.dateTo()));
+  readonly hasActiveFilters = computed(
+    () =>
+      Boolean(this.searchTerm()) ||
+      Boolean(this.filterStatus()) ||
+      Boolean(this.dateFrom()) ||
+      Boolean(this.dateTo()),
+  );
 
   readonly emptyConfig = computed(() => {
     if (this.hasActiveFilters()) {
@@ -173,12 +222,20 @@ export class PaymentsPageComponent implements OnInit {
       next: () => {
         this.registering.set(false);
         this.registerDialogVisible.set(false);
-        this.messageService.add({ severity: 'success', summary: 'Pago registrado', detail: 'El pago se registró correctamente.' });
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Pago registrado',
+          detail: 'El pago se registró correctamente.',
+        });
         this.paymentsService.load();
       },
       error: () => {
         this.registering.set(false);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo registrar el pago.' });
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo registrar el pago.',
+        });
       },
     });
   }
@@ -249,7 +306,11 @@ export class PaymentsPageComponent implements OnInit {
 
   private async reconcileFocusCleanup(): Promise<void> {
     await Promise.resolve();
-    const cleanupTree = this.router.createUrlTree([], { relativeTo: this.route, queryParams: { focus: null }, queryParamsHandling: 'merge' });
+    const cleanupTree = this.router.createUrlTree([], {
+      relativeTo: this.route,
+      queryParams: { focus: null },
+      queryParamsHandling: 'merge',
+    });
     try {
       const reconciled = await this.router.navigateByUrl(cleanupTree, { replaceUrl: true });
       if (!reconciled) clearNotificationFocusFromUrl(this.location);

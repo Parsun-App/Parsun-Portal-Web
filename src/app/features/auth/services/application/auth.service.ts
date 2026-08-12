@@ -5,7 +5,11 @@ import { Router } from '@angular/router';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { catchError, finalize, tap, Observable, of, throwError } from 'rxjs';
 import { AuthApiService } from '@features/auth/services/api/auth-api.service';
-import { CustomerSummary, PortalAuthResponse, ChangePasswordRequest } from '@features/auth/models/interfaces/auth.interface';
+import {
+  CustomerSummary,
+  PortalAuthResponse,
+  ChangePasswordRequest,
+} from '@features/auth/models/interfaces/auth.interface';
 
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
@@ -39,17 +43,20 @@ export class AuthService {
     this.errorSignal.set(null);
 
     return new Promise((resolve) => {
-      this.authApi.login({ rif, password }).pipe(
-        tap(response => this.setSession(response)),
-        catchError(err => {
-          this.errorSignal.set(err.error?.message || 'Error al iniciar sesión');
-          return throwError(() => err);
-        }),
-        finalize(() => this.loadingSignal.set(false)),
-      ).subscribe({
-        next: () => resolve(),
-        error: () => resolve(),
-      });
+      this.authApi
+        .login({ rif, password })
+        .pipe(
+          tap((response) => this.setSession(response)),
+          catchError((err) => {
+            this.errorSignal.set(err.error?.message || 'Error al iniciar sesión');
+            return throwError(() => err);
+          }),
+          finalize(() => this.loadingSignal.set(false)),
+        )
+        .subscribe({
+          next: () => resolve(),
+          error: () => resolve(),
+        });
     });
   }
 
@@ -69,7 +76,7 @@ export class AuthService {
     this.errorSignal.set(null);
 
     return this.authApi.changePassword(request).pipe(
-      catchError(err => {
+      catchError((err) => {
         this.errorSignal.set(err.error?.message || 'Error al cambiar la contraseña');
         return throwError(() => err);
       }),
@@ -85,7 +92,7 @@ export class AuthService {
     }
 
     return this.authApi.refresh(token).pipe(
-      tap(response => {
+      tap((response) => {
         const currentCustomer = this.currentCustomerSignal();
         this.accessTokenSignal.set(response.accessToken);
         this.refreshTokenSignal.set(response.refreshToken);

@@ -29,7 +29,16 @@ export class OrderDetailDialogComponent {
   }
 
   statusSeverity(status: string): StatusSeverity {
-    const map: Record<string, StatusSeverity> = { DRAFT: 'info', CUSTOMER_DRAFT: 'warn', CONFIRMED: 'success', IN_PREPARATION: 'info', READY_FOR_DISPATCH: 'info', DISPATCHED: 'success', DELIVERED: 'success', CANCELLED: 'danger' };
+    const map: Record<string, StatusSeverity> = {
+      DRAFT: 'info',
+      CUSTOMER_DRAFT: 'warn',
+      CONFIRMED: 'success',
+      IN_PREPARATION: 'info',
+      READY_FOR_DISPATCH: 'info',
+      DISPATCHED: 'success',
+      DELIVERED: 'success',
+      CANCELLED: 'danger',
+    };
     return map[status] ?? 'info';
   }
 }

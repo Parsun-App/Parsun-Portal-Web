@@ -37,7 +37,10 @@ export class NotificationDestinationResolver {
     }
   }
 
-  private resolve(referenceType: string | null, resourceId: string | null): NotificationDestination | null {
+  private resolve(
+    referenceType: string | null,
+    resourceId: string | null,
+  ): NotificationDestination | null {
     if (!this.isSupportedReferenceType(referenceType)) return null;
     return { collection: COLLECTION_BY_REFERENCE_TYPE[referenceType], resourceId };
   }
@@ -50,7 +53,9 @@ export class NotificationDestinationResolver {
     }
   }
 
-  private isSupportedReferenceType(referenceType: string | null): referenceType is NotificationReferenceType {
+  private isSupportedReferenceType(
+    referenceType: string | null,
+  ): referenceType is NotificationReferenceType {
     return referenceType === 'PAYMENT' || referenceType === 'QUOTE' || referenceType === 'ORDER';
   }
 }

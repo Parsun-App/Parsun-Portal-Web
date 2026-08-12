@@ -12,7 +12,16 @@ describe('ChangePasswordDialogComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ChangePasswordDialogComponent],
-      providers: [{ provide: AuthService, useValue: { loading: signal(false), error: signal(null), changePassword: vi.fn().mockReturnValue(of({})) } }],
+      providers: [
+        {
+          provide: AuthService,
+          useValue: {
+            loading: signal(false),
+            error: signal(null),
+            changePassword: vi.fn().mockReturnValue(of({})),
+          },
+        },
+      ],
     });
     fixture = TestBed.createComponent(ChangePasswordDialogComponent);
     component = fixture.componentInstance;
@@ -21,13 +30,21 @@ describe('ChangePasswordDialogComponent', () => {
   });
 
   it('accepts the customer rif as a valid new password', () => {
-    component.passwordForm.patchValue({ currentPassword: 'OldPass@1', newPassword: 'J-12345678-9', confirmPassword: 'J-12345678-9' });
+    component.passwordForm.patchValue({
+      currentPassword: 'OldPass@1',
+      newPassword: 'J-12345678-9',
+      confirmPassword: 'J-12345678-9',
+    });
     expect(component.passwordForm.controls.newPassword.errors).toBeNull();
     expect(component.passwordForm.valid).toBe(true);
   });
 
   it('rejects a password that lacks complexity requirements', () => {
-    component.passwordForm.patchValue({ currentPassword: 'OldPass@1', newPassword: 'simple', confirmPassword: 'simple' });
+    component.passwordForm.patchValue({
+      currentPassword: 'OldPass@1',
+      newPassword: 'simple',
+      confirmPassword: 'simple',
+    });
     expect(component.passwordForm.controls.newPassword.errors).not.toBeNull();
   });
 });

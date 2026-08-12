@@ -4,7 +4,12 @@ import { OrderDetailDialogComponent } from '@features/orders/components/order-de
 
 describe('OrderDetailDialogComponent', () => {
   let fixture: ComponentFixture<OrderDetailDialogComponent>;
-  beforeEach(() => { TestBed.configureTestingModule({ imports: [OrderDetailDialogComponent] }); fixture = TestBed.createComponent(OrderDetailDialogComponent); fixture.detectChanges(); });
+  beforeEach(() => {
+    TestBed.configureTestingModule({ imports: [OrderDetailDialogComponent] });
+    fixture = TestBed.createComponent(OrderDetailDialogComponent);
+    fixture.detectChanges();
+  });
   it('creates the dialog', () => expect(fixture.componentInstance).toBeTruthy());
-  it('identifies customer drafts as editable', () => expect(fixture.componentInstance.isDraft('CUSTOMER_DRAFT')).toBe(true));
+  it('identifies customer drafts as editable', () =>
+    expect(fixture.componentInstance.isDraft('CUSTOMER_DRAFT')).toBe(true));
 });

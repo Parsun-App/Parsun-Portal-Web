@@ -43,13 +43,20 @@ export class PaymentsApiService {
   private readonly http = inject(HttpClient);
   private readonly portalBaseUrl = `${environment.apiUrl}/portal`;
 
-  list(params?: { search?: string; dateFrom?: string; dateTo?: string; status?: string }): Observable<PortalPaymentList[]> {
+  list(params?: {
+    search?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    status?: string;
+  }): Observable<PortalPaymentList[]> {
     let httpParams = new HttpParams();
     if (params?.search) httpParams = httpParams.set('search', params.search);
     if (params?.dateFrom) httpParams = httpParams.set('dateFrom', params.dateFrom);
     if (params?.dateTo) httpParams = httpParams.set('dateTo', params.dateTo);
     if (params?.status) httpParams = httpParams.set('status', params.status);
-    return this.http.get<PortalPaymentList[]>(`${this.portalBaseUrl}/payments`, { params: httpParams });
+    return this.http.get<PortalPaymentList[]>(`${this.portalBaseUrl}/payments`, {
+      params: httpParams,
+    });
   }
 
   getById(id: string): Observable<PortalPaymentDetail> {

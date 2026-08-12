@@ -22,7 +22,9 @@ const PROFILE: PortalProfile = {
   currentBalance: 450,
   emails: ['contacto@inversiones.com'],
   phones: ['+58 412 123 4567'],
-  addresses: [{ address: 'Av. Principal', billing: true, state: 'Caracas', municipality: 'Libertador' }],
+  addresses: [
+    { address: 'Av. Principal', billing: true, state: 'Caracas', municipality: 'Libertador' },
+  ],
 };
 
 const authServiceMock = {
@@ -87,5 +89,4 @@ describe('ProfilePageComponent', () => {
     const title = fixture.nativeElement.querySelector('h3');
     expect(title.textContent.trim()).toBe('No se pudo cargar el perfil');
   });
-
 });

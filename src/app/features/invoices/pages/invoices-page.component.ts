@@ -1,4 +1,11 @@
-import { Component, inject, computed, signal, ChangeDetectionStrategy, OnInit } from '@angular/core';
+import {
+  Component,
+  inject,
+  computed,
+  signal,
+  ChangeDetectionStrategy,
+  OnInit,
+} from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
@@ -20,7 +27,10 @@ import type { PaginatorState } from 'primeng/paginator';
 import { MessageService } from 'primeng/api';
 import { InvoicesService } from '@features/invoices/services/application/invoices.service';
 import { InvoicesApiService } from '@features/invoices/services/api/invoices-api.service';
-import { PaymentsApiService, PaymentMethod } from '@features/payments/services/api/payments-api.service';
+import {
+  PaymentsApiService,
+  PaymentMethod,
+} from '@features/payments/services/api/payments-api.service';
 import { PortalInvoiceList } from '@features/invoices/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
@@ -34,7 +44,32 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
 @Component({
   selector: 'app-invoices-page',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, InputNumberModule, SelectModule, DatePickerModule, FileUploadModule, PopoverModule, SkeletonModule, PaginatorModule, EmptyStateComponent, InvoiceDetailDialogComponent, InvoicePaymentDialogComponent, ListFiltersComponent, MetricCardComponent, PageHeaderComponent],
+  imports: [
+    CurrencyPipe,
+    DatePipe,
+    FormsModule,
+    TableModule,
+    TagModule,
+    DialogModule,
+    ButtonModule,
+    TooltipModule,
+    IconFieldModule,
+    InputIconModule,
+    InputTextModule,
+    InputNumberModule,
+    SelectModule,
+    DatePickerModule,
+    FileUploadModule,
+    PopoverModule,
+    SkeletonModule,
+    PaginatorModule,
+    EmptyStateComponent,
+    InvoiceDetailDialogComponent,
+    InvoicePaymentDialogComponent,
+    ListFiltersComponent,
+    MetricCardComponent,
+    PageHeaderComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './invoices-page.component.html',
 })
@@ -87,16 +122,21 @@ export class InvoicesPageComponent implements OnInit {
   readonly payAllReference = signal('');
   readonly payAllFile = signal<File | null>(null);
 
-  readonly canSubmitPayAll = computed(() =>
-    this.payAllAmount() > 0 && this.payAllMethodId() !== null && this.payAllDate() !== null &&
-    (this.payAllReference().trim().length > 0 || this.payAllFile() !== null)
+  readonly canSubmitPayAll = computed(
+    () =>
+      this.payAllAmount() > 0 &&
+      this.payAllMethodId() !== null &&
+      this.payAllDate() !== null &&
+      (this.payAllReference().trim().length > 0 || this.payAllFile() !== null),
   );
 
   readonly isPayPartial = computed(() => this.payAmount() < this.payFullAmount());
 
-  readonly canSubmitPay = computed(() =>
-    this.payAmount() > 0 && this.payMethodId() !== null &&
-    (this.payReference().trim().length > 0 || this.payFile() !== null)
+  readonly canSubmitPay = computed(
+    () =>
+      this.payAmount() > 0 &&
+      this.payMethodId() !== null &&
+      (this.payReference().trim().length > 0 || this.payFile() !== null),
   );
 
   readonly activeFilterCount = computed(() => {
@@ -107,11 +147,26 @@ export class InvoicesPageComponent implements OnInit {
     return count;
   });
 
-  readonly hasActiveFilters = computed(() => Boolean(this.searchTerm()) || Boolean(this.filterStatus()) || Boolean(this.dateFrom()) || Boolean(this.dateTo()));
+  readonly hasActiveFilters = computed(
+    () =>
+      Boolean(this.searchTerm()) ||
+      Boolean(this.filterStatus()) ||
+      Boolean(this.dateFrom()) ||
+      Boolean(this.dateTo()),
+  );
 
   readonly emptyConfig = computed(() => {
-    if (this.hasActiveFilters()) return { icon: 'pi pi-file-invoice', title: 'Sin resultados', message: 'No encontramos resultados para tu búsqueda o filtros actuales.' };
-    return { icon: 'pi pi-file-invoice', title: 'No hay facturas', message: 'Tus facturas aparecerán aquí cuando los tengas.' };
+    if (this.hasActiveFilters())
+      return {
+        icon: 'pi pi-file-invoice',
+        title: 'Sin resultados',
+        message: 'No encontramos resultados para tu búsqueda o filtros actuales.',
+      };
+    return {
+      icon: 'pi pi-file-invoice',
+      title: 'No hay facturas',
+      message: 'Tus facturas aparecerán aquí cuando los tengas.',
+    };
   });
 
   readonly statusOptions = [
@@ -132,7 +187,13 @@ export class InvoicesPageComponent implements OnInit {
   loadSummary(): void {
     this.summaryLoading.set(true);
     this.invoicesApi.getSummary().subscribe({
-      next: (s) => { this.totalDebt.set(s.totalDebt); this.pendingCount.set(s.pendingCount); this.paidThisMonth.set(s.paidThisMonth); this.pendingApprovalAmount.set(s.pendingApprovalAmount); this.summaryLoading.set(false); },
+      next: (s) => {
+        this.totalDebt.set(s.totalDebt);
+        this.pendingCount.set(s.pendingCount);
+        this.paidThisMonth.set(s.paidThisMonth);
+        this.pendingApprovalAmount.set(s.pendingApprovalAmount);
+        this.summaryLoading.set(false);
+      },
       error: () => this.summaryLoading.set(false),
     });
   }
@@ -162,22 +223,34 @@ export class InvoicesPageComponent implements OnInit {
   submitPay(): void {
     if (!this.canSubmitPay() || !this.payInvoiceId()) return;
     this.paying.set(true);
-    this.paymentsApi.payInvoice(this.payInvoiceId()!, {
-      amount: this.payAmount(),
-      paymentMethodId: this.payMethodId()!,
-      paymentDate: this.formatDate(this.payDate()!),
-      referenceNumber: this.payReference().trim() || undefined,
-    }).subscribe({
-      next: () => {
-        this.paying.set(false); this.payDialogVisible.set(false);
-        this.messageService.add({ severity: 'success', summary: 'Pago realizado', detail: 'La factura se pagó correctamente.' });
-        this.invoicesService.load(); this.loadSummary();
-      },
-      error: () => {
-        this.paying.set(false);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo procesar el pago.' });
-      },
-    });
+    this.paymentsApi
+      .payInvoice(this.payInvoiceId()!, {
+        amount: this.payAmount(),
+        paymentMethodId: this.payMethodId()!,
+        paymentDate: this.formatDate(this.payDate()!),
+        referenceNumber: this.payReference().trim() || undefined,
+      })
+      .subscribe({
+        next: () => {
+          this.paying.set(false);
+          this.payDialogVisible.set(false);
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Pago realizado',
+            detail: 'La factura se pagó correctamente.',
+          });
+          this.invoicesService.load();
+          this.loadSummary();
+        },
+        error: () => {
+          this.paying.set(false);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'No se pudo procesar el pago.',
+          });
+        },
+      });
   }
 
   openPayAll(): void {
@@ -207,19 +280,33 @@ export class InvoicesPageComponent implements OnInit {
       : this.paymentsApi.payPartialDebt({ ...req, amount: this.payAllAmount() });
     apiCall.subscribe({
       next: () => {
-        this.payingAll.set(false); this.payAllDialogVisible.set(false);
-        this.messageService.add({ severity: 'success', summary: 'Pago realizado', detail: 'El pago se registró correctamente.' });
-        this.invoicesService.load(); this.loadSummary();
+        this.payingAll.set(false);
+        this.payAllDialogVisible.set(false);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Pago realizado',
+          detail: 'El pago se registró correctamente.',
+        });
+        this.invoicesService.load();
+        this.loadSummary();
       },
       error: () => {
         this.payingAll.set(false);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo procesar el pago.' });
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo procesar el pago.',
+        });
       },
     });
   }
 
-  onSearch(value: string): void { this.invoicesService.onSearch(value); }
-  onStatusFilterChange(value: string | null): void { this.invoicesService.onStatusFilterChange(value); }
+  onSearch(value: string): void {
+    this.invoicesService.onSearch(value);
+  }
+  onStatusFilterChange(value: string | null): void {
+    this.invoicesService.onStatusFilterChange(value);
+  }
 
   onDateFromChange(value: Date | null): void {
     this.dateFromDate.set(value);
@@ -229,26 +316,46 @@ export class InvoicesPageComponent implements OnInit {
     this.dateToDate.set(value);
     this.invoicesService.onDateFilterChange(this.dateFrom(), value ? this.formatDate(value) : '');
   }
-  clearFilters(): void { this.dateFromDate.set(null); this.dateToDate.set(null); this.invoicesService.clearFilters(); }
+  clearFilters(): void {
+    this.dateFromDate.set(null);
+    this.dateToDate.set(null);
+    this.invoicesService.clearFilters();
+  }
 
   onMobilePageChange(event: PaginatorState): void {
     this.mobileFirst.set(event.first ?? 0);
   }
 
-  openDetail(id: string): void { this.invoicesService.openDetail(id); }
-  parseDate(dateStr: string): Date { return new Date(dateStr + 'T00:00:00'); }
+  openDetail(id: string): void {
+    this.invoicesService.openDetail(id);
+  }
+  parseDate(dateStr: string): Date {
+    return new Date(dateStr + 'T00:00:00');
+  }
 
   isPending(invoice: PortalInvoiceList): boolean {
-    return invoice.status === 'PENDING_PAYMENT' || invoice.status === 'PARTIALLY_PAID' || invoice.status === 'OVERDUE';
+    return (
+      invoice.status === 'PENDING_PAYMENT' ||
+      invoice.status === 'PARTIALLY_PAID' ||
+      invoice.status === 'OVERDUE'
+    );
   }
 
   statusSeverity(status: string): StatusSeverity {
-    const map: Record<string, StatusSeverity> = { PAID: 'success', PENDING_PAYMENT: 'warn', PARTIALLY_PAID: 'info', CANCELLED: 'danger', OVERDUE: 'danger' };
+    const map: Record<string, StatusSeverity> = {
+      PAID: 'success',
+      PENDING_PAYMENT: 'warn',
+      PARTIALLY_PAID: 'info',
+      CANCELLED: 'danger',
+      OVERDUE: 'danger',
+    };
     return map[status] ?? 'info';
   }
 
   private formatDate(date: Date): string {
-    const y = date.getFullYear(); const m = String(date.getMonth() + 1).padStart(2, '0'); const d = String(date.getDate()).padStart(2, '0');
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
     return `${y}-${m}-${d}`;
   }
 }

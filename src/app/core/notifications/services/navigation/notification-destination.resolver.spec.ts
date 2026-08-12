@@ -16,13 +16,16 @@ describe('NotificationDestinationResolver', () => {
     ['PAYMENT', 'payment-1', ['/payments']],
     ['QUOTE', 'quote-1', ['/quotes']],
     ['ORDER', 'order-1', ['/orders']],
-  ])('should navigate a %s reference to its collection with focus', async (referenceType, referenceId, commands) => {
-    const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+  ])(
+    'should navigate a %s reference to its collection with focus',
+    async (referenceType, referenceId, commands) => {
+      const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
 
-    await resolver.navigate(referenceType, referenceId);
+      await resolver.navigate(referenceType, referenceId);
 
-    expect(navigate).toHaveBeenCalledWith(commands, { queryParams: { focus: referenceId } });
-  });
+      expect(navigate).toHaveBeenCalledWith(commands, { queryParams: { focus: referenceId } });
+    },
+  );
 
   it('should fall back to a known collection when the id is absent', async () => {
     const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
@@ -33,7 +36,10 @@ describe('NotificationDestinationResolver', () => {
   });
 
   it('should fall back to the collection when focused navigation fails', async () => {
-    const navigate = vi.spyOn(router, 'navigate').mockResolvedValueOnce(false).mockResolvedValueOnce(true);
+    const navigate = vi
+      .spyOn(router, 'navigate')
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(true);
 
     await resolver.navigate('ORDER', 'order-1');
 

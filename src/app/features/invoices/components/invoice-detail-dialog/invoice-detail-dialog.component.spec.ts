@@ -4,7 +4,12 @@ import { InvoiceDetailDialogComponent } from '@features/invoices/components/invo
 
 describe('InvoiceDetailDialogComponent', () => {
   let fixture: ComponentFixture<InvoiceDetailDialogComponent>;
-  beforeEach(() => { TestBed.configureTestingModule({ imports: [InvoiceDetailDialogComponent] }); fixture = TestBed.createComponent(InvoiceDetailDialogComponent); fixture.detectChanges(); });
+  beforeEach(() => {
+    TestBed.configureTestingModule({ imports: [InvoiceDetailDialogComponent] });
+    fixture = TestBed.createComponent(InvoiceDetailDialogComponent);
+    fixture.detectChanges();
+  });
   it('creates the dialog', () => expect(fixture.componentInstance).toBeTruthy());
-  it('maps paid invoices to success severity', () => expect(fixture.componentInstance.statusSeverity('PAID')).toBe('success'));
+  it('maps paid invoices to success severity', () =>
+    expect(fixture.componentInstance.statusSeverity('PAID')).toBe('success'));
 });

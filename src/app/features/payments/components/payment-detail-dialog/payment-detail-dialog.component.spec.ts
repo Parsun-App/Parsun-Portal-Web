@@ -4,7 +4,12 @@ import { PaymentDetailDialogComponent } from '@features/payments/components/paym
 
 describe('PaymentDetailDialogComponent', () => {
   let fixture: ComponentFixture<PaymentDetailDialogComponent>;
-  beforeEach(() => { TestBed.configureTestingModule({ imports: [PaymentDetailDialogComponent] }); fixture = TestBed.createComponent(PaymentDetailDialogComponent); fixture.detectChanges(); });
+  beforeEach(() => {
+    TestBed.configureTestingModule({ imports: [PaymentDetailDialogComponent] });
+    fixture = TestBed.createComponent(PaymentDetailDialogComponent);
+    fixture.detectChanges();
+  });
   it('creates the dialog', () => expect(fixture.componentInstance).toBeTruthy());
-  it('maps rejected payments to danger severity', () => expect(fixture.componentInstance.statusSeverity('REJECTED')).toBe('danger'));
+  it('maps rejected payments to danger severity', () =>
+    expect(fixture.componentInstance.statusSeverity('REJECTED')).toBe('danger'));
 });
