@@ -4,7 +4,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideRouter, Router } from '@angular/router';
 import { signal } from '@angular/core';
 import { Subject, of } from 'rxjs';
-import { QuotesPageComponent } from './quotes-page.component';
+import { QuotesPageComponent } from '@features/quotes/pages/quotes-page.component';
 import { QuotesService } from '@features/quotes/services/application/quotes.service';
 import { ProductsApiService } from '@features/products/services/api/products-api.service';
 import { PortalQuoteList, PortalQuoteDetail } from '@features/quotes/models';

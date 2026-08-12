@@ -1,1 +1,1 @@
-export type { PortalQuoteList, PortalQuoteDetail, PortalQuoteLine } from './interfaces/portal-quote.interface';
+export type { PortalQuoteList, PortalQuoteDetail, PortalQuoteLine } from '@features/quotes/models/interfaces/portal-quote.interface';

@@ -26,6 +26,10 @@ import { ProductsApiService } from '@features/products/services/api/products-api
 import { PortalProduct } from '@features/products/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
+import { MetricCardComponent, PageHeaderComponent } from '@shared/components/ui';
+import { ListFiltersComponent } from '@shared/components/list';
+import { QuoteDetailDialogComponent } from '@features/quotes/components/quote-detail-dialog/quote-detail-dialog.component';
+import { QuoteFormDialogComponent } from '@features/quotes/components/quote-form-dialog/quote-form-dialog.component';
 import { QUOTES_MESSAGES } from '@features/quotes/messages/quotes.messages';
 import { clearNotificationFocusFromUrl } from '@shared/utils/notification-focus-url';
 
@@ -42,7 +46,8 @@ interface FormLine {
   standalone: true,
   imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule,
             ConfirmDialogModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, InputNumberModule,
-            TextareaModule, SelectModule, DatePickerModule, PopoverModule, AutoCompleteModule, PaginatorModule, EmptyStateComponent],
+            TextareaModule, SelectModule, DatePickerModule, PopoverModule, AutoCompleteModule, PaginatorModule, EmptyStateComponent,
+            ListFiltersComponent, MetricCardComponent, PageHeaderComponent, QuoteDetailDialogComponent, QuoteFormDialogComponent],
   providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './quotes-page.component.html',
