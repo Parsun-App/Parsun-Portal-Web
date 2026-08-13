@@ -40,17 +40,18 @@
       <div class="grid gap-4 sm:grid-cols-2">
         <div>
           <label class="text-sm font-medium">Método de pago</label
-          ><p-select
+          >          <p-select
             [options]="paymentMethods()"
             [(ngModel)]="methodId"
             optionLabel="name"
             optionValue="id"
             styleClass="w-full"
+            [appendTo]="'body'"
           />
         </div>
         <div>
           <label class="text-sm font-medium">Fecha de pago</label
-          ><p-datepicker [(ngModel)]="paymentDate" dateFormat="dd/mm/yy" styleClass="w-full" />
+          ><p-datepicker [(ngModel)]="paymentDate" dateFormat="dd/mm/yy" styleClass="w-full" [appendTo]="'body'" />
         </div>
       </div>
     </div>

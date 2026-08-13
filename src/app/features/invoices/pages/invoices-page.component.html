@@ -5,12 +5,12 @@
     icon="pi pi-receipt"
   >
     @if (pendingCount() > 0) {
-      <p-button
-        label="Pagar Deuda"
-        icon="pi pi-dollar"
-        severity="secondary"
-        (click)="openPayAll()"
-      />
+        <p-button
+          label="Pagar Deuda"
+          icon="pi pi-dollar"
+          severity="contrast"
+          (click)="openPayAll()"
+        />
     }
   </app-page-header>
 

@@ -20,13 +20,12 @@ import { ButtonModule } from 'primeng/button';
 import { ImageModule } from 'primeng/image';
 import { TooltipModule } from 'primeng/tooltip';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
-import { MessageService } from 'primeng/api';
 import { ProductsService } from '@features/products/services/application/products.service';
 import { PortalProduct } from '@features/products/models';
-import { PRODUCTS_MESSAGES } from '@features/products/messages/products.messages';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 import { PageHeaderComponent } from '@shared/components/ui';
 import { ProductDetailDialogComponent } from '@features/products/components/product-detail-dialog/product-detail-dialog.component';
+import { PdfViewerDialogComponent, PdfViewerService } from '@core/pdf-viewer';
 import { environment } from '@env/environment';
 
 type ViewMode = 'table' | 'grid';
@@ -53,13 +52,14 @@ const VIEW_MODE_STORAGE_KEY = 'parsun-products-view-mode';
     EmptyStateComponent,
     PageHeaderComponent,
     ProductDetailDialogComponent,
+    PdfViewerDialogComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './products-page.component.html',
 })
 export class ProductsPageComponent implements OnInit, OnDestroy {
   private readonly productsService = inject(ProductsService);
-  private readonly messageService = inject(MessageService);
+  private readonly pdfViewerService = inject(PdfViewerService);
 
   readonly loading = this.productsService.loading;
   readonly products = this.productsService.products;
@@ -73,7 +73,6 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   readonly selectedProduct = signal<PortalProduct | null>(null);
   readonly dialogVisible = signal(false);
   readonly viewMode = signal<ViewMode>('grid');
-  readonly downloadingCatalog = signal(false);
 
   readonly isMobile = signal(false);
   private readonly mediaQuery = window.matchMedia('(max-width: 767px)');
@@ -81,7 +80,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   readonly hasActiveFilters = computed(
     () => Boolean(this.searchTerm()) || Boolean(this.selectedCategory()),
   );
-  readonly isGridView = computed(() => (this.isMobile() ? true : this.viewMode() === 'grid'));
+  readonly isGridView = computed(() => this.viewMode() === 'grid');
 
   readonly emptyConfig = computed(() => {
     if (this.hasActiveFilters()) {
@@ -132,21 +131,10 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   }
 
   downloadCatalog(): void {
-    this.downloadingCatalog.set(true);
-    this.productsService.downloadCatalog().subscribe({
-      next: (blob: Blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const anchor = document.createElement('a');
-        anchor.href = url;
-        anchor.download = 'catalogo-comercial.pdf';
-        anchor.click();
-        window.URL.revokeObjectURL(url);
-        this.downloadingCatalog.set(false);
-      },
-      error: () => {
-        this.downloadingCatalog.set(false);
-        this.messageService.add(PRODUCTS_MESSAGES.catalogDownloadError);
-      },
+    this.pdfViewerService.open({
+      url: `${environment.apiUrl}/portal/products/catalog/pdf`,
+      title: 'Cat&aacute;logo Comercial',
+      fileName: 'catalogo-comercial.pdf',
     });
   }
 
@@ -160,6 +148,12 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
 
   onPageChange(event: TablePageEvent): void {
     this.productsService.onPageChange(event);
+  }
+
+  onMobilePageChange(event: PaginatorState): void {
+    const first = event.first ?? 0;
+    const rows = event.rows ?? this.pageSize();
+    this.productsService.onGridPageChange(first, rows);
   }
 
   onGridPageChange(event: PaginatorState): void {

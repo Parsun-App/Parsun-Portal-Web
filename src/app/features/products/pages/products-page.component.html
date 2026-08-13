@@ -8,28 +8,30 @@
   <div
     class="rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-4 shadow-2xl"
   >
-    <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-      <p-iconfield class="w-full sm:w-72">
-        <p-inputicon class="pi pi-search" />
-        <input
-          pInputText
-          [ngModel]="searchTerm()"
-          (ngModelChange)="searchChanged($event)"
-          placeholder="Buscar productos..."
-          class="w-full"
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+      <div class="flex flex-col gap-3 sm:flex-row sm:flex-1 sm:items-center">
+        <p-iconfield class="w-full sm:w-72">
+          <p-inputicon class="pi pi-search" />
+          <input
+            pInputText
+            [ngModel]="searchTerm()"
+            (ngModelChange)="searchChanged($event)"
+            placeholder="Buscar productos..."
+            class="w-full"
+          />
+        </p-iconfield>
+        <p-select
+          [ngModel]="selectedCategory()"
+          (ngModelChange)="onCategoryChange($event)"
+          [options]="categoryOptions()"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Todas las categorías"
+          class="w-full sm:w-56"
+          [showClear]="true"
         />
-      </p-iconfield>
-      <p-select
-        [ngModel]="selectedCategory()"
-        (ngModelChange)="onCategoryChange($event)"
-        [options]="categoryOptions()"
-        optionLabel="label"
-        optionValue="value"
-        placeholder="Todas las categorías"
-        class="w-full sm:w-56"
-        [showClear]="true"
-      />
-      <div class="hidden md:flex gap-2 ml-auto">
+      </div>
+      <div class="flex gap-2 sm:ml-auto">
         <button
           pButton
           type="button"
@@ -38,17 +40,17 @@
           [text]="true"
           [pTooltip]="isGridView() ? 'Vista lista' : 'Vista catálogo'"
           (click)="toggleView()"
-          class="w-10 h-10 flex items-center justify-center"
+          class="w-10 h-10 shrink-0"
         ></button>
         <button
           pButton
           type="button"
           icon="pi pi-download"
-          label="Catálogo PDF"
-          severity="primary"
-          [loading]="downloadingCatalog()"
+          [label]="isMobile() ? '' : 'Descargar Catálogo'"
+          severity="contrast"
           [disabled]="products().length === 0"
           (click)="downloadCatalog()"
+          class="flex-1 sm:flex-initial"
         ></button>
       </div>
     </div>
@@ -130,73 +132,27 @@
       ></p-paginator>
     </div>
   } @else {
-    <div
-      class="rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden bg-surface-0 dark:bg-surface-900 shadow-2xl"
-    >
-      <p-table
-        [value]="products()"
-        [paginator]="true"
-        [rows]="pageSize()"
-        [totalRecords]="totalElements()"
-        [lazy]="true"
-        (onPage)="onPageChange($event)"
-        [rowsPerPageOptions]="[10, 20, 50]"
-        [paginatorDropdownAppendTo]="'body'"
-        styleClass="w-full"
-        [rowHover]="true"
-        dataKey="id"
-      >
-        <ng-template pTemplate="header">
-          <tr class="border-b border-surface-200 dark:border-surface-700">
-            <th
-              class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider w-16"
-            ></th>
-            <th
-              class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
-            >
-              Código
-            </th>
-            <th
-              class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
-            >
-              Nombre
-            </th>
-            <th
-              class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
-            >
-              Categoría
-            </th>
-            <th
-              class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
-            >
-              Precio
-            </th>
-            <th
-              class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
-            >
-              Stock
-            </th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-product>
-          <tr
-            class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors cursor-pointer"
+    <div class="md:hidden">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+        @for (product of products(); track product.id) {
+          <div
+            class="rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
             (click)="openDetail(product)"
           >
-            <td class="px-4 py-3 text-center">
+            <div class="flex items-start gap-3 mb-3">
               @if (buildPhotoUrl(product.photo); as photoUrl) {
                 <p-image
                   [src]="photoUrl"
                   [alt]="product.name"
-                  width="40"
-                  height="40"
+                  width="48"
+                  height="48"
                   [preview]="true"
-                  imageClass="rounded object-cover"
-                  class="inline-block"
+                  imageClass="rounded-lg object-cover"
+                  class="shrink-0"
                 >
                   <ng-template pTemplate="error">
                     <div
-                      class="w-10 h-10 rounded bg-surface-100 dark:bg-surface-700 flex items-center justify-center"
+                      class="w-12 h-12 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center shrink-0"
                     >
                       <i class="pi pi-image text-sm text-surface-400"></i>
                     </div>
@@ -204,36 +160,158 @@
                 </p-image>
               } @else {
                 <div
-                  class="w-10 h-10 rounded bg-surface-100 dark:bg-surface-700 flex items-center justify-center mx-auto"
+                  class="w-12 h-12 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center shrink-0"
                 >
                   <i class="pi pi-image text-sm text-surface-400"></i>
                 </div>
               }
-            </td>
-            <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">
-              {{ product.code }}
-            </td>
-            <td class="px-4 py-3 font-medium text-surface-900 dark:text-surface-100">
-              {{ product.name }}
-            </td>
-            <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">
-              {{ product.categoryName }}
-            </td>
-            <td class="px-4 py-3 text-right font-medium tabular-nums">
-              {{ product.price | currency: 'USD' : 'symbol' }}
-            </td>
-            <td class="px-4 py-3 text-center">
+              <div class="flex-1 min-w-0">
+                <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm line-clamp-2">
+                  {{ product.name }}
+                </h3>
+                <p class="text-xs font-mono text-surface-500 mt-0.5">{{ product.code }}</p>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <p-tag [value]="product.categoryName" severity="info" styleClass="text-xs" />
+              <span class="text-lg font-bold text-surface-900 dark:text-surface-100 tabular-nums">{{
+                product.price | currency: 'USD' : 'symbol'
+              }}</span>
+            </div>
+            <div class="mt-2 flex items-center justify-between">
+              <span class="text-xs text-surface-500">Stock</span>
               @if (product.availableStock > 0) {
-                <p-tag value="{{ product.availableStock }}" severity="success" />
+                <p-tag [value]="product.availableStock.toString()" severity="success" />
               } @else {
                 <p-tag value="Agotado" severity="danger" />
               }
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
+            </div>
+          </div>
+        }
+      </div>
+      @if (totalElements() > pageSize()) {
+        <div
+          class="rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden bg-surface-0 dark:bg-surface-900 shadow-2xl"
+        >
+          <p-paginator
+            [rows]="pageSize()"
+            [totalRecords]="totalElements()"
+            [first]="currentPage() * pageSize()"
+            (onPageChange)="onMobilePageChange($event)"
+            [rowsPerPageOptions]="[10, 20, 50]"
+          />
+        </div>
+      }
+    </div>
+
+    <div class="hidden md:block">
+      <div
+        class="rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden bg-surface-0 dark:bg-surface-900 shadow-2xl"
+      >
+        <p-table
+          [value]="products()"
+          [paginator]="true"
+          [rows]="pageSize()"
+          [totalRecords]="totalElements()"
+          [lazy]="true"
+          (onPage)="onPageChange($event)"
+          [rowsPerPageOptions]="[10, 20, 50]"
+          [paginatorDropdownAppendTo]="'body'"
+          styleClass="w-full"
+          [rowHover]="true"
+          dataKey="id"
+        >
+          <ng-template pTemplate="header">
+            <tr class="border-b border-surface-200 dark:border-surface-700">
+              <th
+                class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider w-16"
+              ></th>
+              <th
+                class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
+              >
+                Código
+              </th>
+              <th
+                class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
+              >
+                Nombre
+              </th>
+              <th
+                class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
+              >
+                Categoría
+              </th>
+              <th
+                class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
+              >
+                Precio
+              </th>
+              <th
+                class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
+              >
+                Stock
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-product>
+            <tr
+              class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors cursor-pointer"
+              (click)="openDetail(product)"
+            >
+              <td class="px-4 py-3 text-center">
+                @if (buildPhotoUrl(product.photo); as photoUrl) {
+                  <p-image
+                    [src]="photoUrl"
+                    [alt]="product.name"
+                    width="40"
+                    height="40"
+                    [preview]="true"
+                    imageClass="rounded object-cover"
+                    class="inline-block"
+                  >
+                    <ng-template pTemplate="error">
+                      <div
+                        class="w-10 h-10 rounded bg-surface-100 dark:bg-surface-700 flex items-center justify-center"
+                      >
+                        <i class="pi pi-image text-sm text-surface-400"></i>
+                      </div>
+                    </ng-template>
+                  </p-image>
+                } @else {
+                  <div
+                    class="w-10 h-10 rounded bg-surface-100 dark:bg-surface-700 flex items-center justify-center mx-auto"
+                  >
+                    <i class="pi pi-image text-sm text-surface-400"></i>
+                  </div>
+                }
+              </td>
+              <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">
+                {{ product.code }}
+              </td>
+              <td class="px-4 py-3 font-medium text-surface-900 dark:text-surface-100">
+                {{ product.name }}
+              </td>
+              <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">
+                {{ product.categoryName }}
+              </td>
+              <td class="px-4 py-3 text-right font-medium tabular-nums">
+                {{ product.price | currency: 'USD' : 'symbol' }}
+              </td>
+              <td class="px-4 py-3 text-center">
+                @if (product.availableStock > 0) {
+                  <p-tag value="{{ product.availableStock }}" severity="success" />
+                } @else {
+                  <p-tag value="Agotado" severity="danger" />
+                }
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
     </div>
   }
 </div>
 
 <app-product-detail-dialog [(visible)]="dialogVisible" [product]="selectedProduct()" />
+
+<app-pdf-viewer-dialog />
