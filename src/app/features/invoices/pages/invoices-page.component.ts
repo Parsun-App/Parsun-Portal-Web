@@ -158,12 +158,12 @@ export class InvoicesPageComponent implements OnInit {
   readonly emptyConfig = computed(() => {
     if (this.hasActiveFilters())
       return {
-        icon: 'pi pi-file-invoice',
+        icon: 'pi pi-receipt',
         title: 'Sin resultados',
         message: 'No encontramos resultados para tu búsqueda o filtros actuales.',
       };
     return {
-      icon: 'pi pi-file-invoice',
+      icon: 'pi pi-receipt',
       title: 'No hay facturas',
       message: 'Tus facturas aparecerán aquí cuando los tengas.',
     };

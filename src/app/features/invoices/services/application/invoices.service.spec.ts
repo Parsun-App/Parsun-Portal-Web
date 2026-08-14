@@ -104,7 +104,7 @@ describe('InvoicesService', () => {
     service.onStatusFilterChange('PAID');
     expect(service.filterStatus()).toBe('PAID');
     expect(apiMock.list.mock.calls.length).toBe(callsBefore + 1);
-    expect(apiMock.list).toHaveBeenLastCalledWith({ status: 'PAID' });
+    expect(apiMock.list).toHaveBeenLastCalledWith({ statuses: ['PAID'] });
   });
 
   it('should reset search and status filters and reload', () => {

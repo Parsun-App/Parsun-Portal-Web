@@ -28,13 +28,13 @@ export class InvoicesService {
 
   load(): void {
     this.loading.set(true);
-    const params: { search?: string; status?: string; dateFrom?: string; dateTo?: string } = {};
+    const params: { search?: string; statuses?: string[]; dateFrom?: string; dateTo?: string } = {};
     const search = this.searchTerm();
     const status = this.filterStatus();
     const from = this.dateFrom();
     const to = this.dateTo();
     if (search) params.search = search;
-    if (status) params.status = status;
+    if (status) params.statuses = [status];
     if (from) params.dateFrom = from;
     if (to) params.dateTo = to;
     this.api
