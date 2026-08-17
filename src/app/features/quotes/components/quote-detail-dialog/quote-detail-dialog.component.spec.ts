@@ -12,4 +12,6 @@ describe('QuoteDetailDialogComponent', () => {
   it('creates the dialog', () => expect(fixture.componentInstance).toBeTruthy());
   it('identifies drafts as editable', () =>
     expect(fixture.componentInstance.isDraft('DRAFT')).toBe(true));
+  it('maps customer drafts to the warn severity', () =>
+    expect(fixture.componentInstance.statusSeverity('CUSTOMER_DRAFT')).toBe('warn'));
 });

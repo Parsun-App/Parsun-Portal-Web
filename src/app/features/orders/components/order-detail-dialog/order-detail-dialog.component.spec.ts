@@ -12,4 +12,6 @@ describe('OrderDetailDialogComponent', () => {
   it('creates the dialog', () => expect(fixture.componentInstance).toBeTruthy());
   it('identifies customer drafts as editable', () =>
     expect(fixture.componentInstance.isDraft('CUSTOMER_DRAFT')).toBe(true));
+  it('maps customer drafts to the warn severity', () =>
+    expect(fixture.componentInstance.statusSeverity('CUSTOMER_DRAFT')).toBe('warn'));
 });

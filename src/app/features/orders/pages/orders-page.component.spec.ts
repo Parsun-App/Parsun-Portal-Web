@@ -168,6 +168,10 @@ describe('OrdersPageComponent', () => {
     expect(component.statusSeverity('DRAFT')).toBe('info');
   });
 
+  it('should map customer draft orders to the warn severity', () => {
+    expect(component.statusSeverity('CUSTOMER_DRAFT')).toBe('warn');
+  });
+
   it('should map cancelled orders to the danger severity', () => {
     expect(component.statusSeverity('CANCELLED')).toBe('danger');
   });
