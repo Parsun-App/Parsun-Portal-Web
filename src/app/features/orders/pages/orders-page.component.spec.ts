@@ -97,12 +97,12 @@ describe('OrdersPageComponent', () => {
     expect(component.orders).toBe(serviceMock.orders);
   });
 
-  it('should count active filters from search and status', () => {
+  it('should count panel filters without counting the search term', () => {
     expect(component.activeFilterCount()).toBe(0);
     serviceMock.searchTerm.set('acme');
-    expect(component.activeFilterCount()).toBe(1);
+    expect(component.activeFilterCount()).toBe(0);
     serviceMock.filterStatus.set('DRAFT');
-    expect(component.activeFilterCount()).toBe(2);
+    expect(component.activeFilterCount()).toBe(1);
   });
 
   it('should delegate clear filters to the service', () => {

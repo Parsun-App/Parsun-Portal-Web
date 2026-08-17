@@ -10,16 +10,12 @@
   >
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
       <div class="flex flex-col gap-3 sm:flex-row sm:flex-1 sm:items-center">
-        <p-iconfield class="w-full sm:w-72">
-          <p-inputicon class="pi pi-search" />
-          <input
-            pInputText
-            [ngModel]="searchTerm()"
-            (ngModelChange)="searchChanged($event)"
-            placeholder="Buscar productos..."
-            class="w-full"
-          />
-        </p-iconfield>
+        <app-search-field
+          class="w-full sm:w-80"
+          [value]="searchTerm()"
+          placeholder="Buscar productos..."
+          (search)="searchChanged($event)"
+        />
         <p-select
           [ngModel]="selectedCategory()"
           (ngModelChange)="onCategoryChange($event)"
@@ -102,6 +98,9 @@
               <h3 class="font-semibold text-surface-900 dark:text-surface-100 line-clamp-2">
                 {{ product.name }}
               </h3>
+              <div class="shrink-0" (click)="$event.stopPropagation()">
+                <app-list-action-buttons [actions]="actionsFor(product)" />
+              </div>
             </div>
             <p class="text-xs font-mono text-surface-500">{{ product.code }}</p>
             <p-tag [value]="product.categoryName" severity="info" styleClass="text-xs self-start" />
@@ -166,10 +165,15 @@
                 </div>
               }
               <div class="flex-1 min-w-0">
-                <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm line-clamp-2">
+                <h3
+                  class="font-semibold text-surface-900 dark:text-surface-100 text-sm line-clamp-2"
+                >
                   {{ product.name }}
                 </h3>
                 <p class="text-xs font-mono text-surface-500 mt-0.5">{{ product.code }}</p>
+              </div>
+              <div class="shrink-0" (click)="$event.stopPropagation()">
+                <app-list-action-buttons [actions]="actionsFor(product)" />
               </div>
             </div>
             <div class="flex items-center justify-between">
@@ -251,6 +255,11 @@
               >
                 Stock
               </th>
+              <th
+                class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider w-20"
+              >
+                Acciones
+              </th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-product>
@@ -284,6 +293,9 @@
                     <i class="pi pi-image text-sm text-surface-400"></i>
                   </div>
                 }
+              </td>
+              <td class="px-4 py-3 text-center" (click)="$event.stopPropagation()">
+                <app-list-action-buttons [actions]="actionsFor(product)" />
               </td>
               <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">
                 {{ product.code }}

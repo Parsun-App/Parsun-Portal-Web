@@ -30,12 +30,17 @@ import { ConfirmationService } from 'primeng/api';
 import { Subject, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QuotesService } from '@features/quotes/services/application/quotes.service';
+import { PortalQuoteList } from '@features/quotes/models';
 import { ProductsApiService } from '@features/products/services/api/products-api.service';
 import { PortalProduct } from '@features/products/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 import { MetricCardComponent, PageHeaderComponent } from '@shared/components/ui';
-import { ListFiltersComponent } from '@shared/components/list';
+import {
+  ListActionButtonsComponent,
+  ListFiltersComponent,
+  type ListAction,
+} from '@shared/components/list';
 import { QuoteDetailDialogComponent } from '@features/quotes/components/quote-detail-dialog/quote-detail-dialog.component';
 import { QuoteFormDialogComponent } from '@features/quotes/components/quote-form-dialog/quote-form-dialog.component';
 import { QUOTES_MESSAGES } from '@features/quotes/messages/quotes.messages';
@@ -74,6 +79,7 @@ interface FormLine {
     PaginatorModule,
     EmptyStateComponent,
     ListFiltersComponent,
+    ListActionButtonsComponent,
     MetricCardComponent,
     PageHeaderComponent,
     QuoteDetailDialogComponent,
@@ -146,7 +152,6 @@ export class QuotesPageComponent implements OnInit {
 
   readonly activeFilterCount = computed(() => {
     let count = 0;
-    if (this.searchTerm()) count++;
     if (this.filterStatus()) count++;
     if (this.dateFrom() || this.dateTo()) count++;
     return count;
@@ -326,6 +331,24 @@ export class QuotesPageComponent implements OnInit {
 
   openDetail(id: string): void {
     this.quotesService.openDetail(id);
+  }
+
+  actionsFor(quote: PortalQuoteList): ListAction[] {
+    const actions: ListAction[] = [
+      { label: 'Ver detalle', icon: 'pi pi-eye', command: () => this.openDetail(quote.id) },
+    ];
+    if (this.isDraft(quote.status)) {
+      actions.push(
+        { label: 'Editar', icon: 'pi pi-pencil', command: () => this.editQuote(quote.id) },
+        {
+          label: 'Cancelar',
+          icon: 'pi pi-trash',
+          command: () => this.cancelQuote(quote.id),
+          danger: true,
+        },
+      );
+    }
+    return actions;
   }
 
   closeDetail(): void {

@@ -5,19 +5,11 @@
     class="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center sm:gap-4"
   >
     <div class="flex w-full items-center gap-2 sm:w-auto">
-      <p-iconField iconPosition="left" class="flex-1 sm:min-w-[280px] sm:flex-none">
-        <p-inputIcon styleClass="pi pi-search" />
-        <input
-          #searchInput
-          pInputText
-          type="search"
-          [value]="searchTerm()"
-          (input)="searchChanged.emit(searchInput.value)"
-          placeholder="Buscar..."
-          class="w-full"
-          aria-label="Buscar"
-        />
-      </p-iconField>
+      <app-search-field
+        class="min-w-0 flex-1 sm:min-w-[280px] sm:flex-none"
+        [value]="searchTerm()"
+        (search)="searchChanged.emit($event)"
+      />
       <p-button
         icon="pi pi-filter"
         [outlined]="true"

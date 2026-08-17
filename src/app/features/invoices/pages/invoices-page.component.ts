@@ -35,7 +35,11 @@ import { PortalInvoiceList } from '@features/invoices/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 import { MetricCardComponent, PageHeaderComponent } from '@shared/components/ui';
-import { ListFiltersComponent } from '@shared/components/list';
+import {
+  ListActionButtonsComponent,
+  ListFiltersComponent,
+  type ListAction,
+} from '@shared/components/list';
 import { InvoiceDetailDialogComponent } from '@features/invoices/components/invoice-detail-dialog/invoice-detail-dialog.component';
 import { InvoicePaymentDialogComponent } from '@features/invoices/components/invoice-payment-dialog/invoice-payment-dialog.component';
 
@@ -67,6 +71,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
     InvoiceDetailDialogComponent,
     InvoicePaymentDialogComponent,
     ListFiltersComponent,
+    ListActionButtonsComponent,
     MetricCardComponent,
     PageHeaderComponent,
   ],
@@ -141,7 +146,6 @@ export class InvoicesPageComponent implements OnInit {
 
   readonly activeFilterCount = computed(() => {
     let count = 0;
-    if (this.searchTerm()) count++;
     if (this.filterStatus()) count++;
     if (this.dateFrom() || this.dateTo()) count++;
     return count;
@@ -328,6 +332,20 @@ export class InvoicesPageComponent implements OnInit {
 
   openDetail(id: string): void {
     this.invoicesService.openDetail(id);
+  }
+
+  actionsFor(invoice: PortalInvoiceList): ListAction[] {
+    const actions: ListAction[] = [
+      { label: 'Ver detalle', icon: 'pi pi-eye', command: () => this.openDetail(invoice.id) },
+    ];
+    if (this.isPending(invoice)) {
+      actions.push({
+        label: 'Pagar',
+        icon: 'pi pi-credit-card',
+        command: () => this.openPayDialog(invoice),
+      });
+    }
+    return actions;
   }
   parseDate(dateStr: string): Date {
     return new Date(dateStr + 'T00:00:00');

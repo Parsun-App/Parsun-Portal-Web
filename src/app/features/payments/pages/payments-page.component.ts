@@ -27,6 +27,7 @@ import { PaginatorModule } from 'primeng/paginator';
 import type { PaginatorState } from 'primeng/paginator';
 import { MessageService } from 'primeng/api';
 import { PaymentsService } from '@features/payments/services/application/payments.service';
+import { PortalPaymentList } from '@features/payments/models';
 import {
   PaymentsApiService,
   PaymentMethod,
@@ -34,7 +35,11 @@ import {
 import { getStatusLabel } from '@shared/utils/status-labels';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 import { MetricCardComponent, PageHeaderComponent } from '@shared/components/ui';
-import { ListFiltersComponent } from '@shared/components/list';
+import {
+  ListActionButtonsComponent,
+  ListFiltersComponent,
+  type ListAction,
+} from '@shared/components/list';
 import { PaymentDetailDialogComponent } from '@features/payments/components/payment-detail-dialog/payment-detail-dialog.component';
 import { clearNotificationFocusFromUrl } from '@shared/utils/notification-focus-url';
 
@@ -64,6 +69,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
     PaginatorModule,
     EmptyStateComponent,
     ListFiltersComponent,
+    ListActionButtonsComponent,
     MetricCardComponent,
     PageHeaderComponent,
     PaymentDetailDialogComponent,
@@ -131,7 +137,6 @@ export class PaymentsPageComponent implements OnInit {
 
   readonly activeFilterCount = computed(() => {
     let count = 0;
-    if (this.searchTerm()) count++;
     if (this.filterStatus()) count++;
     if (this.dateFrom() || this.dateTo()) count++;
     return count;
@@ -272,6 +277,12 @@ export class PaymentsPageComponent implements OnInit {
 
   openDetail(id: string): void {
     this.paymentsService.openDetail(id);
+  }
+
+  actionsFor(payment: PortalPaymentList): ListAction[] {
+    return [
+      { label: 'Ver detalle', icon: 'pi pi-eye', command: () => this.openDetail(payment.id) },
+    ];
   }
 
   closeDetail(): void {

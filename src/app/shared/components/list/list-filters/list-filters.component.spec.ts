@@ -1,7 +1,9 @@
 import { ComponentRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ListFiltersComponent } from '@shared/components/list/list-filters/list-filters.component';
+import { SearchFieldComponent } from '@shared/components/ui';
 
 describe('ListFiltersComponent', () => {
   let fixture: ComponentFixture<ListFiltersComponent>;
@@ -23,5 +25,11 @@ describe('ListFiltersComponent', () => {
     fixture.componentInstance.filtersCleared.emit();
 
     expect(listener).toHaveBeenCalledOnce();
+  });
+
+  it('uses the shared explicit search field', () => {
+    fixture.detectChanges();
+
+    expect(fixture.debugElement.queryAll(By.directive(SearchFieldComponent))).toHaveLength(1);
   });
 });

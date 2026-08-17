@@ -29,12 +29,17 @@ import { ConfirmationService } from 'primeng/api';
 import { Subject, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OrdersService } from '@features/orders/services/application/orders.service';
+import { PortalOrderList } from '@features/orders/models';
 import { ProductsApiService } from '@features/products/services/api/products-api.service';
 import { PortalProduct } from '@features/products/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 import { MetricCardComponent, PageHeaderComponent } from '@shared/components/ui';
-import { ListFiltersComponent } from '@shared/components/list';
+import {
+  ListActionButtonsComponent,
+  ListFiltersComponent,
+  type ListAction,
+} from '@shared/components/list';
 import { OrderDetailDialogComponent } from '@features/orders/components/order-detail-dialog/order-detail-dialog.component';
 import { OrderFormDialogComponent } from '@features/orders/components/order-form-dialog/order-form-dialog.component';
 import { ORDERS_MESSAGES } from '@features/orders/messages/orders.messages';
@@ -73,6 +78,7 @@ interface FormLine {
     PaginatorModule,
     EmptyStateComponent,
     ListFiltersComponent,
+    ListActionButtonsComponent,
     MetricCardComponent,
     OrderDetailDialogComponent,
     OrderFormDialogComponent,
@@ -142,7 +148,6 @@ export class OrdersPageComponent implements OnInit {
 
   readonly activeFilterCount = computed(() => {
     let count = 0;
-    if (this.searchTerm()) count++;
     if (this.filterStatus()) count++;
     if (this.dateFrom() || this.dateTo()) count++;
     return count;
@@ -322,6 +327,24 @@ export class OrdersPageComponent implements OnInit {
 
   openDetail(id: string): void {
     this.ordersService.openDetail(id);
+  }
+
+  actionsFor(order: PortalOrderList): ListAction[] {
+    const actions: ListAction[] = [
+      { label: 'Ver detalle', icon: 'pi pi-eye', command: () => this.openDetail(order.id) },
+    ];
+    if (this.isDraft(order.status)) {
+      actions.push(
+        { label: 'Editar', icon: 'pi pi-pencil', command: () => this.editOrder(order.id) },
+        {
+          label: 'Cancelar',
+          icon: 'pi pi-trash',
+          command: () => this.cancelOrder(order.id),
+          danger: true,
+        },
+      );
+    }
+    return actions;
   }
 
   closeDetail(): void {

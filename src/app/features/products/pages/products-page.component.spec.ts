@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
@@ -8,6 +9,7 @@ import { MessageService } from 'primeng/api';
 import { ProductsPageComponent } from '@features/products/pages/products-page.component';
 import { ProductsService } from '@features/products/services/application/products.service';
 import { PortalProduct } from '@features/products/models';
+import { SearchFieldComponent } from '@shared/components/ui';
 
 const PRODUCTS: PortalProduct[] = [
   {
@@ -98,6 +100,12 @@ describe('ProductsPageComponent', () => {
   it('should delegate search changes to the service', () => {
     component.searchChanged('mesa');
     expect(serviceMock.searchChanged).toHaveBeenCalledWith('mesa');
+  });
+
+  it('should use the shared explicit search field', () => {
+    const searchField = fixture.debugElement.queryAll(By.directive(SearchFieldComponent));
+
+    expect(searchField).toHaveLength(1);
   });
 
   it('should delegate category changes to the service', () => {

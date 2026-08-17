@@ -139,12 +139,12 @@ describe('QuotesPageComponent', () => {
     expect(component.quotes).toBe(serviceMock.quotes);
   });
 
-  it('should count active filters from search and status', () => {
+  it('should count panel filters without counting the search term', () => {
     expect(component.activeFilterCount()).toBe(0);
     serviceMock.searchTerm.set('acme');
-    expect(component.activeFilterCount()).toBe(1);
+    expect(component.activeFilterCount()).toBe(0);
     serviceMock.filterStatus.set('SENT');
-    expect(component.activeFilterCount()).toBe(2);
+    expect(component.activeFilterCount()).toBe(1);
   });
 
   it('should delegate clear filters to the service', () => {

@@ -9,9 +9,6 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
-import { InputTextModule } from 'primeng/inputtext';
-import { IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
 import { SelectModule } from 'primeng/select';
 import { TableModule, TablePageEvent } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
@@ -23,7 +20,8 @@ import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { ProductsService } from '@features/products/services/application/products.service';
 import { PortalProduct } from '@features/products/models';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
-import { PageHeaderComponent } from '@shared/components/ui';
+import { PageHeaderComponent, SearchFieldComponent } from '@shared/components/ui';
+import { ListActionButtonsComponent, type ListAction } from '@shared/components/list';
 import { ProductDetailDialogComponent } from '@features/products/components/product-detail-dialog/product-detail-dialog.component';
 import { PdfViewerDialogComponent, PdfViewerService } from '@core/pdf-viewer';
 import { environment } from '@env/environment';
@@ -38,9 +36,6 @@ const VIEW_MODE_STORAGE_KEY = 'parsun-products-view-mode';
   imports: [
     FormsModule,
     CurrencyPipe,
-    InputTextModule,
-    IconFieldModule,
-    InputIconModule,
     SelectModule,
     TableModule,
     TagModule,
@@ -51,6 +46,8 @@ const VIEW_MODE_STORAGE_KEY = 'parsun-products-view-mode';
     PaginatorModule,
     EmptyStateComponent,
     PageHeaderComponent,
+    SearchFieldComponent,
+    ListActionButtonsComponent,
     ProductDetailDialogComponent,
     PdfViewerDialogComponent,
   ],
@@ -128,6 +125,10 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   openDetail(product: PortalProduct): void {
     this.selectedProduct.set(product);
     this.dialogVisible.set(true);
+  }
+
+  actionsFor(product: PortalProduct): ListAction[] {
+    return [{ label: 'Ver detalle', icon: 'pi pi-eye', command: () => this.openDetail(product) }];
   }
 
   downloadCatalog(): void {

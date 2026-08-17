@@ -4,7 +4,12 @@
     subtitle="Gestiona tus presupuestos y solicitudes"
     icon="pi pi-file-edit"
   >
-    <p-button label="Nuevo presupuesto" icon="pi pi-plus" severity="contrast" (click)="openCreateDialog()" />
+    <p-button
+      label="Nuevo presupuesto"
+      icon="pi pi-plus"
+      severity="contrast"
+      (click)="openCreateDialog()"
+    />
   </app-page-header>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -88,36 +93,10 @@
                 }}</span>
               </div>
             </div>
-            <div class="flex gap-1 pt-3 border-t border-surface-100 dark:border-surface-700">
-              <p-button
-                icon="pi pi-eye"
-                (onClick)="openDetail(quote.id)"
-                severity="secondary"
-                [text]="true"
-                [rounded]="true"
-                pTooltip="Ver detalle"
-                size="small"
-              />
-              @if (isDraft(quote.status)) {
-                <p-button
-                  icon="pi pi-pencil"
-                  (onClick)="editQuote(quote.id)"
-                  severity="info"
-                  [text]="true"
-                  [rounded]="true"
-                  pTooltip="Editar"
-                  size="small"
-                />
-                <p-button
-                  icon="pi pi-trash"
-                  (onClick)="cancelQuote(quote.id)"
-                  severity="danger"
-                  [text]="true"
-                  [rounded]="true"
-                  pTooltip="Cancelar"
-                  size="small"
-                />
-              }
+            <div
+              class="flex justify-center pt-3 border-t border-surface-100 dark:border-surface-700"
+            >
+              <app-list-action-buttons [actions]="actionsFor(quote)" />
             </div>
           </div>
         }
@@ -208,34 +187,7 @@
                 {{ quote.subtotal | currency: 'USD' : 'symbol' }}
               </td>
               <td class="px-4 py-3 text-center">
-                <div class="flex items-center justify-center gap-1">
-                  <p-button
-                    icon="pi pi-eye"
-                    (onClick)="openDetail(quote.id)"
-                    severity="secondary"
-                    [text]="true"
-                    [rounded]="true"
-                    pTooltip="Ver detalle"
-                  />
-                  @if (isDraft(quote.status)) {
-                    <p-button
-                      icon="pi pi-pencil"
-                      (onClick)="editQuote(quote.id)"
-                      severity="info"
-                      [text]="true"
-                      [rounded]="true"
-                      pTooltip="Editar"
-                    />
-                    <p-button
-                      icon="pi pi-trash"
-                      (onClick)="cancelQuote(quote.id)"
-                      severity="danger"
-                      [text]="true"
-                      [rounded]="true"
-                      pTooltip="Cancelar"
-                    />
-                  }
-                </div>
+                <app-list-action-buttons [actions]="actionsFor(quote)" />
               </td>
             </tr>
           </ng-template>

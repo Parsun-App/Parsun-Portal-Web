@@ -2,12 +2,10 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
-import { IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
-import { InputTextModule } from 'primeng/inputtext';
 import { PopoverModule } from 'primeng/popover';
 import { SelectModule } from 'primeng/select';
 import { TooltipModule } from 'primeng/tooltip';
+import { SearchFieldComponent } from '@shared/components/ui';
 
 export interface ListFilterOption {
   label: string;
@@ -21,12 +19,10 @@ export interface ListFilterOption {
     FormsModule,
     ButtonModule,
     DatePickerModule,
-    IconFieldModule,
-    InputIconModule,
-    InputTextModule,
     PopoverModule,
     SelectModule,
     TooltipModule,
+    SearchFieldComponent,
   ],
   templateUrl: './list-filters.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

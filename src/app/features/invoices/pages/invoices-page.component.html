@@ -1,16 +1,12 @@
 <div class="flex flex-col gap-6">
-  <app-page-header
-    title="Facturas"
-    subtitle="Gestiona tus facturas"
-    icon="pi pi-receipt"
-  >
+  <app-page-header title="Facturas" subtitle="Gestiona tus facturas" icon="pi pi-receipt">
     @if (pendingCount() > 0) {
-        <p-button
-          label="Pagar Deuda"
-          icon="pi pi-dollar"
-          severity="contrast"
-          (click)="openPayAll()"
-        />
+      <p-button
+        label="Pagar Deuda"
+        icon="pi pi-dollar"
+        severity="contrast"
+        (click)="openPayAll()"
+      />
     }
   </app-page-header>
 
@@ -134,27 +130,10 @@
                 </div>
               }
             </div>
-            <div class="flex gap-1 pt-3 border-t border-surface-100 dark:border-surface-700">
-              <p-button
-                icon="pi pi-eye"
-                (onClick)="openDetail(invoice.id)"
-                severity="secondary"
-                [text]="true"
-                [rounded]="true"
-                pTooltip="Ver detalle"
-                size="small"
-              />
-              @if (isPending(invoice)) {
-                <p-button
-                  icon="pi pi-credit-card"
-                  (onClick)="openPayDialog(invoice)"
-                  severity="success"
-                  [text]="true"
-                  [rounded]="true"
-                  pTooltip="Pagar"
-                  size="small"
-                />
-              }
+            <div
+              class="flex justify-center pt-3 border-t border-surface-100 dark:border-surface-700"
+            >
+              <app-list-action-buttons [actions]="actionsFor(invoice)" />
             </div>
           </div>
         }
@@ -267,26 +246,7 @@
                 {{ invoice.pendingApprovalAmount || 0 | currency: 'USD' : 'symbol' }}
               </td>
               <td class="px-4 py-3 text-center">
-                <div class="flex items-center justify-center gap-1">
-                  <p-button
-                    icon="pi pi-eye"
-                    (onClick)="openDetail(invoice.id)"
-                    severity="secondary"
-                    [text]="true"
-                    [rounded]="true"
-                    pTooltip="Ver detalle"
-                  />
-                  @if (isPending(invoice)) {
-                    <p-button
-                      icon="pi pi-credit-card"
-                      (onClick)="openPayDialog(invoice)"
-                      severity="success"
-                      [text]="true"
-                      [rounded]="true"
-                      pTooltip="Pagar"
-                    />
-                  }
-                </div>
+                <app-list-action-buttons [actions]="actionsFor(invoice)" />
               </td>
             </tr>
           </ng-template>

@@ -87,10 +87,10 @@ describe('PaymentsPageComponent', () => {
     expect(component.payments).toBe(serviceMock.payments);
   });
 
-  it('should count active filters from the search term only', () => {
+  it('should not count the search term as an active panel filter', () => {
     expect(component.activeFilterCount()).toBe(0);
     serviceMock.searchTerm.set('PAG-0001');
-    expect(component.activeFilterCount()).toBe(1);
+    expect(component.activeFilterCount()).toBe(0);
   });
 
   it('should delegate clear filters to the service', () => {
