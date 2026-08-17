@@ -2,6 +2,7 @@ import { ComponentRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { Popover } from 'primeng/popover';
 import { ListFiltersComponent } from '@shared/components/list/list-filters/list-filters.component';
 import { SearchFieldComponent } from '@shared/components/ui';
 
@@ -31,5 +32,13 @@ describe('ListFiltersComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.debugElement.queryAll(By.directive(SearchFieldComponent))).toHaveLength(1);
+  });
+
+  it('does not focus the date field when the filter popover opens', () => {
+    fixture.detectChanges();
+
+    const popover = fixture.debugElement.query(By.directive(Popover)).componentInstance as Popover;
+
+    expect(popover.focusOnShow).toBe(false);
   });
 });
