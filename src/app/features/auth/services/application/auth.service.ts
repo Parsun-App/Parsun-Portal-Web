@@ -68,7 +68,7 @@ export class AuthService {
       });
     }
     this.clearSession();
-    this.router.navigate(['@features/auth/login']);
+    this.router.navigate(['/auth/login']);
   }
 
   changePassword(request: ChangePasswordRequest): Observable<CustomerSummary> {

@@ -7,9 +7,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
 
   const bypassPaths = [
-    '/api/portal@features/auth/login',
-    '/api/portal@features/auth/refresh',
-    '/api/portal@features/auth/logout',
+    '/api/portal/auth/login',
+    '/api/portal/auth/refresh',
+    '/api/portal/auth/logout',
   ];
   if (bypassPaths.some((path) => req.url.includes(path))) {
     return next(req);
