@@ -294,9 +294,6 @@
                   </div>
                 }
               </td>
-              <td class="px-4 py-3 text-center" (click)="$event.stopPropagation()">
-                <app-list-action-buttons [actions]="actionsFor(product)" />
-              </td>
               <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">
                 {{ product.code }}
               </td>
@@ -315,6 +312,9 @@
                 } @else {
                   <p-tag value="Agotado" severity="danger" />
                 }
+              </td>
+              <td class="px-4 py-3 text-center" (click)="$event.stopPropagation()">
+                <app-list-action-buttons [actions]="actionsFor(product)" />
               </td>
             </tr>
           </ng-template>
