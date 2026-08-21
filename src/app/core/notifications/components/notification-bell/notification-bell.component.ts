@@ -43,6 +43,7 @@ export class NotificationBellComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.wsService.disconnect?.();
     this.destroy$.next();
     this.destroy$.complete();
   }
