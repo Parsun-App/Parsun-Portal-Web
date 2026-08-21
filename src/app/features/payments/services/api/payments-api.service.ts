@@ -63,16 +63,25 @@ export class PaymentsApiService {
     return this.http.get<PortalPaymentDetail>(`${this.portalBaseUrl}/payments/${id}`);
   }
 
-  payInvoice(invoiceId: string, request: PayInvoiceRequest): Observable<void> {
-    return this.http.post<void>(`${this.portalBaseUrl}/invoices/${invoiceId}/pay`, request);
+  payInvoice(invoiceId: string, request: PayInvoiceRequest, file?: File): Observable<void> {
+    return this.http.post<void>(
+      `${this.portalBaseUrl}/invoices/${invoiceId}/pay`,
+      this.buildPaymentFormData(request, file),
+    );
   }
 
-  payAllDebt(request: PayAllDebtRequest): Observable<void> {
-    return this.http.post<void>(`${this.portalBaseUrl}/debt/pay`, request);
+  payAllDebt(request: PayAllDebtRequest, file?: File): Observable<void> {
+    return this.http.post<void>(
+      `${this.portalBaseUrl}/debt/pay`,
+      this.buildPaymentFormData(request, file),
+    );
   }
 
-  payPartialDebt(request: PayPartialDebtRequest): Observable<void> {
-    return this.http.post<void>(`${this.portalBaseUrl}/debt/pay-partial`, request);
+  payPartialDebt(request: PayPartialDebtRequest, file?: File): Observable<void> {
+    return this.http.post<void>(
+      `${this.portalBaseUrl}/debt/pay-partial`,
+      this.buildPaymentFormData(request, file),
+    );
   }
 
   getPaymentMethods(): Observable<PaymentMethod[]> {
@@ -81,5 +90,25 @@ export class PaymentsApiService {
 
   registerPayment(formData: FormData): Observable<PortalPaymentDetail> {
     return this.http.post<PortalPaymentDetail>(`${this.portalBaseUrl}/payments/register`, formData);
+  }
+
+  checkPendingPayment(invoiceId?: string): Observable<PortalPaymentList[]> {
+    let httpParams = new HttpParams();
+    if (invoiceId) httpParams = httpParams.set('invoiceId', invoiceId);
+    return this.http.get<PortalPaymentList[]>(`${this.portalBaseUrl}/payments/pending-check`, {
+      params: httpParams,
+    });
+  }
+
+  private buildPaymentFormData(
+    request: PayInvoiceRequest | PayAllDebtRequest | PayPartialDebtRequest,
+    file?: File,
+  ): FormData {
+    const formData = new FormData();
+    formData.append('request', new Blob([JSON.stringify(request)], { type: 'application/json' }));
+    if (file) {
+      formData.append('justificante', file);
+    }
+    return formData;
   }
 }

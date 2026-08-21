@@ -32,6 +32,7 @@ import {
   PaymentMethod,
 } from '@features/payments/services/api/payments-api.service';
 import { PortalInvoiceList } from '@features/invoices/models';
+import { PortalPaymentList } from '@features/payments/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 import { MetricCardComponent, PageHeaderComponent } from '@shared/components/ui';
@@ -117,6 +118,7 @@ export class InvoicesPageComponent implements OnInit {
   readonly payDate = signal<Date | null>(new Date());
   readonly payReference = signal('');
   readonly payFile = signal<File | null>(null);
+  readonly payPendingPayment = signal<PortalPaymentList | null>(null);
   readonly paymentMethods = signal<PaymentMethod[]>([]);
 
   readonly payAllDialogVisible = signal(false);
@@ -126,6 +128,7 @@ export class InvoicesPageComponent implements OnInit {
   readonly payAllDate = signal<Date | null>(new Date());
   readonly payAllReference = signal('');
   readonly payAllFile = signal<File | null>(null);
+  readonly payAllPendingPayment = signal<PortalPaymentList | null>(null);
 
   readonly canSubmitPayAll = computed(
     () =>
@@ -217,7 +220,11 @@ export class InvoicesPageComponent implements OnInit {
     this.payDate.set(new Date());
     this.payReference.set('');
     this.payFile.set(null);
+    this.payPendingPayment.set(null);
     this.payDialogVisible.set(true);
+    this.paymentsApi.checkPendingPayment(invoice.id).subscribe({
+      next: (payments) => this.payPendingPayment.set(payments[0] ?? null),
+    });
   }
 
   onPayFileSelected(event: { files: File[] }): void {
@@ -228,12 +235,16 @@ export class InvoicesPageComponent implements OnInit {
     if (!this.canSubmitPay() || !this.payInvoiceId()) return;
     this.paying.set(true);
     this.paymentsApi
-      .payInvoice(this.payInvoiceId()!, {
-        amount: this.payAmount(),
-        paymentMethodId: this.payMethodId()!,
-        paymentDate: this.formatDate(this.payDate()!),
-        referenceNumber: this.payReference().trim() || undefined,
-      })
+      .payInvoice(
+        this.payInvoiceId()!,
+        {
+          amount: this.payAmount(),
+          paymentMethodId: this.payMethodId()!,
+          paymentDate: this.formatDate(this.payDate()!),
+          referenceNumber: this.payReference().trim() || undefined,
+        },
+        this.payFile() ?? undefined,
+      )
       .subscribe({
         next: () => {
           this.paying.set(false);
@@ -263,7 +274,11 @@ export class InvoicesPageComponent implements OnInit {
     this.payAllDate.set(new Date());
     this.payAllReference.set('');
     this.payAllFile.set(null);
+    this.payAllPendingPayment.set(null);
     this.payAllDialogVisible.set(true);
+    this.paymentsApi.checkPendingPayment().subscribe({
+      next: (payments) => this.payAllPendingPayment.set(payments[0] ?? null),
+    });
   }
 
   onPayAllFileSelected(event: { files: File[] }): void {
@@ -279,9 +294,10 @@ export class InvoicesPageComponent implements OnInit {
       referenceNumber: this.payAllReference().trim() || undefined,
       paymentDate: this.formatDate(this.payAllDate()!),
     };
+    const file = this.payAllFile() ?? undefined;
     const apiCall = useFull
-      ? this.paymentsApi.payAllDebt(req)
-      : this.paymentsApi.payPartialDebt({ ...req, amount: this.payAllAmount() });
+      ? this.paymentsApi.payAllDebt(req, file)
+      : this.paymentsApi.payPartialDebt({ ...req, amount: this.payAllAmount() }, file);
     apiCall.subscribe({
       next: () => {
         this.payingAll.set(false);

@@ -1,7 +1,8 @@
-import { CurrencyPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input, model, output } from '@angular/core';
+import { CurrencyPipe, DatePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, input, model, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PaymentMethod } from '@features/payments/services/api/payments-api.service';
+import { PortalPaymentList } from '@features/payments/models';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
 import { DialogModule } from 'primeng/dialog';
@@ -17,6 +18,7 @@ import { SelectModule } from 'primeng/select';
     ButtonModule,
     CurrencyPipe,
     DatePickerModule,
+    DatePipe,
     DialogModule,
     FileUploadModule,
     FormsModule,
@@ -38,6 +40,20 @@ export class InvoicePaymentDialogComponent {
   readonly processing = input(false);
   readonly debtPayment = input(false);
   readonly valid = input(false);
+  readonly pendingPayment = input<PortalPaymentList | null>(null);
   readonly fileSelected = output<{ files: File[] }>();
   readonly submitted = output<void>();
+
+  readonly pendingPaymentMethodName = computed(() => {
+    const pending = this.pendingPayment();
+    if (!pending) return null;
+    return this.paymentMethods().find((m) => m.id === pending.paymentMethodId)?.name ?? null;
+  });
+
+  openVoucher(): void {
+    const url = this.pendingPayment()?.voucherUrl;
+    if (url) {
+      window.open(url, '_blank');
+    }
+  }
 }

@@ -13,11 +13,14 @@ const PAYMENTS: PortalPaymentList[] = [
     paymentNumber: 'PAG-0001',
     customerId: 'cust-1',
     amount: 200,
+    paymentMethodId: 'pm-1',
     referenceNumber: null,
     paymentDate: '2026-08-02',
     status: 'APPLIED',
     appliedAmount: 200,
     createdAt: '2026-08-02',
+    voucherUrl: null,
+    targetInvoiceId: null,
   },
 ];
 
@@ -32,6 +35,8 @@ const DETAIL: PortalPaymentDetail = {
   status: 'APPLIED',
   appliedAmount: 200,
   createdAt: '2026-08-02',
+  voucherUrl: null,
+  targetInvoiceId: null,
 };
 
 describe('PaymentsService', () => {

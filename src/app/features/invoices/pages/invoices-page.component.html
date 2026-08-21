@@ -268,6 +268,7 @@
   [paymentMethods]="paymentMethods()"
   [processing]="paying()"
   [valid]="canSubmitPay()"
+  [pendingPayment]="payPendingPayment()"
   (fileSelected)="onPayFileSelected($event)"
   (submitted)="submitPay()"
 />
@@ -283,6 +284,7 @@
   [processing]="payingAll()"
   [valid]="canSubmitPayAll()"
   [debtPayment]="true"
+  [pendingPayment]="payAllPendingPayment()"
   (fileSelected)="onPayAllFileSelected($event)"
   (submitted)="submitPayAll()"
 />
