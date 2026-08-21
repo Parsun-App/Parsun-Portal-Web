@@ -1,89 +1,68 @@
 # Parsun Portal Web
 
-**Parsun Portal Web** is a comprehensive invoicing and business management system designed to streamline operations for businesses. It provides a cloud-based database solution where sales representatives can connect and create orders, manage inventory, track customers, and handle financial transactions.
+Parsun Portal Web is the private customer-facing Angular application for Parsun. It gives authenticated customers access to their dashboard, products, quotes, orders, invoices, payments, and profile data. The repository exists to isolate the external customer experience from the internal back-office application while using the same backend business contracts.
 
-## 🚀 Quick Start
+## Scope and modules
+
+| Module | Responsibility |
+| --- | --- |
+| Authentication | Customer login, session state, route protection, and API authentication. |
+| Dashboard | Customer-level summary and recent activity. |
+| Products | Catalog visibility for products available to the customer. |
+| Quotes | Quote listing and quote details. |
+| Orders | Customer order listing and details. |
+| Invoices | Customer invoice listing and details. |
+| Payments | Payment history and payment registration or supporting information. |
+| Profile | Customer profile and account information. |
+
+Module-specific references are maintained in [docs/modules/README.md](docs/modules/README.md).
+
+## Frontend architecture
+
+- Angular standalone components with lazy-loaded portal routes.
+- Feature code under `src/app/features`, shared UI under `src/app/shared`, and cross-cutting services under `src/app/core`.
+- Signals for view state and RxJS for API flows.
+- Route guards and HTTP interceptors protect portal resources and attach authentication context.
+- PrimeNG 21 and Tailwind CSS 4 provide the visual system.
+- The portal consumes portal-scoped API resources; authorization and customer ownership remain enforced by the backend.
+
+## Runtime stack
+
+| Concern | Technology |
+| --- | --- |
+| Framework | Angular 21 with standalone components |
+| Language | TypeScript 5.9 in strict mode |
+| UI | PrimeNG 21, PrimeIcons, Tailwind CSS 4 |
+| State and async flows | Angular Signals and RxJS |
+| Charts | Chart.js and ng2-charts |
+| Package manager | Bun 1.3.3 |
+| Testing | Vitest with jsdom |
+| Runtime | Docker Compose or Angular CLI |
+
+## Local runtime
+
+Prerequisites: Bun and Docker with Compose when using containers.
 
 ```bash
-# Clone the repository
-git clone https://gitlab.com/projects-clients/parsun/parsun-portal-web.git
-cd parsun-portal-web
-
-# Development with Docker (recommended)
-docker-compose --profile dev up
-
-# Or local installation
 bun install
 bun start
 ```
 
-The application will be available at `http://localhost:4200/`
+The local development server uses port `4200` by default. The portal Docker profile uses port `4000`:
 
-## 📚 Documentation
+```bash
+docker compose --profile dev up --build
+```
 
-### Getting Started
+The container connects to the API through the shared `parsun-api_parsun-network` network. Confirm the backend URL and other environment values in the Docker and Angular configuration before changing deployment settings.
 
-- **[Getting Started](docs/GETTING_STARTED.md)** - Installation and initial setup
-- **[Docker Development](docs/DOCKER.md)** - Container setup and development
-- **[Testing](docs/TESTING.md)** - Running tests with Vitest
-- **[Environment Variables](docs/ENVIRONMENT.md)** - Environment configuration
-- **[Architecture](docs/ARCHITECTURE.md)** - Project structure and modules
+## Verification
 
-### AI Agents
+```bash
+bun run test:run
+bun run build
+bun run format:check
+bun run e2e
+```
 
-Parsun uses specialized AI agents to maintain code quality, security, and documentation:
-
-- **[🤖 Agents Overview](docs/agents/README.md)** - Integration guide for all agents
-- **[🏗️ Angular Architecture](docs/agents/master-angular-architecture.md)** - Module development with TDD, SOLID, DRY, DDD
-- **[📝 Master Documentation](docs/agents/master-documentation.md)** - Technical documentation specialist
-- **[🔒 Master Security](docs/agents/master-security.md)** - Security auditing and compliance
-- **[⚡ Master Optimization](docs/agents/master-optimization.md)** - Performance and code quality
-
-### Module Documentation
-
-- **[📚 Modules Index](docs/modules/README.md)** - All modules with status overview
-- **[🔐 Authentication](docs/modules/auth.md)** - User authentication and authorization
-- **[📊 Dashboard](docs/modules/dashboard.md)** - Dashboard and analytics
-- **[👥 Customers](docs/modules/customers.md)** - Customer management with contacts
-- **[📦 Products](docs/modules/products.md)** - Product catalog (simple/composite types)
-- **[📍 Warehouses](docs/modules/warehouses.md)** - Warehouse and stock operations
-- **[💰 Differentials](docs/modules/differentials.md)** - Price percentage adjustments
-
-## ✨ Key Features
-
-### System Modules
-
-- **👥 Customer Management** - Customer database with order and invoice history
-- **👤 User Management** - Authentication and role-based access control
-- **📋 Order Management** - Order and quote handling convertible to invoices
-- **🧾 Invoice Management** - Billing and payment tracking
-- **🏷️ Product Management** - Inventory control with categories and stock
-- **🏭 Warehouse Management** - Multi-warehouse stock control with transfers
-
-## 🛠 Technology Stack
-
-### Frontend
-
-- **Framework**: Angular 21 (Standalone components)
-- **UI Library**: PrimeNG 21
-- **Language**: TypeScript 5.8
-- **Styling**: Tailwind CSS
-- **State Management**: Signals + RxJS
-- **Testing**: Vitest
-- **Architecture**: Single Page Application (SPA)
-
-### Backend
-
-- **Language**: Java
-- **Framework**: Spring
-- **Database**: MySQL
-
-### DevOps
-
-- **CI/CD**: GitLab Pipeline
-- **Cloud**: AWS
-- **Containers**: Docker
-
----
-
-Built with ❤️ using Angular 21 and PrimeNG 21
+The portal documentation index is available at [docs/README.md](docs/README.md), with module references under [docs/modules/README.md](docs/modules/README.md).
