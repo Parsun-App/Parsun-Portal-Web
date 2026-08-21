@@ -35,6 +35,9 @@ export class QuotesService {
   }
 
   load(): void {
+    this.quotes.set([]);
+    this.detail.set(null);
+    this.detailDialogVisible.set(false);
     this.loading.set(true);
     const params: { search?: string; status?: string; dateFrom?: string; dateTo?: string } = {};
     const search = this.searchTerm();

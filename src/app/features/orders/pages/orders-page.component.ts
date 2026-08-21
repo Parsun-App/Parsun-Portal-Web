@@ -99,6 +99,7 @@ export class OrdersPageComponent implements OnInit {
   private focusedId: string | null = null;
 
   ngOnInit(): void {
+    this.ordersService.load();
     this.ordersService.createDialogRequested$
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.openCreateDialog());

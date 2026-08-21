@@ -175,6 +175,7 @@ export class PaymentsPageComponent implements OnInit {
   readonly getStatusLabel = getStatusLabel;
 
   ngOnInit(): void {
+    this.paymentsService.load();
     this.loadPaymentMethods();
     this.route.queryParamMap.subscribe((params) => this.consumeFocus(params.get('focus')));
   }

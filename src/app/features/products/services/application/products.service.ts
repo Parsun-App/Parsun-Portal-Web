@@ -114,7 +114,12 @@ export class ProductsService {
     return this.api.downloadCatalogPdf();
   }
 
+  load(): void {
+    this.loadProducts().subscribe();
+  }
+
   private loadProducts() {
+    this.products.set([]);
     this.loading.set(true);
     return this.api
       .list(

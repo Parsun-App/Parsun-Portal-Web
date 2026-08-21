@@ -27,6 +27,9 @@ export class InvoicesService {
   }
 
   load(): void {
+    this.invoices.set([]);
+    this.detail.set(null);
+    this.detailDialogVisible.set(false);
     this.loading.set(true);
     const params: { search?: string; statuses?: string[]; dateFrom?: string; dateTo?: string } = {};
     const search = this.searchTerm();

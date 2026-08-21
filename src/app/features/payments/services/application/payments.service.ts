@@ -27,6 +27,9 @@ export class PaymentsService {
   }
 
   load(): void {
+    this.payments.set([]);
+    this.detail.set(null);
+    this.detailDialogVisible.set(false);
     this.loading.set(true);
     const params: { search?: string; dateFrom?: string; dateTo?: string; status?: string } = {};
     const search = this.searchTerm();

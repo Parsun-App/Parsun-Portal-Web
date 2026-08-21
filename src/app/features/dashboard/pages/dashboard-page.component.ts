@@ -73,6 +73,7 @@ export class DashboardPageComponent implements OnInit {
   private readonly productsApi = inject(ProductsApiService);
 
   ngOnInit(): void {
+    this.dashboardService.load();
     merge(this.quotesService.created$, this.ordersService.created$)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {

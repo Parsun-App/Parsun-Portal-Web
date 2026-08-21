@@ -95,6 +95,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
+    this.productsService.load();
     const stored = localStorage.getItem(VIEW_MODE_STORAGE_KEY);
     if (stored === 'grid' || stored === 'table') {
       this.viewMode.set(stored);

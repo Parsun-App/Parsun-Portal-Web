@@ -50,6 +50,7 @@ describe('ProductsPageComponent', () => {
     categoryOptions: ReturnType<typeof signal<{ label: string; value: string | null }[]>>;
     pageSize: ReturnType<typeof signal<number>>;
     currentPage: ReturnType<typeof signal<number>>;
+    load: ReturnType<typeof vi.fn>;
     searchChanged: ReturnType<typeof vi.fn>;
     onCategoryChange: ReturnType<typeof vi.fn>;
     onPageChange: ReturnType<typeof vi.fn>;
@@ -67,6 +68,7 @@ describe('ProductsPageComponent', () => {
       categoryOptions: signal([{ label: 'Todas las categorías', value: null }]),
       pageSize: signal(20),
       currentPage: signal(0),
+      load: vi.fn(),
       searchChanged: vi.fn(),
       onCategoryChange: vi.fn(),
       onPageChange: vi.fn(),

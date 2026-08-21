@@ -100,6 +100,7 @@ export class QuotesPageComponent implements OnInit {
   private focusedId: string | null = null;
 
   ngOnInit(): void {
+    this.quotesService.load();
     this.quotesService.createDialogRequested$
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.openCreateDialog());

@@ -187,6 +187,7 @@ export class InvoicesPageComponent implements OnInit {
   readonly getStatusLabel = getStatusLabel;
 
   ngOnInit(): void {
+    this.invoicesService.load();
     this.loadSummary();
     this.loadPaymentMethods();
   }
