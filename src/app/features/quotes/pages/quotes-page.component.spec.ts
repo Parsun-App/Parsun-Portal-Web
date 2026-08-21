@@ -4,7 +4,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideRouter, Router } from '@angular/router';
 import { signal } from '@angular/core';
 import { Subject, of } from 'rxjs';
-import { QuotesPageComponent } from './quotes-page.component';
+import { QuotesPageComponent } from '@features/quotes/pages/quotes-page.component';
 import { QuotesService } from '@features/quotes/services/application/quotes.service';
 import { ProductsApiService } from '@features/products/services/api/products-api.service';
 import { PortalQuoteList, PortalQuoteDetail } from '@features/quotes/models';
@@ -67,6 +67,7 @@ describe('QuotesPageComponent', () => {
     dateFrom: ReturnType<typeof signal<string>>;
     dateTo: ReturnType<typeof signal<string>>;
     filterStatus: ReturnType<typeof signal<string | undefined>>;
+    load: ReturnType<typeof vi.fn>;
     onSearch: ReturnType<typeof vi.fn>;
     onDateFilterChange: ReturnType<typeof vi.fn>;
     onStatusFilterChange: ReturnType<typeof vi.fn>;
@@ -93,6 +94,7 @@ describe('QuotesPageComponent', () => {
       dateFrom: signal(''),
       dateTo: signal(''),
       filterStatus: signal<string | undefined>(undefined),
+      load: vi.fn(),
       onSearch: vi.fn(),
       onDateFilterChange: vi.fn(),
       onStatusFilterChange: vi.fn(),
@@ -104,7 +106,20 @@ describe('QuotesPageComponent', () => {
       notify: vi.fn(),
       createDialogRequested$: new Subject<void>(),
     };
-    productsApiMock = { list: vi.fn().mockReturnValue(of({ content: PRODUCTS, totalElements: 1, totalPages: 1, size: 100, number: 0, first: true, last: true, empty: false })) };
+    productsApiMock = {
+      list: vi.fn().mockReturnValue(
+        of({
+          content: PRODUCTS,
+          totalElements: 1,
+          totalPages: 1,
+          size: 100,
+          number: 0,
+          first: true,
+          last: true,
+          empty: false,
+        }),
+      ),
+    };
 
     await TestBed.configureTestingModule({
       imports: [QuotesPageComponent],
@@ -126,12 +141,12 @@ describe('QuotesPageComponent', () => {
     expect(component.quotes).toBe(serviceMock.quotes);
   });
 
-  it('should count active filters from search and status', () => {
+  it('should count panel filters without counting the search term', () => {
     expect(component.activeFilterCount()).toBe(0);
     serviceMock.searchTerm.set('acme');
-    expect(component.activeFilterCount()).toBe(1);
+    expect(component.activeFilterCount()).toBe(0);
     serviceMock.filterStatus.set('SENT');
-    expect(component.activeFilterCount()).toBe(2);
+    expect(component.activeFilterCount()).toBe(1);
   });
 
   it('should delegate clear filters to the service', () => {
@@ -177,9 +192,14 @@ describe('QuotesPageComponent', () => {
 
     await expect(component.clearFocus()).resolves.toBeUndefined();
 
-    expect(navigate).toHaveBeenCalledWith([], expect.objectContaining({
-      queryParams: { focus: null }, queryParamsHandling: 'merge', replaceUrl: true,
-    }));
+    expect(navigate).toHaveBeenCalledWith(
+      [],
+      expect.objectContaining({
+        queryParams: { focus: null },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      }),
+    );
   });
 
   it('should close the detail and safely absorb a rejected focus cleanup', async () => {
@@ -277,9 +297,9 @@ describe('QuotesPageComponent', () => {
     component.updateLineProduct(0, PRODUCTS[0]);
     component.addLine();
     const availableForSecond = component.availableProductsForLine(1);
-    expect(availableForSecond.map(p => p.id)).toEqual(['p2']);
+    expect(availableForSecond.map((p) => p.id)).toEqual(['p2']);
     const availableForFirst = component.availableProductsForLine(0);
-    expect(availableForFirst.map(p => p.id)).toEqual(['p1', 'p2']);
+    expect(availableForFirst.map((p) => p.id)).toEqual(['p1', 'p2']);
   });
 
   it('should compute the draft total from the lines', () => {

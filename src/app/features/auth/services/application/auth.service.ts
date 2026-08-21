@@ -4,12 +4,20 @@ import { PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { catchError, finalize, tap, Observable, of, throwError } from 'rxjs';
-import { AuthApiService } from '../api/auth-api.service';
-import { CustomerSummary, PortalAuthResponse, ChangePasswordRequest } from '../../models/interfaces/auth.interface';
+import { AuthApiService } from '@features/auth/services/api/auth-api.service';
+import {
+  CustomerSummary,
+  PortalAuthResponse,
+  ChangePasswordRequest,
+} from '@features/auth/models/interfaces/auth.interface';
 
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
 const CUSTOMER_KEY = 'customer';
+const INACTIVE_ACCOUNT_ERROR = 'Account is not active or portal access is disabled';
+const INACTIVE_ACCOUNT_MESSAGE = 'La cuenta no está activa o el acceso al portal está deshabilitado.';
+const NON_UNIQUE_RESULT_ERROR = 'Query did not return a unique result: 2 results were returned';
+const INVALID_CREDENTIALS_MESSAGE = 'Los datos introducidos son incorrectos.';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -39,17 +47,20 @@ export class AuthService {
     this.errorSignal.set(null);
 
     return new Promise((resolve) => {
-      this.authApi.login({ rif, password }).pipe(
-        tap(response => this.setSession(response)),
-        catchError(err => {
-          this.errorSignal.set(err.error?.message || 'Error al iniciar sesión');
-          return throwError(() => err);
-        }),
-        finalize(() => this.loadingSignal.set(false)),
-      ).subscribe({
-        next: () => resolve(),
-        error: () => resolve(),
-      });
+      this.authApi
+        .login({ rif, password })
+        .pipe(
+          tap((response) => this.setSession(response)),
+          catchError((err) => {
+            this.errorSignal.set(this.translateError(err.error?.message, 'Error al iniciar sesión'));
+            return throwError(() => err);
+          }),
+          finalize(() => this.loadingSignal.set(false)),
+        )
+        .subscribe({
+          next: () => resolve(),
+          error: () => resolve(),
+        });
     });
   }
 
@@ -69,8 +80,10 @@ export class AuthService {
     this.errorSignal.set(null);
 
     return this.authApi.changePassword(request).pipe(
-      catchError(err => {
-        this.errorSignal.set(err.error?.message || 'Error al cambiar la contraseña');
+      catchError((err) => {
+        this.errorSignal.set(
+          this.translateError(err.error?.message, 'Error al cambiar la contraseña'),
+        );
         return throwError(() => err);
       }),
       finalize(() => this.loadingSignal.set(false)),
@@ -85,7 +98,7 @@ export class AuthService {
     }
 
     return this.authApi.refresh(token).pipe(
-      tap(response => {
+      tap((response) => {
         const currentCustomer = this.currentCustomerSignal();
         this.accessTokenSignal.set(response.accessToken);
         this.refreshTokenSignal.set(response.refreshToken);
@@ -124,6 +137,17 @@ export class AuthService {
       localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
       localStorage.setItem(CUSTOMER_KEY, JSON.stringify(response.customer));
     }
+  }
+
+  private translateError(message: string | undefined, fallback: string): string {
+    if (!message) return fallback;
+    if (message.trim().toLowerCase() === INACTIVE_ACCOUNT_ERROR.toLowerCase()) {
+      return INACTIVE_ACCOUNT_MESSAGE;
+    }
+    if (message.trim().toLowerCase() === NON_UNIQUE_RESULT_ERROR.toLowerCase()) {
+      return INVALID_CREDENTIALS_MESSAGE;
+    }
+    return message;
   }
 
   private clearSession(): void {

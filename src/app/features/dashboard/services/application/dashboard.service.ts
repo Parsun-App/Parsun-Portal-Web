@@ -13,6 +13,7 @@ export class DashboardService {
   readonly dashboard = signal<PortalDashboard | null>(null);
 
   load(): void {
+    this.dashboard.set(null);
     this.loading.set(true);
     this.api.getDashboard().subscribe({
       next: (data) => {

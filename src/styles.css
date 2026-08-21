@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tailwindcss-primeui";
+@import 'tailwindcss';
+@import 'tailwindcss-primeui';
 @variant dark (.my-app-dark &);
 
 :root {
@@ -96,7 +96,7 @@ textarea[pinputtextarea],
 .mobile-panel-menu .p-panelmenu-header-content:focus,
 .mobile-panel-menu .p-panelmenu-header-content.p-focus,
 .mobile-panel-menu .p-panelmenu-header-content.p-highlight,
-.mobile-panel-menu .p-panelmenu-header-content[aria-expanded="true"] {
+.mobile-panel-menu .p-panelmenu-header-content[aria-expanded='true'] {
   background: transparent !important;
   box-shadow: none !important;
 }

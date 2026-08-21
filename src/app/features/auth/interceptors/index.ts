@@ -1,1 +1,1 @@
-export { authInterceptor } from './auth.interceptor';
+export { authInterceptor } from '@features/auth/interceptors/auth.interceptor';

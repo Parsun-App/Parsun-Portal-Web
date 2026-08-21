@@ -27,6 +27,9 @@ export class PaymentsService {
   }
 
   load(): void {
+    this.payments.set([]);
+    this.detail.set(null);
+    this.detailDialogVisible.set(false);
     this.loading.set(true);
     const params: { search?: string; dateFrom?: string; dateTo?: string; status?: string } = {};
     const search = this.searchTerm();
@@ -37,17 +40,20 @@ export class PaymentsService {
     if (status) params.status = status;
     if (from) params.dateFrom = from;
     if (to) params.dateTo = to;
-    this.api.list(params).pipe(
-      tap(response => {
-        this.payments.set(response);
-        this.loading.set(false);
-      }),
-      catchError(() => {
-        this.loading.set(false);
-        this.messageService.add(PAYMENTS_MESSAGES.loadError);
-        return of([] as PortalPaymentList[]);
-      }),
-    ).subscribe();
+    this.api
+      .list(params)
+      .pipe(
+        tap((response) => {
+          this.payments.set(response);
+          this.loading.set(false);
+        }),
+        catchError(() => {
+          this.loading.set(false);
+          this.messageService.add(PAYMENTS_MESSAGES.loadError);
+          return of([] as PortalPaymentList[]);
+        }),
+      )
+      .subscribe();
   }
 
   scheduleLoad(): void {
@@ -80,16 +86,19 @@ export class PaymentsService {
   }
 
   openDetail(id: string): void {
-    this.api.getById(id).pipe(
-      tap(detail => {
-        this.detail.set(detail);
-        this.detailDialogVisible.set(true);
-      }),
-      catchError(() => {
-        this.messageService.add(PAYMENTS_MESSAGES.detailError);
-        return of(null as unknown as PortalPaymentDetail);
-      }),
-    ).subscribe();
+    this.api
+      .getById(id)
+      .pipe(
+        tap((detail) => {
+          this.detail.set(detail);
+          this.detailDialogVisible.set(true);
+        }),
+        catchError(() => {
+          this.messageService.add(PAYMENTS_MESSAGES.detailError);
+          return of(null as unknown as PortalPaymentDetail);
+        }),
+      )
+      .subscribe();
   }
 
   closeDetail(): void {

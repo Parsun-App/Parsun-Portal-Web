@@ -1,1 +1,1 @@
-export { PortalPreset } from './portal-theme.preset';
+export { PortalPreset } from '@core/theme/presets/portal-theme.preset';

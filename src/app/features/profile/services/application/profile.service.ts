@@ -15,16 +15,19 @@ export class ProfileService {
 
   load(): void {
     this.loading.set(true);
-    this.api.getProfile().pipe(
-      tap(profile => {
-        this.profile.set(profile);
-        this.loading.set(false);
-      }),
-      catchError(() => {
-        this.loading.set(false);
-        this.messageService.add(PROFILE_MESSAGES.loadError);
-        return of(null as unknown as PortalProfile);
-      }),
-    ).subscribe();
+    this.api
+      .getProfile()
+      .pipe(
+        tap((profile) => {
+          this.profile.set(profile);
+          this.loading.set(false);
+        }),
+        catchError(() => {
+          this.loading.set(false);
+          this.messageService.add(PROFILE_MESSAGES.loadError);
+          return of(null as unknown as PortalProfile);
+        }),
+      )
+      .subscribe();
   }
 }

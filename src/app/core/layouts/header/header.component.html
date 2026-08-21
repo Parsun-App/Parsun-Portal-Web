@@ -1,4 +1,6 @@
-<header class="flex items-center justify-end h-16 px-4 md:px-6 bg-surface-0 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700">
+<header
+  class="flex items-center justify-end h-16 px-4 md:px-6 bg-surface-0 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700"
+>
   <div class="flex items-center gap-1">
     <app-notification-bell />
     <button
@@ -6,7 +8,10 @@
       class="w-10 h-10 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 flex items-center justify-center transition-colors cursor-pointer border-0 bg-transparent"
       pTooltip="Cambiar tema"
     >
-      <i [class]="isDarkMode() ? 'pi pi-sun' : 'pi pi-moon'" class="text-surface-600 dark:text-surface-400 text-lg"></i>
+      <i
+        [class]="isDarkMode() ? 'pi pi-sun' : 'pi pi-moon'"
+        class="text-surface-600 dark:text-surface-400 text-lg"
+      ></i>
     </button>
     <button
       (click)="logout()"

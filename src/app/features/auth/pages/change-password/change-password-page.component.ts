@@ -1,15 +1,23 @@
-import { Component, signal, ChangeDetectionStrategy, inject, OnInit, OnDestroy, computed } from '@angular/core';
+import {
+  Component,
+  signal,
+  ChangeDetectionStrategy,
+  inject,
+  OnInit,
+  OnDestroy,
+  computed,
+} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { CardModule } from 'primeng/card';
 import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
-import { AuthService } from '../../services/application/auth.service';
+import { AuthService } from '@features/auth/services/application/auth.service';
 import { ProfileService } from '@features/profile/services/application/profile.service';
-import { passwordsMatchValidator } from '../../validators/password-match.validator';
-import { passwordComplexityValidator } from '../../validators/password-complexity.validator';
-import { getPasswordError } from '../../validators/password-validation.helper';
+import { passwordsMatchValidator } from '@features/auth/validators/password-match.validator';
+import { passwordComplexityValidator } from '@features/auth/validators/password-complexity.validator';
+import { getPasswordError } from '@features/auth/validators/password-validation.helper';
 
 @Component({
   selector: 'app-change-password-page',
@@ -29,27 +37,32 @@ export class ChangePasswordPageComponent implements OnInit, OnDestroy {
   readonly error = this.authService.error;
   readonly success = signal(false);
 
-  readonly form: FormGroup = this.fb.group({
-    currentPassword: ['', Validators.required],
-    newPassword: [
-      '',
-      [
-        Validators.required,
-        passwordComplexityValidator(() => this.profileService.profile()?.rif ?? null),
+  readonly form: FormGroup = this.fb.group(
+    {
+      currentPassword: ['', Validators.required],
+      newPassword: [
+        '',
+        [
+          Validators.required,
+          passwordComplexityValidator(() => this.profileService.profile()?.rif ?? null),
+        ],
       ],
-    ],
-    confirmPassword: ['', Validators.required],
-  }, { validators: passwordsMatchValidator });
+      confirmPassword: ['', Validators.required],
+    },
+    { validators: passwordsMatchValidator },
+  );
 
   private readonly newPasswordValue = signal('');
 
   readonly newPasswordError = computed(() =>
-    getPasswordError(this.newPasswordValue(), this.profileService.profile()?.rif ?? null));
+    getPasswordError(this.newPasswordValue(), this.profileService.profile()?.rif ?? null),
+  );
 
   ngOnInit(): void {
     this.valueChangesSub = this.form.valueChanges.subscribe(() => this.success.set(false));
-    this.newPasswordSub = this.form.get('newPassword')?.valueChanges.subscribe(
-      val => this.newPasswordValue.set(val ?? ''));
+    this.newPasswordSub = this.form
+      .get('newPassword')
+      ?.valueChanges.subscribe((val) => this.newPasswordValue.set(val ?? ''));
   }
 
   ngOnDestroy(): void {
@@ -61,14 +74,16 @@ export class ChangePasswordPageComponent implements OnInit, OnDestroy {
     if (this.form.invalid) return;
 
     this.success.set(false);
-    this.authService.changePassword({
-      currentPassword: this.form.value.currentPassword,
-      newPassword: this.form.value.newPassword,
-    }).subscribe({
-      next: () => {
-        this.success.set(true);
-        this.form.reset();
-      },
-    });
+    this.authService
+      .changePassword({
+        currentPassword: this.form.value.currentPassword,
+        newPassword: this.form.value.newPassword,
+      })
+      .subscribe({
+        next: () => {
+          this.success.set(true);
+          this.form.reset();
+        },
+      });
   }
 }

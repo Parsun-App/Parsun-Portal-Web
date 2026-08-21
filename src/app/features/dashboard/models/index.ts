@@ -1,1 +1,4 @@
-export type { PortalDashboard, PortalRecentActivity } from './interfaces/portal-dashboard.interface';
+export type {
+  PortalDashboard,
+  PortalRecentActivity,
+} from '@features/dashboard/models/interfaces/portal-dashboard.interface';

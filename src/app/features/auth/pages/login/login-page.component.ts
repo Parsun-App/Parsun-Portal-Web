@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
-import { AuthService } from '../../services/application/auth.service';
+import { AuthService } from '@features/auth/services/application/auth.service';
 
 @Component({
   selector: 'app-login-page',

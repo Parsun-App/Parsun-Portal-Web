@@ -1,13 +1,17 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, switchMap, throwError } from 'rxjs';
-import { AuthService } from '../services/application/auth.service';
+import { AuthService } from '@features/auth/services/application/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
 
-  const bypassPaths = ['/api/portal/auth/login', '/api/portal/auth/refresh', '/api/portal/auth/logout'];
-  if (bypassPaths.some(path => req.url.includes(path))) {
+  const bypassPaths = [
+    '/api/portal/auth/login',
+    '/api/portal/auth/refresh',
+    '/api/portal/auth/logout',
+  ];
+  if (bypassPaths.some((path) => req.url.includes(path))) {
     return next(req);
   }
 

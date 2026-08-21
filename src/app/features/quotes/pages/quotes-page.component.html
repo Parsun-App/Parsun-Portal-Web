@@ -1,94 +1,52 @@
 <div class="flex flex-col gap-6">
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-    <div class="flex items-center gap-3">
-      <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface-900 text-white dark:bg-surface-100 dark:text-surface-900">
-        <i class="pi pi-file-edit text-lg"></i>
-      </div>
-      <div>
-        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Presupuestos</h1>
-        <p class="text-surface-500 mt-1">Gestiona tus presupuestos y solicitudes</p>
-      </div>
-    </div>
-    <p-button label="Nuevo presupuesto" icon="pi pi-plus" (click)="openCreateDialog()" />
-  </div>
+  <app-page-header
+    title="Presupuestos"
+    subtitle="Gestiona tus presupuestos y solicitudes"
+    icon="pi pi-file-edit"
+  >
+    <p-button
+      label="Nuevo presupuesto"
+      icon="pi pi-plus"
+      severity="contrast"
+      (click)="openCreateDialog()"
+    />
+  </app-page-header>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-    <div class="group relative overflow-hidden rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-5 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200">
-      <div class="absolute top-0 right-0 w-20 h-20 opacity-5 group-hover:opacity-10 transition-opacity rounded-full -translate-y-1/3 translate-x-1/3" style="background: linear-gradient(135deg, #f59e0b, #d97706)"></div>
-      <div class="flex items-start justify-between">
-        <div>
-          <p class="text-2xl font-bold text-surface-900 dark:text-surface-100 tracking-tight">{{ pendingQuotes() }}</p>
-          <p class="text-xs text-surface-500 mt-1 font-medium">Presupuestos Pendientes</p>
-        </div>
-        <div class="w-11 h-11 rounded-xl flex items-center justify-center text-lg shrink-0" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white">
-          <i class="pi pi-clock"></i>
-        </div>
-      </div>
-    </div>
-    <div class="group relative overflow-hidden rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-5 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200">
-      <div class="absolute top-0 right-0 w-20 h-20 opacity-5 group-hover:opacity-10 transition-opacity rounded-full -translate-y-1/3 translate-x-1/3" style="background: linear-gradient(135deg, #22c55e, #16a34a)"></div>
-      <div class="flex items-start justify-between">
-        <div>
-          <p class="text-2xl font-bold text-surface-900 dark:text-surface-100 tracking-tight">{{ convertedQuotes() }}</p>
-          <p class="text-xs text-surface-500 mt-1 font-medium">Presupuestos Convertidos</p>
-        </div>
-        <div class="w-11 h-11 rounded-xl flex items-center justify-center text-lg shrink-0" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white">
-          <i class="pi pi-check-circle"></i>
-        </div>
-      </div>
-    </div>
-    <div class="group relative overflow-hidden rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-5 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200">
-      <div class="absolute top-0 right-0 w-20 h-20 opacity-5 group-hover:opacity-10 transition-opacity rounded-full -translate-y-1/3 translate-x-1/3" style="background: linear-gradient(135deg, #3b82f6, #2563eb)"></div>
-      <div class="flex items-start justify-between">
-        <div>
-          <p class="text-2xl font-bold text-surface-900 dark:text-surface-100 tracking-tight">{{ quotesTotal() | currency:'USD':'symbol' }}</p>
-          <p class="text-xs text-surface-500 mt-1 font-medium">Importe Total</p>
-        </div>
-        <div class="w-11 h-11 rounded-xl flex items-center justify-center text-lg shrink-0" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white">
-          <i class="pi pi-dollar"></i>
-        </div>
-      </div>
-    </div>
+    <app-metric-card
+      label="Presupuestos Pendientes"
+      [value]="pendingQuotes()"
+      icon="pi pi-clock"
+      gradient="linear-gradient(135deg, #f59e0b, #d97706)"
+    />
+    <app-metric-card
+      label="Presupuestos Convertidos"
+      [value]="convertedQuotes()"
+      icon="pi pi-check-circle"
+      gradient="linear-gradient(135deg, #22c55e, #16a34a)"
+    />
+    <app-metric-card
+      label="Importe Total"
+      [value]="quotesTotal()"
+      icon="pi pi-dollar"
+      gradient="linear-gradient(135deg, #3b82f6, #2563eb)"
+      [currency]="true"
+    />
   </div>
 
-  <div class="rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-4 shadow-2xl">
-    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center justify-between">
-      <div class="flex gap-2 items-center w-full sm:w-auto">
-        <p-iconField iconPosition="left" class="flex-1 sm:flex-none sm:min-w-[280px]">
-          <p-inputIcon styleClass="pi pi-search" />
-          <input #searchInput pInputText type="text" [value]="searchTerm()" (input)="onSearch(searchInput.value)" placeholder="Buscar..." class="w-full" />
-        </p-iconField>
-        <p-button #filterBtn icon="pi pi-filter" [outlined]="true" severity="secondary"
-          (onClick)="filterPopover.toggle($event)" pTooltip="Filtros"
-          [badge]="activeFilterCount() > 0 ? activeFilterCount().toString() : ''" badgeSeverity="contrast" />
-        <p-popover #filterPopover>
-          <div class="flex flex-col gap-4 p-1 min-w-[260px]">
-            <div class="flex items-center justify-between">
-              <span class="font-semibold text-sm">Filtros</span>
-              @if (activeFilterCount() > 0) {
-                <p-button label="Limpiar" [text]="true" size="small" severity="secondary" (onClick)="clearFilters()" />
-              }
-            </div>
-            <div class="flex flex-col gap-1">
-              <label class="text-xs font-medium text-surface-500">Estado</label>
-              <p-select [options]="statusOptions" [ngModel]="filterStatus()" (ngModelChange)="onStatusFilterChange($event)"
-                optionLabel="label" optionValue="value" placeholder="Todos" styleClass="w-full" />
-            </div>
-            <div class="flex flex-col gap-1">
-              <label class="text-xs font-medium text-surface-500">Desde</label>
-              <p-datepicker [ngModel]="dateFromDate()" (ngModelChange)="onDateFromChange($event)"
-                dateFormat="dd/mm/yy" placeholder="DD/MM/AA" styleClass="w-full" />
-            </div>
-            <div class="flex flex-col gap-1">
-              <label class="text-xs font-medium text-surface-500">Hasta</label>
-              <p-datepicker [ngModel]="dateToDate()" (ngModelChange)="onDateToChange($event)"
-                dateFormat="dd/mm/yy" placeholder="DD/MM/AA" styleClass="w-full" />
-            </div>
-          </div>
-        </p-popover>
-      </div>
-    </div>
-  </div>
+  <app-list-filters
+    [searchTerm]="searchTerm()"
+    [status]="filterStatus()"
+    [dateFrom]="dateFromDate()"
+    [dateTo]="dateToDate()"
+    [activeFilterCount]="activeFilterCount()"
+    [statusOptions]="statusOptions"
+    (searchChanged)="onSearch($event)"
+    (statusChanged)="onStatusFilterChange($event)"
+    (dateFromChanged)="onDateFromChange($event)"
+    (dateToChanged)="onDateToChange($event)"
+    (filtersCleared)="clearFilters()"
+  />
 
   @if (loading()) {
     <div class="flex items-center justify-center h-64">
@@ -101,37 +59,52 @@
     <div class="md:hidden">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
         @for (quote of mobileQuotes(); track quote.id) {
-          <div class="rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-4 shadow-sm hover:shadow-md transition-shadow">
+          <div
+            class="rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-4 shadow-sm hover:shadow-md transition-shadow"
+          >
             <div class="flex items-center justify-between mb-3">
-              <span class="font-mono text-sm font-semibold text-surface-900 dark:text-surface-100">#{{ quote.quoteNumber }}</span>
-              <p-tag [value]="getStatusLabel(quote.status)" [severity]="statusSeverity(quote.status)" [rounded]="true" styleClass="text-xs" />
+              <span class="font-mono text-sm font-semibold text-surface-900 dark:text-surface-100"
+                >#{{ quote.quoteNumber }}</span
+              >
+              <p-tag
+                [value]="getStatusLabel(quote.status)"
+                [severity]="statusSeverity(quote.status)"
+                [rounded]="true"
+                styleClass="text-xs"
+              />
             </div>
             <div class="flex flex-col gap-1.5 text-sm mb-4">
               <div class="flex justify-between">
                 <span class="text-surface-500 dark:text-surface-400">Fecha</span>
-                <span class="text-surface-900 dark:text-surface-100">{{ quote.createdAt | date:'dd/MM/yy' }}</span>
+                <span class="text-surface-900 dark:text-surface-100">{{
+                  quote.createdAt | date: 'dd/MM/yy'
+                }}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-surface-500 dark:text-surface-400">Vence</span>
-                <span class="text-surface-900 dark:text-surface-100">{{ quote.expiryDate | date:'dd/MM/yy' }}</span>
+                <span class="text-surface-900 dark:text-surface-100">{{
+                  quote.expiryDate | date: 'dd/MM/yy'
+                }}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-surface-500 dark:text-surface-400">Subtotal</span>
-                <span class="text-surface-900 dark:text-surface-100 font-medium tabular-nums">{{ quote.subtotal | currency:'USD':'symbol' }}</span>
+                <span class="text-surface-900 dark:text-surface-100 font-medium tabular-nums">{{
+                  quote.subtotal | currency: 'USD' : 'symbol'
+                }}</span>
               </div>
             </div>
-            <div class="flex gap-1 pt-3 border-t border-surface-100 dark:border-surface-700">
-              <p-button icon="pi pi-eye" (onClick)="openDetail(quote.id)" severity="secondary" [text]="true" [rounded]="true" pTooltip="Ver detalle" size="small" />
-              @if (isDraft(quote.status)) {
-                <p-button icon="pi pi-pencil" (onClick)="editQuote(quote.id)" severity="info" [text]="true" [rounded]="true" pTooltip="Editar" size="small" />
-                <p-button icon="pi pi-trash" (onClick)="cancelQuote(quote.id)" severity="danger" [text]="true" [rounded]="true" pTooltip="Cancelar" size="small" />
-              }
+            <div
+              class="flex justify-center pt-3 border-t border-surface-100 dark:border-surface-700"
+            >
+              <app-list-action-buttons [actions]="actionsFor(quote)" />
             </div>
           </div>
         }
       </div>
       @if (quotes().length > mobileRows) {
-        <div class="rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden bg-surface-0 dark:bg-surface-900 shadow-2xl">
+        <div
+          class="rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden bg-surface-0 dark:bg-surface-900 shadow-2xl"
+        >
           <p-paginator
             [rows]="mobileRows"
             [totalRecords]="quotes().length"
@@ -144,261 +117,109 @@
     </div>
 
     <div class="hidden md:block">
-    <div class="rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden bg-surface-0 dark:bg-surface-900 shadow-2xl">
-      <p-table
-        [value]="quotes()"
-        [paginator]="true"
-        [rows]="10"
-        [rowsPerPageOptions]="[10, 20, 50]"
-        [paginatorDropdownAppendTo]="'body'"
-        styleClass="w-full"
-        [rowHover]="true"
-        dataKey="id"
+      <div
+        class="rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden bg-surface-0 dark:bg-surface-900 shadow-2xl"
       >
-        <ng-template pTemplate="header">
-          <tr class="border-b border-surface-200 dark:border-surface-700">
-            <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">N° Presupuesto</th>
-            <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Fecha</th>
-            <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Estado</th>
-            <th class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Vence</th>
-            <th class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Subtotal</th>
-            <th class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider">Acciones</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-quote>
-          <tr class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors">
-            <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">{{ quote.quoteNumber }}</td>
-            <td class="px-4 py-3 text-sm text-surface-500">{{ quote.createdAt | date:'dd/MM/yy' }}</td>
-            <td class="px-4 py-3">
-              <p-tag [value]="getStatusLabel(quote.status)" [severity]="statusSeverity(quote.status)" />
-            </td>
-            <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{{ quote.expiryDate | date:'dd/MM/yy' }}</td>
-            <td class="px-4 py-3 text-right font-medium tabular-nums">{{ quote.subtotal | currency:'USD':'symbol' }}</td>
-            <td class="px-4 py-3 text-center">
-              <div class="flex items-center justify-center gap-1">
-                <p-button
-                  icon="pi pi-eye"
-                  (onClick)="openDetail(quote.id)"
-                  severity="secondary"
-                  [text]="true"
-                  [rounded]="true"
-                  pTooltip="Ver detalle"
+        <p-table
+          [value]="quotes()"
+          [paginator]="true"
+          [rows]="10"
+          [rowsPerPageOptions]="[10, 20, 50]"
+          [paginatorDropdownAppendTo]="'body'"
+          styleClass="w-full"
+          [rowHover]="true"
+          dataKey="id"
+        >
+          <ng-template pTemplate="header">
+            <tr class="border-b border-surface-200 dark:border-surface-700">
+              <th
+                class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
+              >
+                N° Presupuesto
+              </th>
+              <th
+                class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
+              >
+                Fecha
+              </th>
+              <th
+                class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
+              >
+                Estado
+              </th>
+              <th
+                class="text-left px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
+              >
+                Vence
+              </th>
+              <th
+                class="text-right px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
+              >
+                Subtotal
+              </th>
+              <th
+                class="text-center px-4 py-3 font-medium text-surface-600 dark:text-surface-400 text-xs uppercase tracking-wider"
+              >
+                Acciones
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-quote>
+            <tr
+              class="border-b border-surface-100 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors"
+            >
+              <td class="px-4 py-3 font-mono text-sm text-surface-700 dark:text-surface-300">
+                {{ quote.quoteNumber }}
+              </td>
+              <td class="px-4 py-3 text-sm text-surface-500">
+                {{ quote.createdAt | date: 'dd/MM/yy' }}
+              </td>
+              <td class="px-4 py-3">
+                <p-tag
+                  [value]="getStatusLabel(quote.status)"
+                  [severity]="statusSeverity(quote.status)"
                 />
-                @if (isDraft(quote.status)) {
-                  <p-button
-                    icon="pi pi-pencil"
-                    (onClick)="editQuote(quote.id)"
-                    severity="info"
-                    [text]="true"
-                    [rounded]="true"
-                    pTooltip="Editar"
-                  />
-                  <p-button
-                    icon="pi pi-trash"
-                    (onClick)="cancelQuote(quote.id)"
-                    severity="danger"
-                    [text]="true"
-                    [rounded]="true"
-                    pTooltip="Cancelar"
-                  />
-                }
-              </div>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </div>
+              </td>
+              <td class="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">
+                {{ quote.expiryDate | date: 'dd/MM/yy' }}
+              </td>
+              <td class="px-4 py-3 text-right font-medium tabular-nums">
+                {{ quote.subtotal | currency: 'USD' : 'symbol' }}
+              </td>
+              <td class="px-4 py-3 text-center">
+                <app-list-action-buttons [actions]="actionsFor(quote)" />
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
     </div>
   }
 </div>
 
-<p-dialog
+<app-quote-detail-dialog
   [(visible)]="detailDialogVisible"
-  (onHide)="clearFocus()"
-  [style]="{ width: 'min(52rem, calc(100vw - 2rem))' }"
-  [modal]="true"
-  [closable]="true"
-  [draggable]="false"
->
-  <ng-template pTemplate="header">
-    <div class="flex items-center gap-3">
-      <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-100 text-surface-700 dark:bg-surface-800 dark:text-surface-200"><i class="pi pi-file-edit"></i></div>
-      <div><h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100">Presupuesto {{ detail()?.quoteNumber }}</h2><p class="mt-0.5 text-xs text-surface-500">Detalle y vigencia del presupuesto</p></div>
-    </div>
-  </ng-template>
-  @if (detail(); as d) {
-    <div class="flex flex-col gap-6">
-      <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <div>
-          <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Estado</label>
-          <p class="text-sm mt-1"><p-tag [value]="getStatusLabel(d.status)" [severity]="statusSeverity(d.status)" /></p>
-        </div>
-        <div>
-          <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Vence</label>
-          <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.expiryDate | date:'dd/MM/yy' }}</p>
-        </div>
-        <div>
-          <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Creado por</label>
-          <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.createdByName }}</p>
-        </div>
-        <div>
-          <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Creada</label>
-          <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.createdAt | date:'dd/MM/yy HH:mm' }}</p>
-        </div>
-        @if (d.orderNumber) {
-          <div class="rounded-xl border border-surface-200 bg-surface-50 p-3 dark:border-surface-700 dark:bg-surface-800">
-            <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Pedido asociado</label>
-            <p class="text-sm mt-1 text-surface-900 dark:text-surface-100">{{ d.orderNumber }}</p>
-          </div>
-        }
-      </div>
-
-      @if (d.notes) {
-        <div>
-          <label class="text-xs font-medium text-surface-500 uppercase tracking-wider">Notas</label>
-          <p class="text-sm mt-1 text-surface-700 dark:text-surface-300">{{ d.notes }}</p>
-        </div>
-      }
-
-      <div>
-        <label class="text-xs font-medium text-surface-500 uppercase tracking-wider mb-2 block">Líneas</label>
-        <p-table [value]="d.lines" styleClass="w-full" dataKey="id">
-          <ng-template pTemplate="header">
-            <tr class="border-b border-surface-200 dark:border-surface-700">
-              <th class="text-left px-3 py-2 font-medium text-surface-500 text-xs">Producto</th>
-              <th class="text-right px-3 py-2 font-medium text-surface-500 text-xs">Cant.</th>
-              <th class="text-right px-3 py-2 font-medium text-surface-500 text-xs">Precio Unit.</th>
-              <th class="text-right px-3 py-2 font-medium text-surface-500 text-xs">Total</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-line>
-            <tr class="border-b border-surface-100 dark:border-surface-800">
-              <td class="px-3 py-2 text-sm">
-                <span class="font-medium text-surface-900 dark:text-surface-100">{{ line.productName }}</span>
-                <span class="text-surface-400 ml-1 font-mono text-xs">({{ line.productCode }})</span>
-              </td>
-              <td class="px-3 py-2 text-right text-sm">{{ line.quantity }}</td>
-              <td class="px-3 py-2 text-right text-sm tabular-nums">{{ line.unitPrice | currency:'USD':'symbol' }}</td>
-              <td class="px-3 py-2 text-right text-sm font-medium tabular-nums">{{ line.lineTotal | currency:'USD':'symbol' }}</td>
-            </tr>
-          </ng-template>
-        </p-table>
-        <div class="flex justify-end mt-3">
-          <span class="text-lg font-bold text-surface-900 dark:text-surface-100">{{ d.subtotal | currency:'USD':'symbol' }}</span>
-        </div>
-      </div>
-    </div>
-  }
-  <ng-template pTemplate="footer">
-    <div class="flex items-center justify-between w-full">
-      <div class="flex gap-1">
-        @if (detail(); as d) {
-          @if (isDraft(d.status)) {
-            <p-button icon="pi pi-pencil" label="Editar" (onClick)="editQuote(d.id)" severity="info" [outlined]="true" size="small" />
-            <p-button icon="pi pi-trash" label="Cancelar" (onClick)="cancelQuote(d.id)" severity="danger" [outlined]="true" size="small" />
-          }
-        }
-      </div>
-      <p-button label="Cerrar" (click)="closeDetail()" severity="secondary" [outlined]="true" />
-    </div>
-  </ng-template>
-</p-dialog>
+  [detail]="detail()"
+  (editRequested)="editQuote($event)"
+  (cancelRequested)="cancelQuote($event)"
+  (closed)="clearFocus()"
+/>
 
 <p-confirmDialog />
 
-<p-dialog
+<app-quote-form-dialog
   [(visible)]="createDialogVisible"
-  [header]="isEditing() ? 'Editar presupuesto' : 'Nuevo presupuesto'"
-  [modal]="true"
-  [style]="{ width: '42rem' }"
-  [draggable]="false"
-  [appendTo]="'body'"
->
-  <div class="flex flex-col gap-4">
-    <div>
-      <div class="flex items-center justify-between mb-2">
-        <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Líneas</label>
-        <p-button label="Agregar línea" icon="pi pi-plus" size="small" severity="secondary" [text]="true" (click)="addLine()" />
-      </div>
-
-      <div class="flex flex-col gap-3">
-        @for (line of lines(); track $index; let i = $index) {
-          <div class="p-3 rounded-lg border border-surface-200 dark:border-surface-700">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-medium text-surface-500">Línea {{ i + 1 }}</span>
-              @if (lines().length > 1) {
-                <p-button icon="pi pi-trash" size="small" severity="danger" [text]="true" (click)="removeLine(i)" />
-              }
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div class="col-span-2">
-                <label class="text-xs text-surface-500">Producto</label>
-                <p-autocomplete
-                  [ngModel]="line.product"
-                  (ngModelChange)="onLineProductChange(i, $event)"
-                  (completeMethod)="searchProducts($event, i)"
-                  [suggestions]="filteredSuggestions()"
-                  optionLabel="name"
-                  [dropdown]="true"
-                  [minLength]="0"
-                  placeholder="Buscar producto..."
-                  styleClass="w-full"
-                  inputStyleClass="w-full text-sm"
-                >
-                  <ng-template let-product pTemplate="selectedItem">
-                    <span>{{ product.name }}</span>
-                  </ng-template>
-                  <ng-template let-product pTemplate="item">
-                    <div class="flex items-center justify-between w-full">
-                      <div>
-                        <span class="font-medium">{{ product.name }}</span>
-                        <span class="text-surface-400 ml-1 font-mono text-xs">({{ product.code }})</span>
-                      </div>
-                      <span class="font-medium tabular-nums">{{ product.price | currency:'USD':'symbol' }}</span>
-                    </div>
-                  </ng-template>
-                </p-autocomplete>
-              </div>
-              <div>
-                <label class="text-xs text-surface-500">Cantidad</label>
-                <p-inputNumber
-                  [ngModel]="line.quantity"
-                  (ngModelChange)="updateLineQuantity(i, $event)"
-                  [min]="0.0001"
-                  mode="decimal"
-                  [minFractionDigits]="0"
-                  styleClass="w-full"
-                  inputStyleClass="w-full text-sm"
-                />
-              </div>
-              <div>
-                <label class="text-xs text-surface-500">Precio Unit.</label>
-                <input pInputText [value]="line.unitPrice | currency:'USD':'symbol'" readonly class="w-full text-sm bg-surface-100 dark:bg-surface-800" />
-              </div>
-            </div>
-          </div>
-        }
-      </div>
-    </div>
-
-    <div class="flex justify-end border-t border-surface-200 dark:border-surface-700 pt-3">
-      <span class="text-lg font-bold text-surface-900 dark:text-surface-100">Total: {{ draftTotal() | currency:'USD':'symbol' }}</span>
-    </div>
-
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Notas</label>
-      <textarea pInputTextarea [(ngModel)]="notes" rows="2" class="w-full" placeholder="Notas del presupuesto (opcional)"></textarea>
-    </div>
-  </div>
-
-  <ng-template pTemplate="footer">
-    <p-button label="Cancelar" severity="secondary" [text]="true" (click)="createDialogVisible.set(false)" />
-    <p-button
-      [label]="isEditing() ? 'Guardar cambios' : 'Guardar borrador'"
-      [icon]="isEditing() ? 'pi pi-check' : 'pi pi-save'"
-      [loading]="creating()"
-      [disabled]="!canSubmit()"
-      (click)="submit()"
-    />
-  </ng-template>
-</p-dialog>
+  [(notes)]="notes"
+  [editing]="isEditing()"
+  [creating]="creating()"
+  [lines]="lines()"
+  [suggestions]="filteredSuggestions()"
+  [total]="draftTotal()"
+  [valid]="canSubmit()"
+  (lineAdded)="addLine()"
+  (lineRemoved)="removeLine($event)"
+  (productChanged)="onLineProductChange($event.lineIndex, $event.product)"
+  (quantityChanged)="updateLineQuantity($event.lineIndex, $event.quantity)"
+  (productsSearched)="searchProducts($event.event, $event.lineIndex)"
+  (submitted)="submit()"
+/>

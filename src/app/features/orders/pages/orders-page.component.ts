@@ -1,4 +1,11 @@
-import { Component, inject, computed, signal, ChangeDetectionStrategy, OnInit } from '@angular/core';
+import {
+  Component,
+  inject,
+  computed,
+  signal,
+  ChangeDetectionStrategy,
+  OnInit,
+} from '@angular/core';
 import { CurrencyPipe, DatePipe, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
@@ -22,10 +29,19 @@ import { ConfirmationService } from 'primeng/api';
 import { Subject, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OrdersService } from '@features/orders/services/application/orders.service';
+import { PortalOrderList } from '@features/orders/models';
 import { ProductsApiService } from '@features/products/services/api/products-api.service';
 import { PortalProduct } from '@features/products/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
+import { MetricCardComponent, PageHeaderComponent } from '@shared/components/ui';
+import {
+  ListActionButtonsComponent,
+  ListFiltersComponent,
+  type ListAction,
+} from '@shared/components/list';
+import { OrderDetailDialogComponent } from '@features/orders/components/order-detail-dialog/order-detail-dialog.component';
+import { OrderFormDialogComponent } from '@features/orders/components/order-form-dialog/order-form-dialog.component';
 import { ORDERS_MESSAGES } from '@features/orders/messages/orders.messages';
 import { clearNotificationFocusFromUrl } from '@shared/utils/notification-focus-url';
 
@@ -41,11 +57,32 @@ interface FormLine {
   selector: 'app-orders-page',
   standalone: true,
   imports: [
-    CurrencyPipe, DatePipe, FormsModule,
-    TableModule, TagModule, DialogModule, ButtonModule,
-    ConfirmDialogModule, TooltipModule, IconFieldModule, InputIconModule,
-    InputTextModule, InputNumberModule, TextareaModule,
-    SelectModule, DatePickerModule, PopoverModule, AutoCompleteModule, PaginatorModule, EmptyStateComponent,
+    CurrencyPipe,
+    DatePipe,
+    FormsModule,
+    TableModule,
+    TagModule,
+    DialogModule,
+    ButtonModule,
+    ConfirmDialogModule,
+    TooltipModule,
+    IconFieldModule,
+    InputIconModule,
+    InputTextModule,
+    InputNumberModule,
+    TextareaModule,
+    SelectModule,
+    DatePickerModule,
+    PopoverModule,
+    AutoCompleteModule,
+    PaginatorModule,
+    EmptyStateComponent,
+    ListFiltersComponent,
+    ListActionButtonsComponent,
+    MetricCardComponent,
+    OrderDetailDialogComponent,
+    OrderFormDialogComponent,
+    PageHeaderComponent,
   ],
   providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,10 +99,13 @@ export class OrdersPageComponent implements OnInit {
   private focusedId: string | null = null;
 
   ngOnInit(): void {
+    this.ordersService.load();
     this.ordersService.createDialogRequested$
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.openCreateDialog());
-    this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe((params) => this.consumeFocus(params.get('focus')));
+    this.route.queryParamMap
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((params) => this.consumeFocus(params.get('focus')));
   }
 
   readonly loading = this.ordersService.loading;
@@ -76,8 +116,12 @@ export class OrdersPageComponent implements OnInit {
   readonly createDialogVisible = this.ordersService.createDialogVisible;
   readonly searchTerm = this.ordersService.searchTerm;
 
-  readonly pendingOrders = computed(() => this.orders().filter(o => o.status === 'DRAFT' || o.status === 'CUSTOMER_DRAFT').length);
-  readonly confirmedOrders = computed(() => this.orders().filter(o => o.status === 'CONFIRMED').length);
+  readonly pendingOrders = computed(
+    () => this.orders().filter((o) => o.status === 'DRAFT' || o.status === 'CUSTOMER_DRAFT').length,
+  );
+  readonly confirmedOrders = computed(
+    () => this.orders().filter((o) => o.status === 'CONFIRMED').length,
+  );
   readonly ordersTotal = computed(() => this.orders().reduce((s, o) => s + o.subtotal, 0));
   readonly filterStatus = this.ordersService.filterStatus;
   readonly dateFrom = this.ordersService.dateFrom;
@@ -105,13 +149,18 @@ export class OrdersPageComponent implements OnInit {
 
   readonly activeFilterCount = computed(() => {
     let count = 0;
-    if (this.searchTerm()) count++;
     if (this.filterStatus()) count++;
     if (this.dateFrom() || this.dateTo()) count++;
     return count;
   });
 
-  readonly hasActiveFilters = computed(() => Boolean(this.searchTerm()) || Boolean(this.filterStatus()) || Boolean(this.dateFrom()) || Boolean(this.dateTo()));
+  readonly hasActiveFilters = computed(
+    () =>
+      Boolean(this.searchTerm()) ||
+      Boolean(this.filterStatus()) ||
+      Boolean(this.dateFrom()) ||
+      Boolean(this.dateTo()),
+  );
 
   readonly emptyConfig = computed(() => {
     if (this.hasActiveFilters()) {
@@ -156,11 +205,11 @@ export class OrdersPageComponent implements OnInit {
     this.isEditing.set(true);
     this.editingOrderId.set(id);
     this.ensureProductsThenOpen(() => {
-      this.ordersService.loadOrderForEdit(id).subscribe(detail => {
+      this.ordersService.loadOrderForEdit(id).subscribe((detail) => {
         this.notes.set(detail.notes ?? '');
-        const productMap = new Map(this.products().map(p => [p.id, p]));
+        const productMap = new Map(this.products().map((p) => [p.id, p]));
         this.lines.set(
-          detail.lines.map(l => ({
+          detail.lines.map((l) => ({
             product: productMap.get(l.productId) ?? null,
             quantity: l.quantity,
             unitPrice: l.unitPrice,
@@ -179,18 +228,18 @@ export class OrdersPageComponent implements OnInit {
       after ? after() : this.ordersService.openCreateDialog();
       return;
     }
-    this.productsApi.list(undefined, undefined, 0, 100).subscribe(response => {
+    this.productsApi.list(undefined, undefined, 0, 100).subscribe((response) => {
       this.products.set(response.content);
       after ? after() : this.ordersService.openCreateDialog();
     });
   }
 
   addLine(): void {
-    this.lines.update(list => [...list, this.emptyLine()]);
+    this.lines.update((list) => [...list, this.emptyLine()]);
   }
 
   removeLine(index: number): void {
-    this.lines.update(list => list.filter((_, i) => i !== index));
+    this.lines.update((list) => list.filter((_, i) => i !== index));
   }
 
   updateLineProduct(index: number, product: PortalProduct): void {
@@ -201,19 +250,15 @@ export class OrdersPageComponent implements OnInit {
       this.ordersService.notify(ORDERS_MESSAGES.duplicateProductError);
       return;
     }
-    this.lines.update(list =>
-      list.map((l, i) =>
-        i === index ? { ...l, product, unitPrice: product.price } : l,
-      ),
+    this.lines.update((list) =>
+      list.map((l, i) => (i === index ? { ...l, product, unitPrice: product.price } : l)),
     );
   }
 
   onLineProductChange(index: number, value: PortalProduct | null): void {
     if (!value) {
-      this.lines.update(list =>
-        list.map((l, i) =>
-          i === index ? { ...l, product: null, unitPrice: 0 } : l,
-        ),
+      this.lines.update((list) =>
+        list.map((l, i) => (i === index ? { ...l, product: null, unitPrice: 0 } : l)),
       );
       return;
     }
@@ -221,19 +266,17 @@ export class OrdersPageComponent implements OnInit {
   }
 
   updateLineQuantity(index: number, quantity: number): void {
-    this.lines.update(list =>
-      list.map((l, i) => (i === index ? { ...l, quantity } : l)),
-    );
+    this.lines.update((list) => list.map((l, i) => (i === index ? { ...l, quantity } : l)));
   }
 
   availableProductsForLine(lineIndex: number): PortalProduct[] {
     const selectedIds = new Set(
       this.lines()
         .filter((_, i) => i !== lineIndex)
-        .map(l => l.product?.id)
+        .map((l) => l.product?.id)
         .filter((id): id is string => Boolean(id)),
     );
-    return this.products().filter(p => !selectedIds.has(p.id));
+    return this.products().filter((p) => !selectedIds.has(p.id));
   }
 
   searchProducts(event: { query: string }, lineIndex: number): void {
@@ -244,14 +287,14 @@ export class OrdersPageComponent implements OnInit {
     } else {
       this.filteredSuggestions.set(
         available.filter(
-          p => p.name.toLowerCase().includes(query) || p.code.toLowerCase().includes(query),
+          (p) => p.name.toLowerCase().includes(query) || p.code.toLowerCase().includes(query),
         ),
       );
     }
   }
 
   canSubmit(): boolean {
-    return this.lines().every(l => l.product !== null);
+    return this.lines().every((l) => l.product !== null);
   }
 
   submit(): void {
@@ -259,10 +302,10 @@ export class OrdersPageComponent implements OnInit {
       this.ordersService.notify(ORDERS_MESSAGES.validationError);
       return;
     }
-    const currentLines = this.lines().filter(l => l.product !== null);
+    const currentLines = this.lines().filter((l) => l.product !== null);
     const request = {
       notes: this.notes().trim() || undefined,
-      lines: currentLines.map(l => ({
+      lines: currentLines.map((l) => ({
         productId: l.product!.id,
         quantity: l.quantity,
         unitPrice: l.unitPrice,
@@ -285,6 +328,24 @@ export class OrdersPageComponent implements OnInit {
 
   openDetail(id: string): void {
     this.ordersService.openDetail(id);
+  }
+
+  actionsFor(order: PortalOrderList): ListAction[] {
+    const actions: ListAction[] = [
+      { label: 'Ver detalle', icon: 'pi pi-eye', command: () => this.openDetail(order.id) },
+    ];
+    if (this.isDraft(order.status)) {
+      actions.push(
+        { label: 'Editar', icon: 'pi pi-pencil', command: () => this.editOrder(order.id) },
+        {
+          label: 'Cancelar',
+          icon: 'pi pi-trash',
+          command: () => this.cancelOrder(order.id),
+          danger: true,
+        },
+      );
+    }
+    return actions;
   }
 
   closeDetail(): void {
@@ -319,7 +380,11 @@ export class OrdersPageComponent implements OnInit {
 
   private async reconcileFocusCleanup(): Promise<void> {
     await Promise.resolve();
-    const cleanupTree = this.router.createUrlTree([], { relativeTo: this.route, queryParams: { focus: null }, queryParamsHandling: 'merge' });
+    const cleanupTree = this.router.createUrlTree([], {
+      relativeTo: this.route,
+      queryParams: { focus: null },
+      queryParamsHandling: 'merge',
+    });
     try {
       const reconciled = await this.router.navigateByUrl(cleanupTree, { replaceUrl: true });
       if (!reconciled) clearNotificationFocusFromUrl(this.location);

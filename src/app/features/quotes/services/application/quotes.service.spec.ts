@@ -43,16 +43,32 @@ const DETAIL: PortalQuoteDetail = {
   createdAt: '2026-08-01',
   updatedAt: '2026-08-01',
   lines: [
-    { id: 'l1', productId: 'p1', productName: 'Mesa Roble', productCode: 'PROD-001', quantity: 1, unitPrice: 500, lineTotal: 500 },
+    {
+      id: 'l1',
+      productId: 'p1',
+      productName: 'Mesa Roble',
+      productCode: 'PROD-001',
+      quantity: 1,
+      unitPrice: 500,
+      lineTotal: 500,
+    },
   ],
 };
 
 describe('QuotesService', () => {
-  let apiMock: { list: ReturnType<typeof vi.fn>; getById: ReturnType<typeof vi.fn>; create: ReturnType<typeof vi.fn> };
+  let apiMock: {
+    list: ReturnType<typeof vi.fn>;
+    getById: ReturnType<typeof vi.fn>;
+    create: ReturnType<typeof vi.fn>;
+  };
   let messageMock: { add: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
-    apiMock = { list: vi.fn().mockReturnValue(of([] as PortalQuoteList[])), getById: vi.fn(), create: vi.fn() };
+    apiMock = {
+      list: vi.fn().mockReturnValue(of([] as PortalQuoteList[])),
+      getById: vi.fn(),
+      create: vi.fn(),
+    };
     messageMock = { add: vi.fn() };
   });
 
@@ -176,8 +192,14 @@ describe('QuotesService', () => {
     const service = createService();
     service.openCreateDialog();
     const callsBefore = apiMock.list.mock.calls.length;
-    service.create({ lines: [{ productId: 'p1', quantity: 2, unitPrice: 500 }], expiryDate: '2026-09-01' });
-    expect(apiMock.create).toHaveBeenCalledWith({ lines: [{ productId: 'p1', quantity: 2, unitPrice: 500 }], expiryDate: '2026-09-01' });
+    service.create({
+      lines: [{ productId: 'p1', quantity: 2, unitPrice: 500 }],
+      expiryDate: '2026-09-01',
+    });
+    expect(apiMock.create).toHaveBeenCalledWith({
+      lines: [{ productId: 'p1', quantity: 2, unitPrice: 500 }],
+      expiryDate: '2026-09-01',
+    });
     expect(messageMock.add).toHaveBeenCalledWith(QUOTES_MESSAGES.createSuccess);
     expect(service.createDialogVisible()).toBe(false);
     expect(service.creating()).toBe(false);

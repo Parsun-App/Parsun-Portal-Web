@@ -3,11 +3,14 @@ export interface PortalPaymentList {
   paymentNumber: string;
   customerId: string;
   amount: number;
+  paymentMethodId: string | null;
   referenceNumber: string | null;
   paymentDate: string;
   status: string;
   appliedAmount: number;
   createdAt: string;
+  voucherUrl: string | null;
+  targetInvoiceId: string | null;
 }
 
 export interface PortalPaymentDetail {
@@ -21,4 +24,6 @@ export interface PortalPaymentDetail {
   status: string;
   appliedAmount: number;
   createdAt: string;
+  voucherUrl: string | null;
+  targetInvoiceId: string | null;
 }

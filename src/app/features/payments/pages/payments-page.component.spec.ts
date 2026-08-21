@@ -5,7 +5,7 @@ import { provideRouter, Router } from '@angular/router';
 import { signal } from '@angular/core';
 import { of } from 'rxjs';
 import { MessageService } from 'primeng/api';
-import { PaymentsPageComponent } from './payments-page.component';
+import { PaymentsPageComponent } from '@features/payments/pages/payments-page.component';
 import { PaymentsService } from '@features/payments/services/application/payments.service';
 import { PaymentsApiService } from '@features/payments/services/api/payments-api.service';
 import { PortalPaymentList } from '@features/payments/models';
@@ -16,11 +16,14 @@ const PAYMENTS: PortalPaymentList[] = [
     paymentNumber: 'PAG-0001',
     customerId: 'cust-1',
     amount: 200,
+    paymentMethodId: 'pm-1',
     referenceNumber: null,
     paymentDate: '2026-08-02',
     status: 'APPLIED',
     appliedAmount: 200,
     createdAt: '2026-08-02',
+    voucherUrl: null,
+    targetInvoiceId: null,
   },
 ];
 
@@ -87,10 +90,10 @@ describe('PaymentsPageComponent', () => {
     expect(component.payments).toBe(serviceMock.payments);
   });
 
-  it('should count active filters from the search term only', () => {
+  it('should not count the search term as an active panel filter', () => {
     expect(component.activeFilterCount()).toBe(0);
     serviceMock.searchTerm.set('PAG-0001');
-    expect(component.activeFilterCount()).toBe(1);
+    expect(component.activeFilterCount()).toBe(0);
   });
 
   it('should delegate clear filters to the service', () => {
@@ -119,9 +122,14 @@ describe('PaymentsPageComponent', () => {
 
     await expect(component.clearFocus()).resolves.toBeUndefined();
 
-    expect(navigate).toHaveBeenCalledWith([], expect.objectContaining({
-      queryParams: { focus: null }, queryParamsHandling: 'merge', replaceUrl: true,
-    }));
+    expect(navigate).toHaveBeenCalledWith(
+      [],
+      expect.objectContaining({
+        queryParams: { focus: null },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      }),
+    );
   });
 
   it('should close the detail and safely absorb a rejected focus cleanup', async () => {

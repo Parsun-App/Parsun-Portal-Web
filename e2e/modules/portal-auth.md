@@ -2,25 +2,25 @@
 
 ## Coverage Matrix
 
-| ID | Description | Severity | Status |
-|----|-------------|----------|--------|
-| PAUTH-001 | Login exitoso con RIF y password válidos | CRITICAL | 🔲 NOT EXECUTED |
-| PAUTH-002 | Login fallido con password incorrecta | CRITICAL | 🔲 NOT EXECUTED |
-| PAUTH-003 | Login fallido con RIF inexistente | HIGH | 🔲 NOT EXECUTED |
-| PAUTH-004 | Login fallido con portal_access deshabilitado | HIGH | 🔲 NOT EXECUTED |
-| PAUTH-005 | Validación de formulario vacío | MEDIUM | 🔲 NOT EXECUTED |
-| PAUTH-006 | Persistencia de sesión al recargar página | HIGH | 🔲 NOT EXECUTED |
-| PAUTH-007 | Logout exitoso — limpia tokens y redirige | CRITICAL | 🔲 NOT EXECUTED |
-| PAUTH-008 | Protección de rutas sin autenticación | CRITICAL | 🔲 NOT EXECUTED |
-| PAUTH-009 | Redirección a login desde ruta protegida | HIGH | 🔲 NOT EXECUTED |
-| PAUTH-010 | Cambio de contraseña exitoso | CRITICAL | 🔲 NOT EXECUTED |
-| PAUTH-011 | Cambio de contraseña — contraseña actual incorrecta | HIGH | 🔲 NOT EXECUTED |
-| PAUTH-012 | Cambio de contraseña — nueva contraseña débil | MEDIUM | 🔲 NOT EXECUTED |
-| PAUTH-013 | Cambio de contraseña — confirmación no coincide | MEDIUM | 🔲 NOT EXECUTED |
-| PAUTH-014 | Refresh automático de token (simular expiración) | HIGH | 🔲 NOT EXECUTED |
-| PAUTH-015 | Verificar tokens en localStorage | MEDIUM | 🔲 NOT EXECUTED |
-| PAUTH-016 | Login con formato RIF inválido | LOW | 🔲 NOT EXECUTED |
-| PAUTH-017 | Error 401 con token inválido/manipulado | HIGH | 🔲 NOT EXECUTED |
+| ID        | Description                                         | Severity | Status          |
+| --------- | --------------------------------------------------- | -------- | --------------- |
+| PAUTH-001 | Login exitoso con RIF y password válidos            | CRITICAL | 🔲 NOT EXECUTED |
+| PAUTH-002 | Login fallido con password incorrecta               | CRITICAL | 🔲 NOT EXECUTED |
+| PAUTH-003 | Login fallido con RIF inexistente                   | HIGH     | 🔲 NOT EXECUTED |
+| PAUTH-004 | Login fallido con portal_access deshabilitado       | HIGH     | 🔲 NOT EXECUTED |
+| PAUTH-005 | Validación de formulario vacío                      | MEDIUM   | 🔲 NOT EXECUTED |
+| PAUTH-006 | Persistencia de sesión al recargar página           | HIGH     | 🔲 NOT EXECUTED |
+| PAUTH-007 | Logout exitoso — limpia tokens y redirige           | CRITICAL | 🔲 NOT EXECUTED |
+| PAUTH-008 | Protección de rutas sin autenticación               | CRITICAL | 🔲 NOT EXECUTED |
+| PAUTH-009 | Redirección a login desde ruta protegida            | HIGH     | 🔲 NOT EXECUTED |
+| PAUTH-010 | Cambio de contraseña exitoso                        | CRITICAL | 🔲 NOT EXECUTED |
+| PAUTH-011 | Cambio de contraseña — contraseña actual incorrecta | HIGH     | 🔲 NOT EXECUTED |
+| PAUTH-012 | Cambio de contraseña — nueva contraseña débil       | MEDIUM   | 🔲 NOT EXECUTED |
+| PAUTH-013 | Cambio de contraseña — confirmación no coincide     | MEDIUM   | 🔲 NOT EXECUTED |
+| PAUTH-014 | Refresh automático de token (simular expiración)    | HIGH     | 🔲 NOT EXECUTED |
+| PAUTH-015 | Verificar tokens en localStorage                    | MEDIUM   | 🔲 NOT EXECUTED |
+| PAUTH-016 | Login con formato RIF inválido                      | LOW      | 🔲 NOT EXECUTED |
+| PAUTH-017 | Error 401 con token inválido/manipulado             | HIGH     | 🔲 NOT EXECUTED |
 
 ---
 
@@ -31,24 +31,26 @@
 - Customer seed con `portal_access = true`
 
 ### Customer de prueba
-| RIF | Password |
-|-----|----------|
+
+| RIF            | Password     |
+| -------------- | ------------ |
 | `J-12345678-9` | `Customer1.` |
 
 ### Dependencias de tests
 
-| Test | Depende de |
-|------|------------|
-| PAUTH-007 | PAUTH-001 (debe estar logueado) |
-| PAUTH-010 | PAUTH-001 (debe estar logueado) |
+| Test      | Depende de                          |
+| --------- | ----------------------------------- |
+| PAUTH-007 | PAUTH-001 (debe estar logueado)     |
+| PAUTH-010 | PAUTH-001 (debe estar logueado)     |
 | PAUTH-014 | PAUTH-001 (necesita tokens válidos) |
-| PAUTH-017 | PAUTH-001 + manipulación manual |
+| PAUTH-017 | PAUTH-001 + manipulación manual     |
 
 ---
 
 ## Casos de Prueba
 
 ### PAUTH-001 — Login exitoso con RIF y password válidos
+
 - **Severity**: CRITICAL
 - **Dependencies**: Ninguna
 - **Prerequisites**: Customer `J-12345678-9` con portal_access=true y password=`Customer1.`
@@ -66,6 +68,7 @@
 ---
 
 ### PAUTH-002 — Login fallido con password incorrecta
+
 - **Severity**: CRITICAL
 - **Dependencies**: Ninguna
 - **URL**: `http://localhost:4200/auth/login`
@@ -82,6 +85,7 @@
 ---
 
 ### PAUTH-003 — Login fallido con RIF inexistente
+
 - **Severity**: HIGH
 - **Dependencies**: Ninguna
 - **URL**: `http://localhost:4200/auth/login`
@@ -96,6 +100,7 @@
 ---
 
 ### PAUTH-004 — Login fallido con portal_access deshabilitado
+
 - **Severity**: HIGH
 - **Dependencies**: Customer con portal_access=false (requiere setup manual o seed específico)
 - **URL**: `http://localhost:4200/auth/login`
@@ -110,6 +115,7 @@
 ---
 
 ### PAUTH-005 — Validación de formulario vacío
+
 - **Severity**: MEDIUM
 - **Dependencies**: Ninguna
 - **URL**: `http://localhost:4200/auth/login`
@@ -124,6 +130,7 @@
 ---
 
 ### PAUTH-006 — Persistencia de sesión al recargar página
+
 - **Severity**: HIGH
 - **Dependencies**: PAUTH-001 (debe estar logueado primero)
 - **URL**: `http://localhost:4200/dashboard`
@@ -139,6 +146,7 @@
 ---
 
 ### PAUTH-007 — Logout exitoso
+
 - **Severity**: CRITICAL
 - **Dependencies**: PAUTH-001
 - **URL**: Cualquier página autenticada
@@ -154,6 +162,7 @@
 ---
 
 ### PAUTH-008 — Protección de rutas sin autenticación
+
 - **Severity**: CRITICAL
 - **Dependencies**: Ninguna
 - **URL**: `http://localhost:4200/dashboard`
@@ -168,6 +177,7 @@
 ---
 
 ### PAUTH-009 — Redirección a login desde ruta protegida
+
 - **Severity**: HIGH
 - **Dependencies**: Ninguna
 - **URL**: `http://localhost:4200/products`
@@ -181,6 +191,7 @@
 ---
 
 ### PAUTH-010 — Cambio de contraseña exitoso
+
 - **Severity**: CRITICAL
 - **Dependencies**: PAUTH-001
 - **URL**: `http://localhost:4200/auth/change-password`
@@ -199,6 +210,7 @@
 ---
 
 ### PAUTH-011 — Cambio de contraseña — contraseña actual incorrecta
+
 - **Severity**: HIGH
 - **Dependencies**: PAUTH-001
 - **URL**: `http://localhost:4200/auth/change-password`
@@ -213,6 +225,7 @@
 ---
 
 ### PAUTH-012 — Cambio de contraseña — nueva contraseña débil
+
 - **Severity**: MEDIUM
 - **Dependencies**: PAUTH-001
 - **URL**: `http://localhost:4200/auth/change-password`
@@ -227,6 +240,7 @@
 ---
 
 ### PAUTH-013 — Cambio de contraseña — confirmación no coincide
+
 - **Severity**: MEDIUM
 - **Dependencies**: PAUTH-001
 - **URL**: `http://localhost:4200/auth/change-password`
@@ -241,6 +255,7 @@
 ---
 
 ### PAUTH-014 — Refresh automático de token
+
 - **Severity**: HIGH
 - **Dependencies**: PAUTH-001
 - **URL**: `http://localhost:4200/dashboard`
@@ -259,6 +274,7 @@
 ---
 
 ### PAUTH-015 — Verificar tokens en localStorage
+
 - **Severity**: MEDIUM
 - **Dependencies**: PAUTH-001
 - **URL**: `http://localhost:4200/dashboard`
@@ -275,6 +291,7 @@
 ---
 
 ### PAUTH-016 — Login con formato RIF inválido
+
 - **Severity**: LOW
 - **Dependencies**: Ninguna
 - **URL**: `http://localhost:4200/auth/login`
@@ -288,6 +305,7 @@
 ---
 
 ### PAUTH-017 — Error 401 con token inválido/manipulado
+
 - **Severity**: HIGH
 - **Dependencies**: Manipular token manualmente
 - **URL**: `http://localhost:4200/dashboard`
@@ -306,16 +324,16 @@
 ## Execution Results
 
 | Executed | Passed | Failed | Warning | Pending |
-|----------|--------|--------|---------|---------|
-| 0 | 0 | 0 | 0 | 17 |
+| -------- | ------ | ------ | ------- | ------- |
+| 0        | 0      | 0      | 0       | 17      |
 
 ---
 
 ## Bugs Found
 
-| ID | Test | Severity | Description |
-|----|------|----------|-------------|
-| — | — | — | — |
+| ID  | Test | Severity | Description |
+| --- | ---- | -------- | ----------- |
+| —   | —    | —        | —           |
 
 ---
 

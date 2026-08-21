@@ -1,1 +1,5 @@
-export type { PortalOrderList, PortalOrderDetail, PortalOrderLine } from './interfaces/portal-order.interface';
+export type {
+  PortalOrderList,
+  PortalOrderDetail,
+  PortalOrderLine,
+} from '@features/orders/models/interfaces/portal-order.interface';

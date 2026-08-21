@@ -1,11 +1,4 @@
-import {
-  Component,
-  inject,
-  signal,
-  ViewChild,
-  OnInit,
-  OnDestroy,
-} from '@angular/core';
+import { Component, inject, signal, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { Popover, PopoverModule } from 'primeng/popover';
@@ -13,9 +6,9 @@ import { TooltipModule } from 'primeng/tooltip';
 import {
   NotificationApiService,
   AppNotification,
-} from '../../services/api/notification-api.service';
-import { NotificationWebSocketService } from '../../services/websocket/notification-websocket.service';
-import { NotificationDestinationResolver } from '../../services/navigation/notification-destination.resolver';
+} from '@core/notifications/services/api/notification-api.service';
+import { NotificationWebSocketService } from '@core/notifications/services/websocket/notification-websocket.service';
+import { NotificationDestinationResolver } from '@core/notifications/services/navigation/notification-destination.resolver';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -50,6 +43,7 @@ export class NotificationBellComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.wsService.disconnect?.();
     this.destroy$.next();
     this.destroy$.complete();
   }

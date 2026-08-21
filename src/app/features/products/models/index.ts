@@ -1,1 +1,1 @@
-export type { PortalProduct } from './interfaces/portal-product.interface';
+export type { PortalProduct } from '@features/products/models/interfaces/portal-product.interface';

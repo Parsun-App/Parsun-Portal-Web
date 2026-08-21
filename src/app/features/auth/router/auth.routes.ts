@@ -4,7 +4,7 @@ export const authRoutes: Routes = [
   {
     path: 'login',
     loadComponent: () =>
-      import('../pages/login/login-page.component').then((m) => m.LoginPageComponent),
+      import('@features/auth/pages/login/login-page.component').then((m) => m.LoginPageComponent),
   },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 ];

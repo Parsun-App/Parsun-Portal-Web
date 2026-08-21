@@ -4,7 +4,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
 import { Subject, of } from 'rxjs';
-import { DashboardPageComponent } from './dashboard-page.component';
+import { DashboardPageComponent } from '@features/dashboard/pages/dashboard-page.component';
 import { DashboardService } from '@features/dashboard/services/application/dashboard.service';
 import { AuthService } from '@features/auth/services/application/auth.service';
 import { QuotesService } from '@features/quotes/services/application/quotes.service';
@@ -58,7 +58,9 @@ describe('DashboardPageComponent', () => {
       dashboard: signal<PortalDashboard | null>(PORTAL_DASHBOARD),
       load: vi.fn(),
     };
-    const authMock = { currentUser: vi.fn().mockReturnValue({ legalName: 'Inversiones Global S.A.' }) };
+    const authMock = {
+      currentUser: vi.fn().mockReturnValue({ legalName: 'Inversiones Global S.A.' }),
+    };
 
     await TestBed.configureTestingModule({
       imports: [DashboardPageComponent],
@@ -85,14 +87,18 @@ describe('DashboardPageComponent', () => {
   });
 
   it('should render the pending amount card with full amount when at least one thousand', () => {
-    const card = component.buildStats({ ...PORTAL_DASHBOARD, pendingAmount: 1200 }).find((c) => c.label === 'Monto Pendiente');
+    const card = component
+      .buildStats({ ...PORTAL_DASHBOARD, pendingAmount: 1200 })
+      .find((c) => c.label === 'Monto Pendiente');
     expect(card?.value).toBe(1200);
     expect(card?.isCurrency).toBe(true);
   });
 
   it('should display the pending amount as $400.00 in the template', () => {
     const cards = fixture.nativeElement.querySelectorAll('a');
-    const pendingCard = Array.from(cards).find((card: Element) => card.textContent.includes('Monto Pendiente'));
+    const pendingCard = Array.from(cards).find((card: Element) =>
+      card.textContent.includes('Monto Pendiente'),
+    );
     expect(pendingCard.textContent).toContain('$400.00');
   });
 
@@ -101,7 +107,9 @@ describe('DashboardPageComponent', () => {
     fixture.detectChanges();
 
     const cards = fixture.nativeElement.querySelectorAll('a');
-    const pendingCard = Array.from(cards).find((card: Element) => card.textContent.includes('Monto Pendiente'));
+    const pendingCard = Array.from(cards).find((card: Element) =>
+      card.textContent.includes('Monto Pendiente'),
+    );
     expect(pendingCard.textContent).toContain('$1,200.00');
   });
 });

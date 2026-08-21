@@ -1,8 +1,8 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
-import { SidebarComponent } from './sidebar/sidebar.component';
-import { HeaderComponent } from './header/header.component';
+import { SidebarComponent } from '@core/layouts/sidebar/sidebar.component';
+import { HeaderComponent } from '@core/layouts/header/header.component';
 
 @Component({
   selector: 'app-portal-layout',

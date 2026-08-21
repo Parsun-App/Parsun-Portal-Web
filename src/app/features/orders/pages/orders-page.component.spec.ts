@@ -5,7 +5,7 @@ import { provideRouter, Router } from '@angular/router';
 import { signal } from '@angular/core';
 import { Subject, of } from 'rxjs';
 import { ConfirmationService } from 'primeng/api';
-import { OrdersPageComponent } from './orders-page.component';
+import { OrdersPageComponent } from '@features/orders/pages/orders-page.component';
 import { OrdersService } from '@features/orders/services/application/orders.service';
 import { PortalOrderList } from '@features/orders/models';
 
@@ -37,6 +37,7 @@ describe('OrdersPageComponent', () => {
     dateFrom: ReturnType<typeof signal<string>>;
     dateTo: ReturnType<typeof signal<string>>;
     filterStatus: ReturnType<typeof signal<string | undefined>>;
+    load: ReturnType<typeof vi.fn>;
     onSearch: ReturnType<typeof vi.fn>;
     onDateFilterChange: ReturnType<typeof vi.fn>;
     onStatusFilterChange: ReturnType<typeof vi.fn>;
@@ -62,6 +63,7 @@ describe('OrdersPageComponent', () => {
       dateFrom: signal(''),
       dateTo: signal(''),
       filterStatus: signal<string | undefined>(undefined),
+      load: vi.fn(),
       onSearch: vi.fn(),
       onDateFilterChange: vi.fn(),
       onStatusFilterChange: vi.fn(),
@@ -97,12 +99,12 @@ describe('OrdersPageComponent', () => {
     expect(component.orders).toBe(serviceMock.orders);
   });
 
-  it('should count active filters from search and status', () => {
+  it('should count panel filters without counting the search term', () => {
     expect(component.activeFilterCount()).toBe(0);
     serviceMock.searchTerm.set('acme');
-    expect(component.activeFilterCount()).toBe(1);
+    expect(component.activeFilterCount()).toBe(0);
     serviceMock.filterStatus.set('DRAFT');
-    expect(component.activeFilterCount()).toBe(2);
+    expect(component.activeFilterCount()).toBe(1);
   });
 
   it('should delegate clear filters to the service', () => {
@@ -136,9 +138,14 @@ describe('OrdersPageComponent', () => {
 
     await expect(component.clearFocus()).resolves.toBeUndefined();
 
-    expect(navigate).toHaveBeenCalledWith([], expect.objectContaining({
-      queryParams: { focus: null }, queryParamsHandling: 'merge', replaceUrl: true,
-    }));
+    expect(navigate).toHaveBeenCalledWith(
+      [],
+      expect.objectContaining({
+        queryParams: { focus: null },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      }),
+    );
   });
 
   it('should close the detail and safely absorb a rejected focus cleanup', async () => {
@@ -161,6 +168,10 @@ describe('OrdersPageComponent', () => {
 
   it('should map draft orders to the info severity', () => {
     expect(component.statusSeverity('DRAFT')).toBe('info');
+  });
+
+  it('should map customer draft orders to the warn severity', () => {
+    expect(component.statusSeverity('CUSTOMER_DRAFT')).toBe('warn');
   });
 
   it('should map cancelled orders to the danger severity', () => {

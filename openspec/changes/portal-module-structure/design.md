@@ -49,12 +49,24 @@ export class QuotesService {
   readonly searchTerm = signal('');
   readonly filterStatus = signal<string | undefined>(undefined);
 
-  load(): void { /* sets loading, calls api.list, fills quotes, toasts on error via QUOTES_MESSAGES */ }
-  onSearch(value: string): void { /* set term + debounce 300ms */ }
-  onStatusFilterChange(value: string | null): void { /* set + load */ }
-  clearFilters(): void { /* reset + load */ }
-  openDetail(id: string): void { /* api.getById, sets detail + dialog, toasts on error */ }
-  closeDetail(): void { /* clears detail + dialog */ }
+  load(): void {
+    /* sets loading, calls api.list, fills quotes, toasts on error via QUOTES_MESSAGES */
+  }
+  onSearch(value: string): void {
+    /* set term + debounce 300ms */
+  }
+  onStatusFilterChange(value: string | null): void {
+    /* set + load */
+  }
+  clearFilters(): void {
+    /* reset + load */
+  }
+  openDetail(id: string): void {
+    /* api.getById, sets detail + dialog, toasts on error */
+  }
+  closeDetail(): void {
+    /* clears detail + dialog */
+  }
 }
 ```
 
@@ -64,8 +76,16 @@ Per-feature constants file:
 
 ```ts
 export const QUOTES_MESSAGES = {
-  loadError: { severity: 'error' as const, summary: 'Error', detail: 'No se pudieron cargar los presupuestos' },
-  detailError: { severity: 'error' as const, summary: 'Error', detail: 'No se pudo cargar el detalle del presupuesto' },
+  loadError: {
+    severity: 'error' as const,
+    summary: 'Error',
+    detail: 'No se pudieron cargar los presupuestos',
+  },
+  detailError: {
+    severity: 'error' as const,
+    summary: 'Error',
+    detail: 'No se pudo cargar el detalle del presupuesto',
+  },
 };
 ```
 
@@ -84,14 +104,26 @@ Go with **Option A** — aligns with the "screaming" shell and removes duplicate
 
 ```ts
 export const routes: Routes = [
-  { path: 'auth', loadChildren: () => import('./features/auth/router/auth.routes').then(m => m.authRoutes) },
+  {
+    path: 'auth',
+    loadChildren: () => import('./features/auth/router/auth.routes').then((m) => m.authRoutes),
+  },
   {
     path: '',
-    loadComponent: () => import('./core/layouts/portal-layout.component').then(m => m.PortalLayoutComponent),
-    canActivate: [() => import('./features/auth/guards/auth.guard').then(m => m.authGuard)],
+    loadComponent: () =>
+      import('./core/layouts/portal-layout.component').then((m) => m.PortalLayoutComponent),
+    canActivate: [() => import('./features/auth/guards/auth.guard').then((m) => m.authGuard)],
     children: [
-      { path: 'dashboard', loadChildren: () => import('./features/dashboard/router/dashboard.routes').then(m => m.dashboardRoutes) },
-      { path: 'products', loadChildren: () => import('./features/products/router/products.routes').then(m => m.productsRoutes) },
+      {
+        path: 'dashboard',
+        loadChildren: () =>
+          import('./features/dashboard/router/dashboard.routes').then((m) => m.dashboardRoutes),
+      },
+      {
+        path: 'products',
+        loadChildren: () =>
+          import('./features/products/router/products.routes').then((m) => m.productsRoutes),
+      },
       // ... quotes, orders, invoices, payments, profile
       { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
     ],
@@ -105,25 +137,23 @@ Each feature routes file:
 ```ts
 import { Routes } from '@angular/router';
 
-export const dashboardRoutes: Routes = [
-  { path: '', component: DashboardPageComponent },
-];
+export const dashboardRoutes: Routes = [{ path: '', component: DashboardPageComponent }];
 ```
 
 `DashboardPageComponent` path import becomes `../pages/dashboard-page.component`.
 
 ## Models move
 
-| Source (shared/models/interfaces/) | Destination |
-|------------------------------------|-------------|
-| `portal-dashboard.interface.ts` | `features/dashboard/models/interfaces/` |
-| `portal-product.interface.ts` | `features/products/models/interfaces/` |
-| `portal-quote.interface.ts` | `features/quotes/models/interfaces/` |
-| `portal-order.interface.ts` | `features/orders/models/interfaces/` |
-| `portal-invoice.interface.ts` | `features/invoices/models/interfaces/` |
-| `portal-payment.interface.ts` | `features/payments/models/interfaces/` |
-| `portal-profile.interface.ts` | `features/profile/models/interfaces/` |
-| `paged-response.interface.ts` | **stays** in `shared/models/interfaces/` (generic cross-cutting) |
+| Source (shared/models/interfaces/) | Destination                                                      |
+| ---------------------------------- | ---------------------------------------------------------------- |
+| `portal-dashboard.interface.ts`    | `features/dashboard/models/interfaces/`                          |
+| `portal-product.interface.ts`      | `features/products/models/interfaces/`                           |
+| `portal-quote.interface.ts`        | `features/quotes/models/interfaces/`                             |
+| `portal-order.interface.ts`        | `features/orders/models/interfaces/`                             |
+| `portal-invoice.interface.ts`      | `features/invoices/models/interfaces/`                           |
+| `portal-payment.interface.ts`      | `features/payments/models/interfaces/`                           |
+| `portal-profile.interface.ts`      | `features/profile/models/interfaces/`                            |
+| `paged-response.interface.ts`      | **stays** in `shared/models/interfaces/` (generic cross-cutting) |
 
 `shared/models/index.ts` is reduced to re-export `PagedResponse` only.
 `shared/models.ts` (legacy flat file) is **deleted** — it duplicates interfaces and is unused (all imports resolve to `shared/models/` barrel).
@@ -136,15 +166,15 @@ export const dashboardRoutes: Routes = [
 
 ## Per-feature service responsibilities
 
-| Feature | Application service | Signals owned |
-|---------|--------------------|---------------|
-| dashboard | `DashboardService` | loading, dashboard |
-| products | `ProductsService` | loading, products, totalElements, searchTerm, selectedCategory, currentPage, pageSize, categoryOptions (+ debounce) |
-| quotes | `QuotesService` | loading, quotes, detail, detailDialogVisible, searchTerm, filterStatus (+ debounce) |
-| orders | `OrdersService` | loading, orders, detail, detailDialogVisible, searchTerm, filterStatus (+ debounce, confirm/cancel with ConfirmationService) |
-| invoices | `InvoicesService` | loading, invoices, detail, detailDialogVisible, searchTerm, filterStatus (+ debounce) |
-| payments | `PaymentsService` | loading, payments, detail, detailDialogVisible, searchTerm (+ debounce) |
-| profile | `ProfileService` | loading, profile |
+| Feature   | Application service | Signals owned                                                                                                                |
+| --------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| dashboard | `DashboardService`  | loading, dashboard                                                                                                           |
+| products  | `ProductsService`   | loading, products, totalElements, searchTerm, selectedCategory, currentPage, pageSize, categoryOptions (+ debounce)          |
+| quotes    | `QuotesService`     | loading, quotes, detail, detailDialogVisible, searchTerm, filterStatus (+ debounce)                                          |
+| orders    | `OrdersService`     | loading, orders, detail, detailDialogVisible, searchTerm, filterStatus (+ debounce, confirm/cancel with ConfirmationService) |
+| invoices  | `InvoicesService`   | loading, invoices, detail, detailDialogVisible, searchTerm, filterStatus (+ debounce)                                        |
+| payments  | `PaymentsService`   | loading, payments, detail, detailDialogVisible, searchTerm (+ debounce)                                                      |
+| profile   | `ProfileService`    | loading, profile                                                                                                             |
 
 Confirmation dialogs (`ConfirmationService`) stay in the page component for `orders` (UI concern) — the service exposes `confirm(id)` / `cancel(id)` api calls, the page composes the `confirm()` dialog and calls them. **Decision**: keep `confirmOrder`/`cancelOrder` orchestration in the service but return a simple API; page owns the PrimeNG confirmation dialog wiring. Simpler: service exposes `confirmOrder(id)` and `cancelOrder(id)` methods that do the api call + toast; page keeps the `confirm()` dialog UI and invokes service methods in the accept callback.
 

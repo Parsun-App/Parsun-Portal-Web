@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { EmptyStateComponent } from './empty-state.component';
+import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 
 describe('EmptyStateComponent', () => {
   let fixture: ComponentFixture<EmptyStateComponent>;

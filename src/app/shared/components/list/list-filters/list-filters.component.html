@@ -1,0 +1,76 @@
+<div
+  class="rounded-xl border border-surface-200 bg-surface-0 p-4 shadow-2xl dark:border-surface-700 dark:bg-surface-800"
+>
+  <div
+    class="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center sm:gap-4"
+  >
+    <div class="flex w-full items-center gap-2 sm:w-auto">
+      <app-search-field
+        class="min-w-0 flex-1 sm:min-w-[280px] sm:flex-none"
+        [value]="searchTerm()"
+        (search)="searchChanged.emit($event)"
+      />
+      <p-button
+        icon="pi pi-filter"
+        [outlined]="true"
+        severity="secondary"
+        (onClick)="filterPopover.toggle($event)"
+        pTooltip="Filtros"
+        [badge]="activeFilterCount() > 0 ? activeFilterCount().toString() : ''"
+        badgeSeverity="contrast"
+        ariaLabel="Abrir filtros"
+      />
+      <p-popover #filterPopover [focusOnShow]="false">
+        <div class="flex min-w-[260px] flex-col gap-4 p-1">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold">Filtros</span>
+            @if (activeFilterCount() > 0) {
+              <p-button
+                label="Limpiar"
+                [text]="true"
+                size="small"
+                severity="secondary"
+                (onClick)="filtersCleared.emit()"
+              />
+            }
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-medium text-surface-500" for="status-filter">Estado</label>
+            <p-select
+              inputId="status-filter"
+              [options]="statusOptions()"
+              [ngModel]="status()"
+              (ngModelChange)="statusChanged.emit($event)"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Todos"
+              styleClass="w-full"
+            />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-medium text-surface-500" for="date-from-filter">Desde</label>
+            <p-datepicker
+              inputId="date-from-filter"
+              [ngModel]="dateFrom()"
+              (ngModelChange)="dateFromChanged.emit($event)"
+              dateFormat="dd/mm/yy"
+              placeholder="DD/MM/AA"
+              styleClass="w-full"
+            />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-medium text-surface-500" for="date-to-filter">Hasta</label>
+            <p-datepicker
+              inputId="date-to-filter"
+              [ngModel]="dateTo()"
+              (ngModelChange)="dateToChanged.emit($event)"
+              dateFormat="dd/mm/yy"
+              placeholder="DD/MM/AA"
+              styleClass="w-full"
+            />
+          </div>
+        </div>
+      </p-popover>
+    </div>
+  </div>
+</div>

@@ -27,27 +27,33 @@ export class InvoicesService {
   }
 
   load(): void {
+    this.invoices.set([]);
+    this.detail.set(null);
+    this.detailDialogVisible.set(false);
     this.loading.set(true);
-    const params: { search?: string; status?: string; dateFrom?: string; dateTo?: string } = {};
+    const params: { search?: string; statuses?: string[]; dateFrom?: string; dateTo?: string } = {};
     const search = this.searchTerm();
     const status = this.filterStatus();
     const from = this.dateFrom();
     const to = this.dateTo();
     if (search) params.search = search;
-    if (status) params.status = status;
+    if (status) params.statuses = [status];
     if (from) params.dateFrom = from;
     if (to) params.dateTo = to;
-    this.api.list(params).pipe(
-      tap(response => {
-        this.invoices.set(response);
-        this.loading.set(false);
-      }),
-      catchError(() => {
-        this.loading.set(false);
-        this.messageService.add(INVOICES_MESSAGES.loadError);
-        return of([] as PortalInvoiceList[]);
-      }),
-    ).subscribe();
+    this.api
+      .list(params)
+      .pipe(
+        tap((response) => {
+          this.invoices.set(response);
+          this.loading.set(false);
+        }),
+        catchError(() => {
+          this.loading.set(false);
+          this.messageService.add(INVOICES_MESSAGES.loadError);
+          return of([] as PortalInvoiceList[]);
+        }),
+      )
+      .subscribe();
   }
 
   scheduleLoad(): void {
@@ -80,16 +86,19 @@ export class InvoicesService {
   }
 
   openDetail(id: string): void {
-    this.api.getById(id).pipe(
-      tap(detail => {
-        this.detail.set(detail);
-        this.detailDialogVisible.set(true);
-      }),
-      catchError(() => {
-        this.messageService.add(INVOICES_MESSAGES.detailError);
-        return of(null as unknown as PortalInvoiceDetail);
-      }),
-    ).subscribe();
+    this.api
+      .getById(id)
+      .pipe(
+        tap((detail) => {
+          this.detail.set(detail);
+          this.detailDialogVisible.set(true);
+        }),
+        catchError(() => {
+          this.messageService.add(INVOICES_MESSAGES.detailError);
+          return of(null as unknown as PortalInvoiceDetail);
+        }),
+      )
+      .subscribe();
   }
 
   closeDetail(): void {

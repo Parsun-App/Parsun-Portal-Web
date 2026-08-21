@@ -1,4 +1,12 @@
-import { Component, inject, computed, signal, ChangeDetectionStrategy, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  inject,
+  computed,
+  signal,
+  ChangeDetectionStrategy,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { CurrencyPipe, DatePipe, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
@@ -22,10 +30,19 @@ import { ConfirmationService } from 'primeng/api';
 import { Subject, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QuotesService } from '@features/quotes/services/application/quotes.service';
+import { PortalQuoteList } from '@features/quotes/models';
 import { ProductsApiService } from '@features/products/services/api/products-api.service';
 import { PortalProduct } from '@features/products/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
+import { MetricCardComponent, PageHeaderComponent } from '@shared/components/ui';
+import {
+  ListActionButtonsComponent,
+  ListFiltersComponent,
+  type ListAction,
+} from '@shared/components/list';
+import { QuoteDetailDialogComponent } from '@features/quotes/components/quote-detail-dialog/quote-detail-dialog.component';
+import { QuoteFormDialogComponent } from '@features/quotes/components/quote-form-dialog/quote-form-dialog.component';
 import { QUOTES_MESSAGES } from '@features/quotes/messages/quotes.messages';
 import { clearNotificationFocusFromUrl } from '@shared/utils/notification-focus-url';
 
@@ -40,9 +57,34 @@ interface FormLine {
 @Component({
   selector: 'app-quotes-page',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, FormsModule, TableModule, TagModule, DialogModule, ButtonModule,
-            ConfirmDialogModule, TooltipModule, IconFieldModule, InputIconModule, InputTextModule, InputNumberModule,
-            TextareaModule, SelectModule, DatePickerModule, PopoverModule, AutoCompleteModule, PaginatorModule, EmptyStateComponent],
+  imports: [
+    CurrencyPipe,
+    DatePipe,
+    FormsModule,
+    TableModule,
+    TagModule,
+    DialogModule,
+    ButtonModule,
+    ConfirmDialogModule,
+    TooltipModule,
+    IconFieldModule,
+    InputIconModule,
+    InputTextModule,
+    InputNumberModule,
+    TextareaModule,
+    SelectModule,
+    DatePickerModule,
+    PopoverModule,
+    AutoCompleteModule,
+    PaginatorModule,
+    EmptyStateComponent,
+    ListFiltersComponent,
+    ListActionButtonsComponent,
+    MetricCardComponent,
+    PageHeaderComponent,
+    QuoteDetailDialogComponent,
+    QuoteFormDialogComponent,
+  ],
   providers: [ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './quotes-page.component.html',
@@ -58,10 +100,13 @@ export class QuotesPageComponent implements OnInit {
   private focusedId: string | null = null;
 
   ngOnInit(): void {
+    this.quotesService.load();
     this.quotesService.createDialogRequested$
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.openCreateDialog());
-    this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe((params) => this.consumeFocus(params.get('focus')));
+    this.route.queryParamMap
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((params) => this.consumeFocus(params.get('focus')));
   }
 
   readonly loading = this.quotesService.loading;
@@ -74,8 +119,15 @@ export class QuotesPageComponent implements OnInit {
   readonly filterStatus = this.quotesService.filterStatus;
   readonly dateFrom = this.quotesService.dateFrom;
 
-  readonly pendingQuotes = computed(() => this.quotes().filter(q => q.status === 'DRAFT' || q.status === 'CUSTOMER_DRAFT').length);
-  readonly convertedQuotes = computed(() => this.quotes().filter(q => q.status === 'CONVERTED_TO_ORDER' || q.status === 'CONVERTED_TO_INVOICE').length);
+  readonly pendingQuotes = computed(
+    () => this.quotes().filter((q) => q.status === 'DRAFT' || q.status === 'CUSTOMER_DRAFT').length,
+  );
+  readonly convertedQuotes = computed(
+    () =>
+      this.quotes().filter(
+        (q) => q.status === 'CONVERTED_TO_ORDER' || q.status === 'CONVERTED_TO_INVOICE',
+      ).length,
+  );
   readonly quotesTotal = computed(() => this.quotes().reduce((s, q) => s + q.subtotal, 0));
   readonly dateTo = this.quotesService.dateTo;
   readonly dateFromDate = signal<Date | null>(null);
@@ -101,13 +153,18 @@ export class QuotesPageComponent implements OnInit {
 
   readonly activeFilterCount = computed(() => {
     let count = 0;
-    if (this.searchTerm()) count++;
     if (this.filterStatus()) count++;
     if (this.dateFrom() || this.dateTo()) count++;
     return count;
   });
 
-  readonly hasActiveFilters = computed(() => Boolean(this.searchTerm()) || Boolean(this.filterStatus()) || Boolean(this.dateFrom()) || Boolean(this.dateTo()));
+  readonly hasActiveFilters = computed(
+    () =>
+      Boolean(this.searchTerm()) ||
+      Boolean(this.filterStatus()) ||
+      Boolean(this.dateFrom()) ||
+      Boolean(this.dateTo()),
+  );
 
   readonly emptyConfig = computed(() => {
     if (this.hasActiveFilters()) {
@@ -152,11 +209,11 @@ export class QuotesPageComponent implements OnInit {
     this.isEditing.set(true);
     this.editingQuoteId.set(id);
     this.ensureProductsThenOpen(() => {
-      this.quotesService.loadQuoteForEdit(id).subscribe(detail => {
+      this.quotesService.loadQuoteForEdit(id).subscribe((detail) => {
         this.notes.set(detail.notes ?? '');
-        const productMap = new Map(this.products().map(p => [p.id, p]));
+        const productMap = new Map(this.products().map((p) => [p.id, p]));
         this.lines.set(
-          detail.lines.map(l => ({
+          detail.lines.map((l) => ({
             product: productMap.get(l.productId) ?? null,
             quantity: l.quantity,
             unitPrice: l.unitPrice,
@@ -175,18 +232,18 @@ export class QuotesPageComponent implements OnInit {
       after ? after() : this.quotesService.openCreateDialog();
       return;
     }
-    this.productsApi.list(undefined, undefined, 0, 100).subscribe(response => {
+    this.productsApi.list(undefined, undefined, 0, 100).subscribe((response) => {
       this.products.set(response.content);
       after ? after() : this.quotesService.openCreateDialog();
     });
   }
 
   addLine(): void {
-    this.lines.update(list => [...list, this.emptyLine()]);
+    this.lines.update((list) => [...list, this.emptyLine()]);
   }
 
   removeLine(index: number): void {
-    this.lines.update(list => list.filter((_, i) => i !== index));
+    this.lines.update((list) => list.filter((_, i) => i !== index));
   }
 
   updateLineProduct(index: number, product: PortalProduct): void {
@@ -197,19 +254,15 @@ export class QuotesPageComponent implements OnInit {
       this.quotesService.notify(QUOTES_MESSAGES.duplicateProductError);
       return;
     }
-    this.lines.update(list =>
-      list.map((l, i) =>
-        i === index ? { ...l, product, unitPrice: product.price } : l,
-      ),
+    this.lines.update((list) =>
+      list.map((l, i) => (i === index ? { ...l, product, unitPrice: product.price } : l)),
     );
   }
 
   onLineProductChange(index: number, value: PortalProduct | null): void {
     if (!value) {
-      this.lines.update(list =>
-        list.map((l, i) =>
-          i === index ? { ...l, product: null, unitPrice: 0 } : l,
-        ),
+      this.lines.update((list) =>
+        list.map((l, i) => (i === index ? { ...l, product: null, unitPrice: 0 } : l)),
       );
       return;
     }
@@ -217,19 +270,17 @@ export class QuotesPageComponent implements OnInit {
   }
 
   updateLineQuantity(index: number, quantity: number): void {
-    this.lines.update(list =>
-      list.map((l, i) => (i === index ? { ...l, quantity } : l)),
-    );
+    this.lines.update((list) => list.map((l, i) => (i === index ? { ...l, quantity } : l)));
   }
 
   availableProductsForLine(lineIndex: number): PortalProduct[] {
     const selectedIds = new Set(
       this.lines()
         .filter((_, i) => i !== lineIndex)
-        .map(l => l.product?.id)
+        .map((l) => l.product?.id)
         .filter((id): id is string => Boolean(id)),
     );
-    return this.products().filter(p => !selectedIds.has(p.id));
+    return this.products().filter((p) => !selectedIds.has(p.id));
   }
 
   searchProducts(event: { query: string }, lineIndex: number): void {
@@ -240,14 +291,14 @@ export class QuotesPageComponent implements OnInit {
     } else {
       this.filteredSuggestions.set(
         available.filter(
-          p => p.name.toLowerCase().includes(query) || p.code.toLowerCase().includes(query),
+          (p) => p.name.toLowerCase().includes(query) || p.code.toLowerCase().includes(query),
         ),
       );
     }
   }
 
   canSubmit(): boolean {
-    return this.lines().every(l => l.product !== null);
+    return this.lines().every((l) => l.product !== null);
   }
 
   submit(): void {
@@ -255,10 +306,10 @@ export class QuotesPageComponent implements OnInit {
       this.quotesService.notify(QUOTES_MESSAGES.validationError);
       return;
     }
-    const currentLines = this.lines().filter(l => l.product !== null);
+    const currentLines = this.lines().filter((l) => l.product !== null);
     const request = {
       notes: this.notes().trim() || undefined,
-      lines: currentLines.map(l => ({
+      lines: currentLines.map((l) => ({
         productId: l.product!.id,
         quantity: l.quantity,
         unitPrice: l.unitPrice,
@@ -281,6 +332,24 @@ export class QuotesPageComponent implements OnInit {
 
   openDetail(id: string): void {
     this.quotesService.openDetail(id);
+  }
+
+  actionsFor(quote: PortalQuoteList): ListAction[] {
+    const actions: ListAction[] = [
+      { label: 'Ver detalle', icon: 'pi pi-eye', command: () => this.openDetail(quote.id) },
+    ];
+    if (this.isDraft(quote.status)) {
+      actions.push(
+        { label: 'Editar', icon: 'pi pi-pencil', command: () => this.editQuote(quote.id) },
+        {
+          label: 'Cancelar',
+          icon: 'pi pi-trash',
+          command: () => this.cancelQuote(quote.id),
+          danger: true,
+        },
+      );
+    }
+    return actions;
   }
 
   closeDetail(): void {

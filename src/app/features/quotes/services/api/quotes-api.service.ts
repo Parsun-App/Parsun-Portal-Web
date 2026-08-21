@@ -26,7 +26,12 @@ export class QuotesApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/portal/quotes`;
 
-  list(params?: { search?: string; dateFrom?: string; dateTo?: string; status?: string }): Observable<PortalQuoteList[]> {
+  list(params?: {
+    search?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    status?: string;
+  }): Observable<PortalQuoteList[]> {
     let httpParams = new HttpParams();
     if (params?.search) httpParams = httpParams.set('search', params.search);
     if (params?.dateFrom) httpParams = httpParams.set('dateFrom', params.dateFrom);

@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { clearNotificationFocusFromUrl } from './notification-focus-url';
+import { clearNotificationFocusFromUrl } from '@shared/utils/notification-focus-url';
 
 describe('clearNotificationFocusFromUrl', () => {
   it.each([

@@ -36,7 +36,15 @@ const DETAIL: PortalInvoiceDetail = {
   subtotal: 500,
   createdAt: '2026-08-01',
   lines: [
-    { id: 'l1', productId: 'p1', productName: 'Mesa Roble', productCode: 'PROD-001', quantity: 1, unitPrice: 500, lineTotal: 500 },
+    {
+      id: 'l1',
+      productId: 'p1',
+      productName: 'Mesa Roble',
+      productCode: 'PROD-001',
+      quantity: 1,
+      unitPrice: 500,
+      lineTotal: 500,
+    },
   ],
 };
 
@@ -96,7 +104,7 @@ describe('InvoicesService', () => {
     service.onStatusFilterChange('PAID');
     expect(service.filterStatus()).toBe('PAID');
     expect(apiMock.list.mock.calls.length).toBe(callsBefore + 1);
-    expect(apiMock.list).toHaveBeenLastCalledWith({ status: 'PAID' });
+    expect(apiMock.list).toHaveBeenLastCalledWith({ statuses: ['PAID'] });
   });
 
   it('should reset search and status filters and reload', () => {

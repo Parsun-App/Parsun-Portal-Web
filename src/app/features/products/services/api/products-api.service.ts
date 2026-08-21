@@ -10,7 +10,12 @@ export class ProductsApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/portal/products`;
 
-  list(search?: string, categoryId?: string, page: number = 0, size: number = 20): Observable<PagedResponse<PortalProduct>> {
+  list(
+    search?: string,
+    categoryId?: string,
+    page: number = 0,
+    size: number = 20,
+  ): Observable<PagedResponse<PortalProduct>> {
     let params = new HttpParams().set('page', page).set('size', size);
     if (search) params = params.set('search', search);
     if (categoryId) params = params.set('categoryId', categoryId);

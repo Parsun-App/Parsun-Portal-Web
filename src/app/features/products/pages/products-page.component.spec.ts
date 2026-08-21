@@ -1,17 +1,41 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
 import type { TablePageEvent, PaginatorState } from 'primeng/table';
 import { MessageService } from 'primeng/api';
-import { ProductsPageComponent } from './products-page.component';
+import { ProductsPageComponent } from '@features/products/pages/products-page.component';
 import { ProductsService } from '@features/products/services/application/products.service';
 import { PortalProduct } from '@features/products/models';
+import { SearchFieldComponent } from '@shared/components/ui';
 
 const PRODUCTS: PortalProduct[] = [
-  { id: 'p1', code: 'PROD-001', name: 'Mesa Roble', description: 'Mesa de roble macizo', categoryId: 'c1', categoryName: 'Muebles', active: true, photo: null, price: 250, availableStock: 8 },
-  { id: 'p2', code: 'PROD-002', name: 'Silla Ergonómica', description: 'Silla de oficina', categoryId: 'c1', categoryName: 'Muebles', active: true, photo: null, price: 90, availableStock: 0 },
+  {
+    id: 'p1',
+    code: 'PROD-001',
+    name: 'Mesa Roble',
+    description: 'Mesa de roble macizo',
+    categoryId: 'c1',
+    categoryName: 'Muebles',
+    active: true,
+    photo: null,
+    price: 250,
+    availableStock: 8,
+  },
+  {
+    id: 'p2',
+    code: 'PROD-002',
+    name: 'Silla Ergonómica',
+    description: 'Silla de oficina',
+    categoryId: 'c1',
+    categoryName: 'Muebles',
+    active: true,
+    photo: null,
+    price: 90,
+    availableStock: 0,
+  },
 ];
 
 describe('ProductsPageComponent', () => {
@@ -26,6 +50,7 @@ describe('ProductsPageComponent', () => {
     categoryOptions: ReturnType<typeof signal<{ label: string; value: string | null }[]>>;
     pageSize: ReturnType<typeof signal<number>>;
     currentPage: ReturnType<typeof signal<number>>;
+    load: ReturnType<typeof vi.fn>;
     searchChanged: ReturnType<typeof vi.fn>;
     onCategoryChange: ReturnType<typeof vi.fn>;
     onPageChange: ReturnType<typeof vi.fn>;
@@ -43,6 +68,7 @@ describe('ProductsPageComponent', () => {
       categoryOptions: signal([{ label: 'Todas las categorías', value: null }]),
       pageSize: signal(20),
       currentPage: signal(0),
+      load: vi.fn(),
       searchChanged: vi.fn(),
       onCategoryChange: vi.fn(),
       onPageChange: vi.fn(),
@@ -76,6 +102,12 @@ describe('ProductsPageComponent', () => {
   it('should delegate search changes to the service', () => {
     component.searchChanged('mesa');
     expect(serviceMock.searchChanged).toHaveBeenCalledWith('mesa');
+  });
+
+  it('should use the shared explicit search field', () => {
+    const searchField = fixture.debugElement.queryAll(By.directive(SearchFieldComponent));
+
+    expect(searchField).toHaveLength(1);
   });
 
   it('should delegate category changes to the service', () => {
