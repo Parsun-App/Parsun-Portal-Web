@@ -462,10 +462,10 @@ export class OrdersPageComponent implements OnInit {
 
   statusSeverity(status: string): StatusSeverity {
     const map: Record<string, StatusSeverity> = {
-      DRAFT: 'info',
+      DRAFT: 'secondary',
       CUSTOMER_DRAFT: 'warn',
-      CONFIRMED: 'success',
-      INVOICED: 'info',
+      CONFIRMED: 'info',
+      INVOICED: 'success',
       CANCELLED: 'danger',
     };
     return map[status] ?? 'info';

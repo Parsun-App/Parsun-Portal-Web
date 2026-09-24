@@ -466,7 +466,7 @@ export class QuotesPageComponent implements OnInit {
 
   statusSeverity(status: string): StatusSeverity {
     const map: Record<string, StatusSeverity> = {
-      DRAFT: 'info',
+      DRAFT: 'secondary',
       CUSTOMER_DRAFT: 'warn',
       CONVERTED_TO_ORDER: 'success',
       CONVERTED_TO_INVOICE: 'success',

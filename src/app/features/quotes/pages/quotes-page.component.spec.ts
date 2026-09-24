@@ -225,6 +225,10 @@ describe('QuotesPageComponent', () => {
     expect(component.statusSeverity('CONVERTED')).toBe('success');
   });
 
+  it('should map draft quotes to the secondary severity like the app', () => {
+    expect(component.statusSeverity('DRAFT')).toBe('secondary');
+  });
+
   it('should map expired quotes to the warn severity', () => {
     expect(component.statusSeverity('EXPIRED')).toBe('warn');
   });

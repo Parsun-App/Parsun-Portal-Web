@@ -9,10 +9,10 @@
       [disabled]="cart.orderCount() === 0"
       (click)="openCart('order')"
     >
-      <i class="pi pi-shopping-cart text-lg text-surface-600 dark:text-surface-400"></i>
+      <i class="pi pi-shopping-cart text-lg text-green-500"></i>
       @if (cart.orderCount() > 0) {
         <span
-          class="absolute right-0 top-0 min-w-4 rounded-full bg-primary px-1 text-[10px] font-semibold text-white"
+          class="absolute right-0 top-0 min-w-4 rounded-full bg-green-500 px-1 text-[10px] font-semibold text-white"
           >{{ cart.orderCount() }}</span
         >
       }
@@ -24,10 +24,10 @@
       [disabled]="cart.quoteCount() === 0"
       (click)="openCart('quote')"
     >
-      <i class="pi pi-file-edit text-lg text-surface-600 dark:text-surface-400"></i>
+      <i class="pi pi-file-edit text-lg text-blue-500"></i>
       @if (cart.quoteCount() > 0) {
         <span
-          class="absolute right-0 top-0 min-w-4 rounded-full bg-primary px-1 text-[10px] font-semibold text-white"
+          class="absolute right-0 top-0 min-w-4 rounded-full bg-blue-500 px-1 text-[10px] font-semibold text-white"
           >{{ cart.quoteCount() }}</span
         >
       }
@@ -65,11 +65,19 @@
   <ng-template pTemplate="header">
     <div class="flex items-center gap-3 px-2">
       <i
-        [class]="cart.mode() === 'order' ? 'pi pi-shopping-cart' : 'pi pi-file-edit'"
+        [class]="
+          cart.mode() === 'order'
+            ? 'pi pi-shopping-cart text-green-500'
+            : 'pi pi-file-edit text-blue-500'
+        "
         class="text-xl"
       ></i>
       <div>
-        <h2 class="text-lg font-semibold">
+        <h2
+          class="text-lg font-semibold"
+          [class.text-green-500]="cart.mode() === 'order'"
+          [class.text-blue-500]="cart.mode() === 'quote'"
+        >
           {{ cart.mode() === 'order' ? 'Nuevo pedido' : 'Nuevo presupuesto' }}
         </h2>
         <p class="text-xs text-surface-500">Revisa los productos antes de confirmar</p>
@@ -158,6 +166,7 @@
           styleClass="w-full"
           [label]="cart.mode() === 'order' ? 'Confirmar pedido' : 'Confirmar presupuesto'"
           [icon]="cart.mode() === 'order' ? 'pi pi-shopping-cart' : 'pi pi-file-edit'"
+          [severity]="cart.mode() === 'order' ? 'success' : 'info'"
           [loading]="confirmingCart()"
           (click)="confirmCart()"
         />

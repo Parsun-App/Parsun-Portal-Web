@@ -17,6 +17,7 @@ import { ButtonModule } from 'primeng/button';
 import { ImageModule } from 'primeng/image';
 import { TooltipModule } from 'primeng/tooltip';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
+import { MessageService } from 'primeng/api';
 import { ProductsService } from '@features/products/services/application/products.service';
 import { PortalProduct } from '@features/products/models';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
@@ -62,6 +63,7 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   private readonly productsService = inject(ProductsService);
   private readonly pdfViewerService = inject(PdfViewerService);
   private readonly cartService = inject(PortalCartService);
+  private readonly messageService = inject(MessageService);
 
   readonly loading = this.productsService.loading;
   readonly products = this.productsService.products;
@@ -148,10 +150,20 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
 
   addOrder(product: PortalProduct): void {
     this.addToCart(product, 1, 'order');
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Pedido actualizado',
+      detail: `${product.name} se ha añadido al pedido`,
+    });
   }
 
   addQuote(product: PortalProduct): void {
     this.addToCart(product, 1, 'quote');
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Presupuesto actualizado',
+      detail: `${product.name} se ha añadido al presupuesto`,
+    });
   }
 
   private addToCart(product: PortalProduct, quantity: number, mode: 'order' | 'quote'): void {

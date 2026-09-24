@@ -166,8 +166,13 @@ describe('OrdersPageComponent', () => {
     expect(serviceMock.cancelOrder).toHaveBeenCalledWith('o1');
   });
 
-  it('should map draft orders to the info severity', () => {
-    expect(component.statusSeverity('DRAFT')).toBe('info');
+  it('should map draft orders to the secondary severity like the app', () => {
+    expect(component.statusSeverity('DRAFT')).toBe('secondary');
+  });
+
+  it('should match the app severity for confirmed and invoiced orders', () => {
+    expect(component.statusSeverity('CONFIRMED')).toBe('info');
+    expect(component.statusSeverity('INVOICED')).toBe('success');
   });
 
   it('should map customer draft orders to the warn severity', () => {
