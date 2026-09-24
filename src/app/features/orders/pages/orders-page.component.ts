@@ -97,15 +97,21 @@ export class OrdersPageComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly location = inject(Location);
   private focusedId: string | null = null;
+  private productCreationKey: string | null = null;
 
   ngOnInit(): void {
     this.ordersService.load();
     this.ordersService.createDialogRequested$
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.openCreateDialog());
-    this.route.queryParamMap
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((params) => this.consumeFocus(params.get('focus')));
+    this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+      this.consumeFocus(params.get('focus'));
+      this.consumeProductCreation(
+        params.get('create'),
+        params.get('productId'),
+        params.get('quantity'),
+      );
+    });
   }
 
   readonly loading = this.ordersService.loading;
@@ -231,6 +237,46 @@ export class OrdersPageComponent implements OnInit {
     this.productsApi.list(undefined, undefined, 0, 100).subscribe((response) => {
       this.products.set(response.content);
       after ? after() : this.ordersService.openCreateDialog();
+    });
+  }
+
+  private consumeProductCreation(
+    action: string | null,
+    productId: string | null,
+    rawQuantity: string | null,
+  ): void {
+    if (action !== 'product' || !productId) return;
+    const quantity = Math.max(Number.parseInt(rawQuantity ?? '1', 10) || 1, 1);
+    const key = `${productId}:${quantity}`;
+    if (key === this.productCreationKey) return;
+    this.productCreationKey = key;
+    this.ensureProductsThenOpen(() => {
+      const product = this.products().find((item) => item.id === productId);
+      if (!product) {
+        void this.clearProductCreationParams();
+        return;
+      }
+      this.isEditing.set(false);
+      this.editingOrderId.set(null);
+      this.notes.set('');
+      this.lines.set([
+        {
+          product,
+          quantity: Math.min(quantity, Math.max(product.availableStock, 1)),
+          unitPrice: product.price,
+        },
+      ]);
+      this.ordersService.openCreateDialog();
+      void this.clearProductCreationParams();
+    });
+  }
+
+  private clearProductCreationParams(): Promise<boolean> {
+    return this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { create: null, productId: null, quantity: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
     });
   }
 

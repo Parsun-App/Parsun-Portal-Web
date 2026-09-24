@@ -114,6 +114,25 @@
                 <p-tag value="Agotado" severity="danger" />
               }
             </div>
+            <div class="mt-3 grid grid-cols-2 gap-2" (click)="$event.stopPropagation()">
+              <p-button
+                label="Pedido"
+                icon="pi pi-shopping-cart"
+                size="small"
+                styleClass="w-full"
+                [disabled]="!product.active || product.availableStock === 0"
+                (click)="addOrder(product)"
+              />
+              <p-button
+                label="Presupuesto"
+                icon="pi pi-file-edit"
+                size="small"
+                severity="secondary"
+                styleClass="w-full"
+                [disabled]="!product.active || product.availableStock === 0"
+                (click)="addQuote(product)"
+              />
+            </div>
           </div>
         </div>
       }
@@ -189,6 +208,25 @@
               } @else {
                 <p-tag value="Agotado" severity="danger" />
               }
+            </div>
+            <div class="mt-3 grid grid-cols-2 gap-2" (click)="$event.stopPropagation()">
+              <p-button
+                label="Pedido"
+                icon="pi pi-shopping-cart"
+                size="small"
+                styleClass="w-full"
+                [disabled]="!product.active || product.availableStock === 0"
+                (click)="addOrder(product)"
+              />
+              <p-button
+                label="Presupuesto"
+                icon="pi pi-file-edit"
+                size="small"
+                severity="secondary"
+                styleClass="w-full"
+                [disabled]="!product.active || product.availableStock === 0"
+                (click)="addQuote(product)"
+              />
             </div>
           </div>
         }
@@ -314,7 +352,26 @@
                 }
               </td>
               <td class="px-4 py-3 text-center" (click)="$event.stopPropagation()">
-                <app-list-action-buttons [actions]="actionsFor(product)" />
+                <div class="flex items-center justify-center gap-1">
+                  <p-button
+                    icon="pi pi-shopping-cart"
+                    size="small"
+                    [text]="true"
+                    pTooltip="Añadir al pedido"
+                    [disabled]="!product.active || product.availableStock === 0"
+                    (click)="addOrder(product)"
+                  />
+                  <p-button
+                    icon="pi pi-file-edit"
+                    size="small"
+                    severity="secondary"
+                    [text]="true"
+                    pTooltip="Añadir al presupuesto"
+                    [disabled]="!product.active || product.availableStock === 0"
+                    (click)="addQuote(product)"
+                  />
+                  <app-list-action-buttons [actions]="actionsFor(product)" />
+                </div>
               </td>
             </tr>
           </ng-template>
@@ -324,6 +381,11 @@
   }
 </div>
 
-<app-product-detail-dialog [(visible)]="dialogVisible" [product]="selectedProduct()" />
+<app-product-detail-dialog
+  [(visible)]="dialogVisible"
+  [product]="selectedProduct()"
+  (createOrder)="createOrder($event)"
+  (createQuote)="createQuote($event)"
+/>
 
 <app-pdf-viewer-dialog />

@@ -160,4 +160,19 @@ describe('ProductsPageComponent', () => {
     component.toggleView();
     expect(component.viewMode()).toBe('grid');
   });
+  it('should add a product to the order cart', () => {
+    component.createOrder({ product: PRODUCTS[0], quantity: 2 });
+
+    expect(component.cartMode()).toBe('order');
+    expect(component.cartVisible()).toBe(false);
+    expect(component.cartLines()).toEqual([{ product: PRODUCTS[0], quantity: 2 }]);
+  });
+
+  it('should add a product to the quote cart', () => {
+    component.createQuote({ product: PRODUCTS[0], quantity: 2 });
+
+    expect(component.cartMode()).toBe('quote');
+    expect(component.cartVisible()).toBe(false);
+    expect(component.cartLines()).toEqual([{ product: PRODUCTS[0], quantity: 2 }]);
+  });
 });

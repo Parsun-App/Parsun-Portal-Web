@@ -56,9 +56,42 @@
         <label class="text-xs font-medium uppercase text-surface-500">Estado</label>
         <p class="mt-1 text-sm">{{ item.active ? 'Activo' : 'Inactivo' }}</p>
       </div>
+      @if (item.active && item.availableStock > 0) {
+        <div class="flex flex-col gap-2 rounded-lg bg-surface-50 p-3 dark:bg-surface-900">
+          <label for="product-quantity" class="text-sm font-medium">Cantidad</label>
+          <p-inputNumber
+            inputId="product-quantity"
+            [ngModel]="quantity()"
+            (ngModelChange)="quantity.set($event)"
+            [min]="1"
+            [max]="item.availableStock"
+            [showButtons]="true"
+            buttonLayout="horizontal"
+            [step]="1"
+            fluid
+          />
+          <span class="text-xs text-surface-500">Máximo disponible: {{ item.availableStock }}</span>
+        </div>
+      }
     </div>
   }
   <ng-template pTemplate="footer"
-    ><p-button label="Cerrar" (click)="visible.set(false)" severity="secondary" [text]="true"
-  /></ng-template>
+    ><div class="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-between">
+      <p-button label="Cerrar" (click)="visible.set(false)" severity="secondary" [text]="true" />
+      <div class="flex flex-col gap-2 sm:flex-row">
+        <p-button
+          label="Crear presupuesto"
+          icon="pi pi-file-edit"
+          severity="secondary"
+          [disabled]="!product()?.active || product()?.availableStock === 0"
+          (click)="requestQuote()"
+        />
+        <p-button
+          label="Crear pedido"
+          icon="pi pi-shopping-cart"
+          [disabled]="!product()?.active || product()?.availableStock === 0"
+          (click)="requestOrder()"
+        />
+      </div></div
+  ></ng-template>
 </p-dialog>

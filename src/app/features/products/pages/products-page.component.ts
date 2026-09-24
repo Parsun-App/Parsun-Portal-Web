@@ -22,9 +22,13 @@ import { PortalProduct } from '@features/products/models';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 import { PageHeaderComponent, SearchFieldComponent } from '@shared/components/ui';
 import { ListActionButtonsComponent, type ListAction } from '@shared/components/list';
-import { ProductDetailDialogComponent } from '@features/products/components/product-detail-dialog/product-detail-dialog.component';
+import {
+  ProductDetailDialogComponent,
+  ProductCreationRequest,
+} from '@features/products/components/product-detail-dialog/product-detail-dialog.component';
 import { PdfViewerDialogComponent, PdfViewerService } from '@core/pdf-viewer';
 import { environment } from '@env/environment';
+import { PortalCartService } from '@features/products/services/application/portal-cart.service';
 
 type ViewMode = 'table' | 'grid';
 
@@ -57,6 +61,7 @@ const VIEW_MODE_STORAGE_KEY = 'parsun-products-view-mode';
 export class ProductsPageComponent implements OnInit, OnDestroy {
   private readonly productsService = inject(ProductsService);
   private readonly pdfViewerService = inject(PdfViewerService);
+  private readonly cartService = inject(PortalCartService);
 
   readonly loading = this.productsService.loading;
   readonly products = this.productsService.products;
@@ -69,6 +74,11 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
 
   readonly selectedProduct = signal<PortalProduct | null>(null);
   readonly dialogVisible = signal(false);
+  readonly cartVisible = this.cartService.visible;
+  readonly cartMode = this.cartService.mode;
+  readonly cartLines = this.cartService.lines;
+  readonly orderCartCount = this.cartService.orderCount;
+  readonly quoteCartCount = this.cartService.quoteCount;
   readonly viewMode = signal<ViewMode>('grid');
 
   readonly isMobile = signal(false);
@@ -128,8 +138,55 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
     this.dialogVisible.set(true);
   }
 
+  createOrder(request: ProductCreationRequest): void {
+    this.addToCart(request.product, request.quantity, 'order');
+  }
+
+  createQuote(request: ProductCreationRequest): void {
+    this.addToCart(request.product, request.quantity, 'quote');
+  }
+
+  addOrder(product: PortalProduct): void {
+    this.addToCart(product, 1, 'order');
+  }
+
+  addQuote(product: PortalProduct): void {
+    this.addToCart(product, 1, 'quote');
+  }
+
+  private addToCart(product: PortalProduct, quantity: number, mode: 'order' | 'quote'): void {
+    this.cartService.add(product, quantity, mode);
+  }
+
+  openCart(mode: 'order' | 'quote'): void {
+    this.cartService.open(mode);
+  }
+
+  updateCartQuantity(productId: string, quantity: number): void {
+    const line = this.cartLines().find((item) => item.product.id === productId);
+    if (!line) return;
+    const nextQuantity = Math.max(1, Math.min(quantity || 1, line.product.availableStock));
+    this.cartService.updateQuantity(productId, nextQuantity);
+  }
+
+  removeFromCart(productId: string): void {
+    this.cartService.remove(productId);
+  }
+
   actionsFor(product: PortalProduct): ListAction[] {
-    return [{ label: 'Ver detalle', icon: 'pi pi-eye', command: () => this.openDetail(product) }];
+    return [
+      {
+        label: 'Añadir al pedido',
+        icon: 'pi pi-shopping-cart',
+        command: () => this.addOrder(product),
+      },
+      {
+        label: 'Añadir al presupuesto',
+        icon: 'pi pi-file-edit',
+        command: () => this.addQuote(product),
+      },
+      { label: 'Ver detalle', icon: 'pi pi-eye', command: () => this.openDetail(product) },
+    ];
   }
 
   downloadCatalog(): void {
