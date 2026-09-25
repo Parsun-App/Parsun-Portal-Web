@@ -59,4 +59,8 @@ export class OrderFormDialogComponent {
   readonly quantityChanged = output<QuantityChange>();
   readonly productsSearched = output<ProductSearchRequest>();
   readonly submitted = output<void>();
+
+  buildPhotoUrl(photo: string | null): string | null {
+    return photo ? `/api/files/${photo}` : null;
+  }
 }

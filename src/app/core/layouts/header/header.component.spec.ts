@@ -1,6 +1,7 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { MessageService } from 'primeng/api';
 import { of, Subject } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { AuthService } from '@features/auth/services/application/auth.service';
@@ -11,6 +12,8 @@ import {
 } from '@core/notifications/services/api/notification-api.service';
 import { NotificationDestinationResolver } from '@core/notifications/services/navigation/notification-destination.resolver';
 import { NotificationWebSocketService } from '@core/notifications/services/websocket/notification-websocket.service';
+import { OrdersApiService } from '@features/orders/services/api/orders-api.service';
+import { QuotesApiService } from '@features/quotes/services/api/quotes-api.service';
 
 describe('HeaderComponent', () => {
   it('delegates logout to authentication', () => {
@@ -29,6 +32,9 @@ describe('HeaderComponent', () => {
           useValue: { connect: vi.fn(), notification$: new Subject<AppNotification>() },
         },
         { provide: NotificationDestinationResolver, useValue: {} },
+        { provide: OrdersApiService, useValue: {} },
+        { provide: QuotesApiService, useValue: {} },
+        MessageService,
       ],
     });
     const component = TestBed.createComponent(HeaderComponent).componentInstance;

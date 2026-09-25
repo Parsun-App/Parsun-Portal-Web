@@ -160,4 +160,32 @@ describe('ProductsPageComponent', () => {
     component.toggleView();
     expect(component.viewMode()).toBe('grid');
   });
+  it('should add a product to the order cart', () => {
+    component.createOrder({ product: PRODUCTS[0], quantity: 2 });
+
+    expect(component.cartMode()).toBe('order');
+    expect(component.cartVisible()).toBe(false);
+    expect(component.cartLines()).toEqual([{ product: PRODUCTS[0], quantity: 2 }]);
+  });
+
+  it('should show the same feedback when adding an order from the product detail', () => {
+    const messageService = TestBed.inject(MessageService);
+    const addMessage = vi.spyOn(messageService, 'add');
+
+    component.createOrder({ product: PRODUCTS[0], quantity: 2 });
+
+    expect(addMessage).toHaveBeenCalledWith({
+      severity: 'success',
+      summary: 'Pedido actualizado',
+      detail: 'Mesa Roble se ha añadido al pedido',
+    });
+  });
+
+  it('should add a product to the quote cart', () => {
+    component.createQuote({ product: PRODUCTS[0], quantity: 2 });
+
+    expect(component.cartMode()).toBe('quote');
+    expect(component.cartVisible()).toBe(false);
+    expect(component.cartLines()).toEqual([{ product: PRODUCTS[0], quantity: 2 }]);
+  });
 });

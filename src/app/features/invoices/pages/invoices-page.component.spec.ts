@@ -148,6 +148,11 @@ describe('InvoicesPageComponent', () => {
     expect(component.statusSeverity('PAID')).toBe('success');
   });
 
+  it('should match the app severity for draft and pending invoices', () => {
+    expect(component.statusSeverity('DRAFT')).toBe('secondary');
+    expect(component.statusSeverity('PENDING_PAYMENT')).toBe('info');
+  });
+
   it('should query the pending payment for the invoice when opening the pay dialog', () => {
     component.openPayDialog(INVOICES[0]);
 
