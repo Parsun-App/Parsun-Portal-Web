@@ -142,27 +142,32 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
 
   createOrder(request: ProductCreationRequest): void {
     this.addToCart(request.product, request.quantity, 'order');
+    this.showCartAdditionFeedback(request.product, 'order');
   }
 
   createQuote(request: ProductCreationRequest): void {
     this.addToCart(request.product, request.quantity, 'quote');
+    this.showCartAdditionFeedback(request.product, 'quote');
   }
 
   addOrder(product: PortalProduct): void {
     this.addToCart(product, 1, 'order');
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Pedido actualizado',
-      detail: `${product.name} se ha añadido al pedido`,
-    });
+    this.showCartAdditionFeedback(product, 'order');
   }
 
   addQuote(product: PortalProduct): void {
     this.addToCart(product, 1, 'quote');
+    this.showCartAdditionFeedback(product, 'quote');
+  }
+
+  private showCartAdditionFeedback(product: PortalProduct, mode: 'order' | 'quote'): void {
     this.messageService.add({
       severity: 'success',
-      summary: 'Presupuesto actualizado',
-      detail: `${product.name} se ha añadido al presupuesto`,
+      summary: mode === 'order' ? 'Pedido actualizado' : 'Presupuesto actualizado',
+      detail:
+        mode === 'order'
+          ? `${product.name} se ha añadido al pedido`
+          : `${product.name} se ha añadido al presupuesto`,
     });
   }
 
