@@ -127,9 +127,6 @@ export class OrdersPageComponent implements OnInit {
   readonly pendingOrders = computed(
     () => this.orders().filter((o) => o.status === 'DRAFT' || o.status === 'CUSTOMER_DRAFT').length,
   );
-  readonly confirmedOrders = computed(
-    () => this.orders().filter((o) => o.status === 'CONFIRMED').length,
-  );
   readonly ordersTotal = computed(() => this.orders().reduce((s, o) => s + o.subtotal, 0));
   readonly filterStatus = this.ordersService.filterStatus;
   readonly dateFrom = this.ordersService.dateFrom;

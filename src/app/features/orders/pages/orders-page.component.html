@@ -14,18 +14,12 @@
     />
   </app-page-header>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <app-metric-card
       label="Pedidos Pendientes"
       [value]="pendingOrders()"
       icon="pi pi-clock"
       gradient="linear-gradient(135deg, #f59e0b, #d97706)"
-    />
-    <app-metric-card
-      label="Pedidos Confirmados"
-      [value]="confirmedOrders()"
-      icon="pi pi-check-circle"
-      gradient="linear-gradient(135deg, #22c55e, #16a34a)"
     />
     <app-metric-card
       label="Importe Total"
