@@ -34,6 +34,7 @@ import { PortalQuoteList } from '@features/quotes/models';
 import { ProductsApiService } from '@features/products/services/api/products-api.service';
 import { PortalProduct } from '@features/products/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
+import { PORTAL_MODULE_COLORS } from '@shared/utils/module-colors';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 import { MetricCardComponent, PageHeaderComponent } from '@shared/components/ui';
 import {
@@ -91,6 +92,7 @@ interface FormLine {
 })
 export class QuotesPageComponent implements OnInit {
   private readonly destroy$ = new Subject<void>();
+  readonly colors = PORTAL_MODULE_COLORS;
   private readonly quotesService = inject(QuotesService);
   private readonly productsApi = inject(ProductsApiService);
   private readonly confirmationService = inject(ConfirmationService);

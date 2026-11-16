@@ -2,6 +2,8 @@
   <div class="flex items-center gap-3">
     <div
       class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface-900 text-white dark:bg-surface-100 dark:text-surface-900"
+      [style.background]="background() || null"
+      [style.color]="color() || null"
     >
       <i [class]="icon() + ' text-lg'" aria-hidden="true"></i>
     </div>

@@ -46,6 +46,7 @@ const PORTAL_DASHBOARD: PortalDashboard = {
   pendingInvoices: 1,
   pendingAmount: 400,
   recentActivity: [],
+  pendingOrders: 2,
 };
 
 describe('DashboardPageComponent', () => {

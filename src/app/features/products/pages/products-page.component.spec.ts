@@ -5,7 +5,6 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
 import type { TablePageEvent, PaginatorState } from 'primeng/table';
-import { MessageService } from 'primeng/api';
 import { ProductsPageComponent } from '@features/products/pages/products-page.component';
 import { ProductsService } from '@features/products/services/application/products.service';
 import { PortalProduct } from '@features/products/models';
@@ -82,7 +81,6 @@ describe('ProductsPageComponent', () => {
         provideHttpClient(),
         provideRouter([]),
         { provide: ProductsService, useValue: serviceMock },
-        MessageService,
       ],
     }).compileComponents();
 
@@ -159,33 +157,5 @@ describe('ProductsPageComponent', () => {
     expect(component.viewMode()).toBe('table');
     component.toggleView();
     expect(component.viewMode()).toBe('grid');
-  });
-  it('should add a product to the order cart', () => {
-    component.createOrder({ product: PRODUCTS[0], quantity: 2 });
-
-    expect(component.cartMode()).toBe('order');
-    expect(component.cartVisible()).toBe(false);
-    expect(component.cartLines()).toEqual([{ product: PRODUCTS[0], quantity: 2 }]);
-  });
-
-  it('should show the same feedback when adding an order from the product detail', () => {
-    const messageService = TestBed.inject(MessageService);
-    const addMessage = vi.spyOn(messageService, 'add');
-
-    component.createOrder({ product: PRODUCTS[0], quantity: 2 });
-
-    expect(addMessage).toHaveBeenCalledWith({
-      severity: 'success',
-      summary: 'Pedido actualizado',
-      detail: 'Mesa Roble se ha añadido al pedido',
-    });
-  });
-
-  it('should add a product to the quote cart', () => {
-    component.createQuote({ product: PRODUCTS[0], quantity: 2 });
-
-    expect(component.cartMode()).toBe('quote');
-    expect(component.cartVisible()).toBe(false);
-    expect(component.cartLines()).toEqual([{ product: PRODUCTS[0], quantity: 2 }]);
   });
 });

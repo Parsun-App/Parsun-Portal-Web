@@ -1,5 +1,11 @@
 <div class="flex flex-col gap-6">
-  <app-page-header title="Facturas" subtitle="Gestiona tus facturas" icon="pi pi-receipt">
+  <app-page-header
+    title="Facturas"
+    subtitle="Gestiona tus facturas"
+    icon="pi pi-file"
+    [color]="colors.invoices.icon"
+    [background]="colors.invoices.background"
+  >
     @if (pendingCount() > 0) {
       <p-button
         label="Pagar Deuda"

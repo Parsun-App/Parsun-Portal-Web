@@ -3,6 +3,10 @@ import { Client, IMessage } from '@stomp/stompjs';
 import { Subject } from 'rxjs';
 import { AuthService } from '@features/auth/services/application/auth.service';
 import { AppNotification } from '@core/notifications/services/api/notification-api.service';
+import {
+  normalizeNotification,
+  RawNotificationPayload,
+} from '@core/notifications/services/websocket/notification-payload.mapper';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationWebSocketService implements OnDestroy {
@@ -36,11 +40,11 @@ export class NotificationWebSocketService implements OnDestroy {
     this.stompClient.onConnect = () => {
       this.connected.set(true);
       this.stompClient!.subscribe(
-        `/topic@core/notifications/customer/${customer.id}`,
+        `/topic/notifications/customer/${customer.id}`,
         (message: IMessage) => {
           try {
-            const notification: AppNotification = JSON.parse(message.body);
-            this.notification$.next(notification);
+            const payload: RawNotificationPayload = JSON.parse(message.body);
+            this.notification$.next(normalizeNotification(payload));
           } catch {}
         },
       );

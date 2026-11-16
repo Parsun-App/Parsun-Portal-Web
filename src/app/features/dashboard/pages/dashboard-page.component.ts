@@ -24,6 +24,7 @@ import { PortalDashboard } from '@features/dashboard/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 import { MetricCardComponent } from '@shared/components/ui';
+import { PORTAL_MODULE_COLORS } from '@shared/utils/module-colors';
 
 type Severity = 'info' | 'success' | 'warn' | 'danger' | 'secondary' | 'contrast';
 
@@ -90,52 +91,44 @@ export class DashboardPageComponent implements OnInit {
 
   readonly quickActions: QuickAction[] = [
     {
+      label: 'Descargar Catálogo',
+      desc: 'Catálogo en PDF',
+      icon: 'pi pi-download',
+      bg: PORTAL_MODULE_COLORS.products.background,
+      color: PORTAL_MODULE_COLORS.products.icon,
+      action: () => this.downloadCatalog(),
+    },
+    {
       label: 'Agregar Presupuesto',
       desc: 'Crear nuevo presupuesto',
       icon: 'pi pi-file-edit',
-      bg: 'rgba(59,130,246,0.1)',
-      color: '#3b82f6',
+      bg: PORTAL_MODULE_COLORS.quotes.background,
+      color: PORTAL_MODULE_COLORS.quotes.icon,
       action: () => this.quotesService.requestCreateDialog(),
     },
     {
       label: 'Agregar Pedido',
       desc: 'Crear nuevo pedido',
       icon: 'pi pi-shopping-cart',
-      bg: 'rgba(34,197,94,0.1)',
-      color: '#22c55e',
+      bg: PORTAL_MODULE_COLORS.orders.background,
+      color: PORTAL_MODULE_COLORS.orders.icon,
       action: () => this.ordersService.requestCreateDialog(),
+    },
+    {
+      label: 'Ver Pagos Pendientes',
+      desc: 'Facturas por pagar',
+      icon: 'pi pi-file',
+      bg: PORTAL_MODULE_COLORS.invoices.background,
+      color: PORTAL_MODULE_COLORS.invoices.icon,
+      link: '/invoices',
     },
     {
       label: 'Agregar Pago',
       desc: 'Registrar un pago',
       icon: 'pi pi-credit-card',
-      bg: 'rgba(245,158,11,0.1)',
-      color: '#f59e0b',
+      bg: PORTAL_MODULE_COLORS.payments.background,
+      color: PORTAL_MODULE_COLORS.payments.icon,
       link: '/payments',
-    },
-    {
-      label: 'Ver Perfil',
-      desc: 'Datos de cuenta',
-      icon: 'pi pi-user',
-      bg: 'rgba(139,92,246,0.1)',
-      color: '#8b5cf6',
-      link: '/profile',
-    },
-    {
-      label: 'Ver Pagos Pendientes',
-      desc: 'Facturas por pagar',
-      icon: 'pi pi-receipt',
-      bg: 'rgba(239,68,68,0.1)',
-      color: '#ef4444',
-      link: '/invoices',
-    },
-    {
-      label: 'Descargar Catálogo',
-      desc: 'Catálogo en PDF',
-      icon: 'pi pi-download',
-      bg: 'rgba(14,165,233,0.1)',
-      color: '#0ea5e9',
-      action: () => this.downloadCatalog(),
     },
   ];
 
@@ -162,15 +155,15 @@ export class DashboardPageComponent implements OnInit {
   buildStats(data: PortalDashboard): StatCard[] {
     return [
       {
-        label: 'Presupuestos Activos',
+        label: 'Presupuestos Pendientes',
         value: String(data.draftQuotes),
         icon: 'pi pi-file-edit',
         route: '/quotes',
         gradient: 'linear-gradient(135deg, #3b82f6, #2563eb)',
       },
       {
-        label: 'Pedidos Confirmados',
-        value: String(data.confirmedOrders),
+        label: 'Pedidos Pendientes',
+        value: String(data.pendingOrders),
         icon: 'pi pi-shopping-cart',
         route: '/orders',
         gradient: 'linear-gradient(135deg, #22c55e, #16a34a)',
@@ -178,7 +171,7 @@ export class DashboardPageComponent implements OnInit {
       {
         label: 'Facturas Pendientes',
         value: String(data.pendingInvoices),
-        icon: 'pi pi-receipt',
+        icon: 'pi pi-file',
         route: '/invoices',
         gradient: 'linear-gradient(135deg, #f59e0b, #d97706)',
       },

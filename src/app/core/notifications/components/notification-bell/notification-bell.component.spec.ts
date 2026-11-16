@@ -66,14 +66,25 @@ describe('NotificationBellComponent', () => {
     expect(resolver.navigate).not.toHaveBeenCalled();
   });
 
-  it('should navigate without marking the notification as read', () => {
+  it('should mark the notification as read when opening its destination', () => {
+    component.unreadCount.set(1);
     component.notifications.set([notification]);
 
     component.openNotification(notification);
 
-    expect(api.markAsRead).not.toHaveBeenCalled();
-    expect(component.notifications()).toEqual([notification]);
+    expect(api.markAsRead).toHaveBeenCalledWith('n1');
+    expect(component.unreadCount()).toBe(0);
+    expect(component.notifications()).toEqual([]);
     expect(component.panel.hide).toHaveBeenCalled();
+    expect(resolver.navigate).toHaveBeenCalledWith('PAYMENT', 'p1');
+  });
+
+  it('should not mark an already read notification again when opening it', () => {
+    component.notifications.set([{ ...notification, isRead: true }]);
+
+    component.openNotification({ ...notification, isRead: true });
+
+    expect(api.markAsRead).not.toHaveBeenCalled();
     expect(resolver.navigate).toHaveBeenCalledWith('PAYMENT', 'p1');
   });
 
@@ -88,7 +99,7 @@ describe('NotificationBellComponent', () => {
   it('should handle clicks on the explicit notification action', () => {
     component.openNotification(notification);
 
-    expect(api.markAsRead).not.toHaveBeenCalled();
+    expect(api.markAsRead).toHaveBeenCalledWith('n1');
     expect(resolver.navigate).toHaveBeenCalledWith('PAYMENT', 'p1');
   });
 });

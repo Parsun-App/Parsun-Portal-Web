@@ -34,6 +34,7 @@ import {
 import { PortalInvoiceList } from '@features/invoices/models';
 import { PortalPaymentList } from '@features/payments/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
+import { PORTAL_MODULE_COLORS } from '@shared/utils/module-colors';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 import { MetricCardComponent, PageHeaderComponent } from '@shared/components/ui';
 import {
@@ -80,6 +81,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
   templateUrl: './invoices-page.component.html',
 })
 export class InvoicesPageComponent implements OnInit {
+  readonly colors = PORTAL_MODULE_COLORS;
   private readonly invoicesService = inject(InvoicesService);
   private readonly invoicesApi = inject(InvoicesApiService);
   private readonly paymentsApi = inject(PaymentsApiService);
