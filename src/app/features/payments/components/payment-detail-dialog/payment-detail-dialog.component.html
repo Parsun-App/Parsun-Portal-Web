@@ -1,64 +1,113 @@
 <p-dialog
   [(visible)]="visible"
   (onHide)="closed.emit()"
-  [style]="{ width: 'min(38rem, calc(100vw - 2rem))' }"
+  [style]="{ width: 'min(40rem, calc(100vw - 2rem))' }"
   [modal]="true"
   [closable]="true"
   [draggable]="false"
+  styleClass="portal-detail-dialog"
 >
-  <ng-template pTemplate="header"
-    ><div class="flex items-center gap-3">
-      <i class="pi pi-credit-card"></i>
-      <div>
-        <h2 class="text-lg font-semibold">Pago {{ detail()?.paymentNumber }}</h2>
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-3">
+      <span
+        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+        style="background: rgba(245, 158, 11, 0.12); color: #f59e0b"
+      >
+        <i class="pi pi-credit-card text-lg"></i>
+      </span>
+      <div class="min-w-0">
+        <h2 class="truncate text-lg font-semibold text-surface-900 dark:text-surface-100">
+          Pago {{ detail()?.paymentNumber }}
+        </h2>
         <p class="text-xs text-surface-500">Detalle del movimiento y aplicación</p>
       </div>
-    </div></ng-template
-  >
+    </div>
+  </ng-template>
+
   @if (detail(); as payment) {
-    <div class="grid gap-4 sm:grid-cols-2">
-      <div>
-        <label class="text-xs font-medium uppercase text-surface-500">N° Pago</label>
-        <p class="mt-1 font-mono text-sm">{{ payment.paymentNumber }}</p>
-      </div>
-      <div>
-        <label class="text-xs font-medium uppercase text-surface-500">Estado</label>
-        <p class="mt-1">
-          <p-tag
-            [value]="getStatusLabel(payment.status)"
-            [severity]="statusSeverity(payment.status)"
-          />
-        </p>
-      </div>
-      <div>
-        <label class="text-xs font-medium uppercase text-surface-500">Monto</label>
-        <p class="mt-1 text-sm font-medium">{{ payment.amount | currency: 'USD' : 'symbol' }}</p>
-      </div>
-      <div>
-        <label class="text-xs font-medium uppercase text-surface-500">Monto Aplicado</label>
-        <p class="mt-1 text-sm">{{ payment.appliedAmount | currency: 'USD' : 'symbol' }}</p>
-      </div>
-      <div>
-        <label class="text-xs font-medium uppercase text-surface-500">Referencia</label>
-        <p class="mt-1 text-sm">{{ payment.referenceNumber || '-' }}</p>
-      </div>
-      <div>
-        <label class="text-xs font-medium uppercase text-surface-500">Fecha de Pago</label>
-        <p class="mt-1 text-sm">{{ payment.paymentDate | date: 'dd/MM/yy' }}</p>
-      </div>
-      <div>
-        <label class="text-xs font-medium uppercase text-surface-500">Creado</label>
-        <p class="mt-1 text-sm">{{ payment.createdAt | date: 'dd/MM/yy HH:mm' }}</p>
-      </div>
-      @if (payment.notes) {
+    <div class="flex flex-col gap-5">
+      <div
+        class="grid gap-4 rounded-xl border border-surface-200 bg-surface-50 p-4 sm:grid-cols-2 dark:border-surface-700 dark:bg-surface-800/50"
+      >
         <div>
-          <label class="text-xs font-medium uppercase text-surface-500">Notas</label>
-          <p class="mt-1 text-sm">{{ payment.notes }}</p>
+          <span class="text-[11px] font-semibold uppercase tracking-wide text-surface-400"
+            >N° Pago</span
+          >
+          <p class="mt-1.5 font-mono text-sm text-surface-800 dark:text-surface-100">
+            {{ payment.paymentNumber }}
+          </p>
         </div>
-      }
+        <div>
+          <span class="text-[11px] font-semibold uppercase tracking-wide text-surface-400"
+            >Estado</span
+          >
+          <div class="mt-1.5">
+            <p-tag
+              [value]="getStatusLabel(payment.status)"
+              [severity]="statusSeverity(payment.status)"
+            />
+          </div>
+        </div>
+        <div>
+          <span class="text-[11px] font-semibold uppercase tracking-wide text-surface-400"
+            >Monto</span
+          >
+          <p class="mt-1.5 text-base font-semibold text-surface-800 dark:text-surface-100">
+            {{ payment.amount | currency: 'USD' : 'symbol' }}
+          </p>
+        </div>
+        <div>
+          <span class="text-[11px] font-semibold uppercase tracking-wide text-surface-400"
+            >Monto Aplicado</span
+          >
+          <p class="mt-1.5 text-sm text-surface-800 dark:text-surface-100">
+            {{ payment.appliedAmount | currency: 'USD' : 'symbol' }}
+          </p>
+        </div>
+        <div>
+          <span class="text-[11px] font-semibold uppercase tracking-wide text-surface-400"
+            >Referencia</span
+          >
+          <p class="mt-1.5 text-sm text-surface-800 dark:text-surface-100">
+            {{ payment.referenceNumber || '-' }}
+          </p>
+        </div>
+        <div>
+          <span class="text-[11px] font-semibold uppercase tracking-wide text-surface-400"
+            >Fecha de Pago</span
+          >
+          <p class="mt-1.5 text-sm text-surface-800 dark:text-surface-100">
+            {{ payment.paymentDate | date: 'dd/MM/yy' }}
+          </p>
+        </div>
+        <div>
+          <span class="text-[11px] font-semibold uppercase tracking-wide text-surface-400"
+            >Creado</span
+          >
+          <p class="mt-1.5 text-sm text-surface-800 dark:text-surface-100">
+            {{ payment.createdAt | date: 'dd/MM/yy HH:mm' }}
+          </p>
+        </div>
+        @if (payment.notes) {
+          <div class="sm:col-span-2">
+            <span class="text-[11px] font-semibold uppercase tracking-wide text-surface-400"
+              >Notas</span
+            >
+            <p class="mt-1.5 text-sm text-surface-700 dark:text-surface-200">{{ payment.notes }}</p>
+          </div>
+        }
+      </div>
     </div>
   }
-  <ng-template pTemplate="footer"
-    ><p-button label="Cerrar" (click)="visible.set(false)" severity="secondary" [outlined]="true"
-  /></ng-template>
+
+  <ng-template pTemplate="footer">
+    <div class="flex w-full justify-end">
+      <p-button
+        label="Cerrar"
+        (click)="visible.set(false)"
+        severity="secondary"
+        [outlined]="true"
+      />
+    </div>
+  </ng-template>
 </p-dialog>

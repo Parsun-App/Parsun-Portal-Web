@@ -4,11 +4,12 @@ import { PortalProduct } from '@features/products/models';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { ImageModule } from 'primeng/image';
+import { TagModule } from 'primeng/tag';
 
 @Component({
   selector: 'app-product-detail-dialog',
   standalone: true,
-  imports: [ButtonModule, CurrencyPipe, DialogModule, ImageModule],
+  imports: [ButtonModule, CurrencyPipe, DialogModule, ImageModule, TagModule],
   templateUrl: './product-detail-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
