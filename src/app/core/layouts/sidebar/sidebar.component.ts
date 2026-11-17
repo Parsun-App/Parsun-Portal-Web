@@ -1,7 +1,8 @@
-import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { DrawerModule } from 'primeng/drawer';
 import { TooltipModule } from 'primeng/tooltip';
+import { PortalSidebarService } from '@core/layouts/portal-sidebar.service';
 import { PORTAL_MODULE_COLORS } from '@shared/utils/module-colors';
 
 interface MenuItem {
@@ -20,7 +21,7 @@ interface MenuItem {
   templateUrl: './sidebar.component.html',
 })
 export class SidebarComponent {
-  readonly mobileOpen = signal(false);
+  readonly sidebar = inject(PortalSidebarService);
 
   readonly menuItems: MenuItem[] = [
     {

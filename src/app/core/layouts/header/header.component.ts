@@ -14,6 +14,7 @@ import { AuthService } from '@features/auth/services/application/auth.service';
 import { Popover, PopoverModule } from 'primeng/popover';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { NotificationBellComponent } from '@core/notifications/components/notification-bell/notification-bell.component';
+import { PortalSidebarService } from '@core/layouts/portal-sidebar.service';
 
 const DARK_MODE_CLASS = 'my-app-dark';
 const DARK_MODE_KEY = 'darkMode';
@@ -29,6 +30,7 @@ export class HeaderComponent {
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
+  readonly sidebar = inject(PortalSidebarService);
   readonly currentUser = this.authService.currentUser;
 
   @ViewChild('userMenu') userMenu!: Popover;

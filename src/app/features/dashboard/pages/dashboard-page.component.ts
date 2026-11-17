@@ -159,21 +159,21 @@ export class DashboardPageComponent implements OnInit {
         value: String(data.draftQuotes),
         icon: 'pi pi-file-edit',
         route: '/quotes',
-        gradient: 'linear-gradient(135deg, #3b82f6, #2563eb)',
+        gradient: 'linear-gradient(135deg, #1e40af, #2563eb)',
       },
       {
         label: 'Pedidos Pendientes',
         value: String(data.pendingOrders),
         icon: 'pi pi-shopping-cart',
         route: '/orders',
-        gradient: 'linear-gradient(135deg, #22c55e, #16a34a)',
+        gradient: 'linear-gradient(135deg, #2563eb, #1e40af)',
       },
       {
         label: 'Facturas Pendientes',
         value: String(data.pendingInvoices),
         icon: 'pi pi-file',
         route: '/invoices',
-        gradient: 'linear-gradient(135deg, #f59e0b, #d97706)',
+        gradient: 'linear-gradient(135deg, #b91c2c, #dc2626)',
       },
       this.pendingAmountCard(data.pendingAmount),
     ];
@@ -185,7 +185,7 @@ export class DashboardPageComponent implements OnInit {
       value: amount,
       icon: 'pi pi-dollar',
       route: '/invoices',
-      gradient: 'linear-gradient(135deg, #ef4444, #dc2626)',
+      gradient: 'linear-gradient(135deg, #dc2626, #b91c2c)',
       isCurrency: true,
     };
   }
@@ -202,10 +202,10 @@ export class DashboardPageComponent implements OnInit {
 
   activityColor(type: string): string {
     const map: Record<string, string> = {
-      QUOTE: '#3b82f6',
-      ORDER: '#22c55e',
-      INVOICE: '#f59e0b',
-      PAYMENT: '#8b5cf6',
+      QUOTE: '#1e40af',
+      ORDER: '#2563eb',
+      INVOICE: '#b91c2c',
+      PAYMENT: '#dc2626',
     };
     return map[type] ?? '#6b7280';
   }

@@ -1,23 +1,26 @@
 <div class="min-h-screen flex flex-col lg:flex-row bg-surface-0 dark:bg-surface-950">
-  <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-zinc-950">
-    <div class="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-900"></div>
+  <div
+    class="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[linear-gradient(135deg,#0c2a66_0%,#1e40af_55%,#b91c2c_100%)]"
+  >
+    <div class="absolute -top-24 -left-16 h-72 w-72 rounded-full bg-white/10 blur-2xl"></div>
+    <div class="absolute -bottom-28 right-0 h-80 w-80 rounded-full bg-red-500/30 blur-3xl"></div>
     <div class="relative z-10 flex flex-col justify-center items-center px-16 text-center w-full">
       <div class="bg-white rounded-2xl p-6 shadow-2xl mb-8">
         <img src="/Parsun.png" alt="Parsun" class="h-14 w-auto" />
       </div>
       <h2 class="text-3xl font-bold text-white tracking-tight mb-3">Portal de Clientes</h2>
-      <p class="text-zinc-400 max-w-sm">
+      <p class="max-w-sm text-blue-100/90">
         Gestiona tus presupuestos, pedidos, facturas y pagos desde un solo lugar.
       </p>
-      <div class="flex gap-6 mt-8 text-zinc-400">
+      <div class="flex gap-6 mt-8 text-blue-50">
         <div class="flex items-center gap-2">
-          <i class="pi pi-check-circle text-green-500"></i><span class="text-sm">Presupuestos</span>
+          <i class="pi pi-check-circle text-blue-200"></i><span class="text-sm">Presupuestos</span>
         </div>
         <div class="flex items-center gap-2">
-          <i class="pi pi-check-circle text-green-500"></i><span class="text-sm">Pedidos</span>
+          <i class="pi pi-check-circle text-blue-200"></i><span class="text-sm">Pedidos</span>
         </div>
         <div class="flex items-center gap-2">
-          <i class="pi pi-check-circle text-green-500"></i><span class="text-sm">Pagos</span>
+          <i class="pi pi-check-circle text-red-200"></i><span class="text-sm">Pagos</span>
         </div>
       </div>
     </div>
@@ -26,82 +29,87 @@
   <div class="flex-1 flex items-center justify-center p-6 sm:p-12">
     <div class="w-full max-w-md">
       <div class="lg:hidden text-center mb-8">
-        <img src="/Parsun.png" alt="Parsun" class="h-14 w-auto mx-auto mb-3" />
+        <img src="/parsun-logo.png" alt="Parsun" class="h-10 w-auto mx-auto mb-3" />
         <p class="text-surface-500 text-sm">Portal de Clientes</p>
       </div>
 
       <div
-        class="bg-surface-0 dark:bg-surface-800 rounded-2xl shadow-lg dark:shadow-2xl p-8 border border-surface-200 dark:border-surface-700"
+        class="overflow-hidden rounded-2xl border border-surface-200 bg-surface-0 shadow-lg dark:border-surface-700 dark:bg-surface-800 dark:shadow-2xl"
       >
-        <div class="text-center mb-6">
-          <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">Iniciar Sesión</h1>
-          <p class="text-surface-500 text-sm mt-1">Ingresa con tu RIF y contraseña</p>
-        </div>
-
-        @if (error()) {
-          <div
-            class="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 text-sm flex items-center gap-2"
-          >
-            <i class="pi pi-exclamation-triangle"></i>
-            {{ error() }}
+        <div class="h-1.5 bg-[linear-gradient(90deg,#1e40af_0%,#2563eb_60%,#b91c2c_100%)]"></div>
+        <div class="p-8">
+          <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-100">
+              Iniciar Sesión
+            </h1>
+            <p class="text-surface-500 text-sm mt-1">Ingresa con tu RIF y contraseña</p>
           </div>
-        }
 
-        <div class="flex flex-col gap-5">
-          <div>
-            <label
-              class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5"
-              for="rif"
-              >RIF</label
+          @if (error()) {
+            <div
+              class="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 text-sm flex items-center gap-2"
             >
-            <div class="relative">
-              <i
-                class="pi pi-id-card absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm"
-              ></i>
-              <input
-                id="rif"
-                pInputText
-                [ngModel]="rif()"
-                (ngModelChange)="rif.set($event)"
-                placeholder="J-12345678-9"
-                class="w-full pl-10"
-                autocomplete="username"
-              />
+              <i class="pi pi-exclamation-triangle"></i>
+              {{ error() }}
             </div>
-          </div>
+          }
 
-          <div>
-            <label
-              class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5"
-              for="password"
-              >Contraseña</label
-            >
-            <div class="relative">
-              <i
-                class="pi pi-lock absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm"
-              ></i>
-              <input
-                id="password"
-                pInputText
-                type="password"
-                [ngModel]="password()"
-                (ngModelChange)="password.set($event)"
-                placeholder="••••••••"
-                class="w-full pl-10"
-                (keyup.enter)="login()"
-                autocomplete="current-password"
-              />
+          <div class="flex flex-col gap-5">
+            <div>
+              <label
+                class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5"
+                for="rif"
+                >RIF</label
+              >
+              <div class="relative">
+                <i
+                  class="pi pi-id-card absolute left-3 top-1/2 -translate-y-1/2 text-primary text-sm"
+                ></i>
+                <input
+                  id="rif"
+                  pInputText
+                  [ngModel]="rif()"
+                  (ngModelChange)="rif.set($event)"
+                  placeholder="J-12345678-9"
+                  class="w-full pl-10"
+                  autocomplete="username"
+                />
+              </div>
             </div>
-          </div>
 
-          <p-button
-            label="Iniciar Sesión"
-            icon="pi pi-sign-in"
-            [loading]="loading()"
-            (click)="login()"
-            styleClass="w-full mt-1"
-            [raised]="true"
-          />
+            <div>
+              <label
+                class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5"
+                for="password"
+                >Contraseña</label
+              >
+              <div class="relative">
+                <i
+                  class="pi pi-lock absolute left-3 top-1/2 -translate-y-1/2 text-primary text-sm"
+                ></i>
+                <input
+                  id="password"
+                  pInputText
+                  type="password"
+                  [ngModel]="password()"
+                  (ngModelChange)="password.set($event)"
+                  placeholder="••••••••"
+                  class="w-full pl-10"
+                  (keyup.enter)="login()"
+                  autocomplete="current-password"
+                />
+              </div>
+            </div>
+
+            <p-button
+              label="Iniciar Sesión"
+              icon="pi pi-sign-in"
+              [loading]="loading()"
+              (click)="login()"
+              styleClass="w-full mt-1"
+              [raised]="true"
+            />
+          </div>
         </div>
       </div>
 

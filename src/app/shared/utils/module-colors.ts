@@ -3,14 +3,19 @@ export interface ModuleColor {
   background: string;
 }
 
+export const BRAND_BLUE = '#1e40af';
+export const BRAND_BLUE_LIGHT = '#2563eb';
+export const BRAND_RED = '#b91c2c';
+export const BRAND_RED_LIGHT = '#dc2626';
+
 export const PORTAL_MODULE_COLORS = {
-  dashboard: { icon: '#6366f1', background: 'rgba(99,102,241,0.1)' },
-  products: { icon: '#0ea5e9', background: 'rgba(14,165,233,0.1)' },
-  quotes: { icon: '#3b82f6', background: 'rgba(59,130,246,0.1)' },
-  orders: { icon: '#22c55e', background: 'rgba(34,197,94,0.1)' },
-  invoices: { icon: '#ef4444', background: 'rgba(239,68,68,0.1)' },
-  payments: { icon: '#f59e0b', background: 'rgba(245,158,11,0.1)' },
-  profile: { icon: '#8b5cf6', background: 'rgba(139,92,246,0.1)' },
+  dashboard: { icon: BRAND_BLUE, background: 'rgba(30,64,175,0.1)' },
+  products: { icon: BRAND_BLUE_LIGHT, background: 'rgba(37,99,235,0.1)' },
+  quotes: { icon: BRAND_BLUE, background: 'rgba(30,64,175,0.1)' },
+  orders: { icon: BRAND_BLUE_LIGHT, background: 'rgba(37,99,235,0.1)' },
+  invoices: { icon: BRAND_RED, background: 'rgba(185,28,44,0.1)' },
+  payments: { icon: BRAND_RED_LIGHT, background: 'rgba(220,38,38,0.1)' },
+  profile: { icon: BRAND_BLUE, background: 'rgba(30,64,175,0.1)' },
 } as const satisfies Record<string, ModuleColor>;
 
 export type PortalModule = keyof typeof PORTAL_MODULE_COLORS;

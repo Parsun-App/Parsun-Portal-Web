@@ -45,7 +45,6 @@
           type="button"
           icon="pi pi-download"
           [label]="isMobile() ? '' : 'Descargar Catálogo'"
-          severity="contrast"
           [disabled]="products().length === 0"
           (click)="downloadCatalog()"
           class="flex-1 sm:flex-initial"

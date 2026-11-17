@@ -6,12 +6,7 @@
     [color]="colors.quotes.icon"
     [background]="colors.quotes.background"
   >
-    <p-button
-      label="Nuevo presupuesto"
-      icon="pi pi-plus"
-      severity="contrast"
-      (click)="openCreateDialog()"
-    />
+    <p-button label="Nuevo presupuesto" icon="pi pi-plus" (click)="openCreateDialog()" />
   </app-page-header>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -19,13 +14,13 @@
       label="Presupuestos Pendientes"
       [value]="pendingQuotes()"
       icon="pi pi-clock"
-      gradient="linear-gradient(135deg, #f59e0b, #d97706)"
+      gradient="linear-gradient(135deg, #1e40af, #2563eb)"
     />
     <app-metric-card
       label="Importe Total"
       [value]="quotesTotal()"
       icon="pi pi-dollar"
-      gradient="linear-gradient(135deg, #3b82f6, #2563eb)"
+      gradient="linear-gradient(135deg, #1e3a8a, #1e40af)"
       [currency]="true"
     />
   </div>

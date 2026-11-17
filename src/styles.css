@@ -228,3 +228,25 @@ body:not(.p-overflow-hidden) .p-drawer-mask {
   width: 1.25rem !important;
   height: 1.25rem !important;
 }
+
+.portal-detail-dialog .p-dialog-close-button,
+.portal-form-dialog .p-dialog-close-button {
+  color: var(--p-primary-color);
+}
+
+.portal-detail-dialog .p-dialog-close-button:hover,
+.portal-form-dialog .p-dialog-close-button:hover {
+  background: var(--p-primary-50);
+  color: var(--p-primary-700);
+}
+
+.dark .portal-detail-dialog .p-dialog-close-button:hover,
+.dark .portal-form-dialog .p-dialog-close-button:hover {
+  background: color-mix(in srgb, var(--p-primary-color) 16%, transparent);
+  color: var(--p-primary-300);
+}
+
+.p-button.portal-danger-action .p-button-label,
+.p-button.portal-danger-action .p-button-icon {
+  color: #b91c2c !important;
+}

@@ -10,7 +10,7 @@
     <div class="flex items-center gap-3">
       <span
         class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
-        style="background: rgba(245, 158, 11, 0.12); color: #f59e0b"
+        style="background: rgba(30, 64, 175, 0.12); color: #1e40af"
       >
         <i [class]="debtPayment() ? 'pi pi-wallet text-lg' : 'pi pi-credit-card text-lg'"></i>
       </span>
@@ -25,14 +25,14 @@
 
   <div class="flex flex-col gap-5">
     <div
-      class="relative overflow-hidden rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-800/60 dark:bg-amber-950/30"
+      class="relative overflow-hidden rounded-xl border border-blue-200 bg-blue-50 p-4 dark:border-blue-800/60 dark:bg-blue-950/30"
     >
       <div
-        class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-amber-400/20 blur-xl"
+        class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-blue-400/20 blur-xl"
         aria-hidden="true"
       ></div>
       <p
-        class="relative text-[11px] font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400"
+        class="relative text-[11px] font-semibold uppercase tracking-wide text-blue-700 dark:text-blue-400"
       >
         {{ debtPayment() ? 'Deuda total' : 'Saldo pendiente' }}
       </p>
@@ -47,7 +47,7 @@
         class="flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/40"
       >
         <p
-          class="text-[11px] font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400"
+          class="text-[11px] font-semibold uppercase tracking-wide text-blue-700 dark:text-blue-400"
         >
           Ya existe un pago pendiente de aprobación
         </p>
@@ -157,7 +157,6 @@
     <div class="flex w-full items-center justify-end gap-2">
       <p-button
         label="Cancelar"
-        severity="secondary"
         [outlined]="true"
         (click)="visible.set(false)"
         [disabled]="processing()"

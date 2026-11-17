@@ -11,7 +11,7 @@
     <div class="flex items-center gap-3">
       <span
         class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
-        style="background: rgba(59, 130, 246, 0.12); color: #3b82f6"
+        style="background: rgba(30, 64, 175, 0.12); color: #1e40af"
       >
         <i class="pi pi-file-edit text-lg"></i>
       </span>
@@ -116,12 +116,9 @@
       </div>
 
       <div
-        class="flex items-center justify-between rounded-xl bg-surface-900 px-5 py-3.5 text-white dark:bg-surface-100 dark:text-surface-900"
+        class="flex items-center justify-between rounded-xl bg-[linear-gradient(120deg,#1e40af_0%,#2563eb_55%,#b91c2c_100%)] px-5 py-3.5 text-white shadow-lg"
       >
-        <span
-          class="text-xs font-semibold uppercase tracking-wide text-white/70 dark:text-surface-500"
-          >Total</span
-        >
+        <span class="text-xs font-semibold uppercase tracking-wide text-white/70">Total</span>
         <span class="text-xl font-bold">{{ quote.subtotal | currency: 'USD' : 'symbol' }}</span>
       </div>
     </div>
@@ -151,12 +148,7 @@
           }
         }
       </div>
-      <p-button
-        label="Cerrar"
-        (click)="visible.set(false)"
-        severity="secondary"
-        [outlined]="true"
-      />
+      <p-button label="Cerrar" (click)="visible.set(false)" [outlined]="true" />
     </div>
   </ng-template>
 </p-dialog>
