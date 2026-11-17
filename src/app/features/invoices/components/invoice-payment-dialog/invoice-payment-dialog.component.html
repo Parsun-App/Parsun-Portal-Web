@@ -34,7 +34,7 @@
       <p
         class="relative text-[11px] font-semibold uppercase tracking-wide text-blue-700 dark:text-blue-400"
       >
-        {{ debtPayment() ? 'Deuda total' : 'Saldo pendiente' }}
+        {{ debtPayment() ? 'Deuda a pagar' : 'Saldo pendiente' }}
       </p>
       <p class="relative mt-1 text-2xl font-bold text-surface-900 dark:text-surface-100">
         {{ fullAmount() | currency: 'USD' : 'symbol' }}

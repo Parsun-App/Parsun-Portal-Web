@@ -7,7 +7,12 @@
     [background]="colors.invoices.background"
   >
     @if (pendingCount() > 0) {
-      <p-button label="Pagar Deuda" icon="pi pi-dollar" (click)="openPayAll()" />
+      <p-button
+        label="Pagar Deuda"
+        icon="pi pi-dollar"
+        [disabled]="payableDebt() <= 0"
+        (click)="openPayAll()"
+      />
     }
   </app-page-header>
 
@@ -280,7 +285,7 @@
   [(methodId)]="payAllMethodId"
   [(paymentDate)]="payAllDate"
   [(reference)]="payAllReference"
-  [fullAmount]="totalDebt()"
+  [fullAmount]="payableDebt()"
   [paymentMethods]="paymentMethods()"
   [processing]="payingAll()"
   [valid]="canSubmitPayAll()"
