@@ -43,5 +43,6 @@ jobs:
         run: sh scripts/railway-deploy.sh
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
           RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID || '66b251d2-15eb-446a-a126-b01e64b5fea8' }}
           RAILWAY_SERVICE: ${{ vars.RAILWAY_SERVICE || 'parsun-portal-web' }}

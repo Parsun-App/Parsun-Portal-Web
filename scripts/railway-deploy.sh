@@ -9,6 +9,7 @@ echo "Deploying ${RAILWAY_SERVICE} (context: $(du -sh . | cut -f1))"
 if [ -n "${RAILWAY_TOKEN:-}" ]; then
   railway up --service "$RAILWAY_SERVICE" --ci
 else
+  : "${RAILWAY_API_TOKEN:?RAILWAY_TOKEN or RAILWAY_API_TOKEN is required}"
   : "${RAILWAY_PROJECT_ID:?RAILWAY_PROJECT_ID is required when RAILWAY_TOKEN is not set}"
   railway up --service "$RAILWAY_SERVICE" --project "$RAILWAY_PROJECT_ID" --environment production --ci
 fi
