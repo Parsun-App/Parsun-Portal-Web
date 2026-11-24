@@ -1,24 +1,20 @@
-import { Component, inject, signal, afterNextRender } from '@angular/core';
-import { CurrencyPipe, isPlatformBrowser } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { PLATFORM_ID } from '@angular/core';
-import { AuthService } from '@features/auth/services/application/auth.service';
-import { TooltipModule } from 'primeng/tooltip';
-import { ButtonModule } from 'primeng/button';
-import { DrawerModule } from 'primeng/drawer';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { TextareaModule } from 'primeng/textarea';
-import { NotificationBellComponent } from '@core/notifications/components/notification-bell/notification-bell.component';
 import {
-  PortalCartMode,
-  PortalCartService,
-} from '@features/products/services/application/portal-cart.service';
-import { OrdersApiService } from '@features/orders/services/api/orders-api.service';
-import { QuotesApiService } from '@features/quotes/services/api/quotes-api.service';
-import { MessageService } from 'primeng/api';
-import { EMPTY, Observable, catchError, finalize, tap } from 'rxjs';
-import { ORDERS_MESSAGES } from '@features/orders/messages/orders.messages';
-import { QUOTES_MESSAGES } from '@features/quotes/messages/quotes.messages';
+  Component,
+  inject,
+  signal,
+  computed,
+  afterNextRender,
+  ViewChild,
+  PLATFORM_ID,
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
+import { AuthService } from '@features/auth/services/application/auth.service';
+import { Popover, PopoverModule } from 'primeng/popover';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { NotificationBellComponent } from '@core/notifications/components/notification-bell/notification-bell.component';
+import { PortalSidebarService } from '@core/layouts/portal-sidebar.service';
 
 const DARK_MODE_CLASS = 'my-app-dark';
 const DARK_MODE_KEY = 'darkMode';
@@ -26,29 +22,29 @@ const DARK_MODE_KEY = 'darkMode';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [
-    ButtonModule,
-    CurrencyPipe,
-    DrawerModule,
-    FormsModule,
-    InputNumberModule,
-    TextareaModule,
-    TooltipModule,
-    NotificationBellComponent,
-  ],
+  imports: [FormsModule, PopoverModule, ToggleSwitchModule, NotificationBellComponent],
   templateUrl: './header.component.html',
 })
 export class HeaderComponent {
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
-  readonly cart = inject(PortalCartService);
-  private readonly ordersApi = inject(OrdersApiService);
-  private readonly quotesApi = inject(QuotesApiService);
-  private readonly messageService = inject(MessageService);
-  readonly confirmingCart = signal(false);
+  readonly sidebar = inject(PortalSidebarService);
+  readonly currentUser = this.authService.currentUser;
+
+  @ViewChild('userMenu') userMenu!: Popover;
 
   readonly isDarkMode = signal(false);
+  readonly initials = computed(() => {
+    const name = this.currentUser()?.legalName?.trim();
+    if (!name) return 'P';
+    return name
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join('');
+  });
 
   constructor() {
     afterNextRender(() => {
@@ -67,70 +63,25 @@ export class HeaderComponent {
     return document.documentElement.classList.contains(DARK_MODE_CLASS);
   }
 
-  toggleDarkMode(): void {
-    const newVal = !this.isDarkMode();
-    this.isDarkMode.set(newVal);
+  setDarkMode(enabled: boolean): void {
+    this.isDarkMode.set(enabled);
     if (this.isBrowser) {
-      document.documentElement.classList.toggle(DARK_MODE_CLASS, newVal);
-      localStorage.setItem(DARK_MODE_KEY, String(newVal));
+      document.documentElement.classList.toggle(DARK_MODE_CLASS, enabled);
+      localStorage.setItem(DARK_MODE_KEY, String(enabled));
     }
   }
 
   logout(): void {
+    this.userMenu?.hide();
     this.authService.logout();
   }
 
-  openCart(mode: PortalCartMode): void {
-    this.cart.open(mode);
+  toggleUserMenu(event: Event): void {
+    this.userMenu.toggle(event);
   }
 
-  updateQuantity(productId: string, quantity: number): void {
-    this.cart.updateQuantity(productId, quantity);
-  }
-
-  updateNotes(notes: string): void {
-    this.cart.updateNotes(notes);
-  }
-
-  remove(productId: string): void {
-    this.cart.remove(productId);
-  }
-
-  buildPhotoUrl(photo: string | null): string | null {
-    return photo ? `/api/files/${photo}` : null;
-  }
-
-  confirmCart(): void {
-    if (this.confirmingCart() || this.cart.lines().length === 0) return;
-    const mode = this.cart.mode();
-    const request = {
-      lines: this.cart.lines().map((line) => ({
-        productId: line.product.id,
-        quantity: line.quantity,
-        unitPrice: line.product.price,
-      })),
-      notes: this.cart.notes().trim() || undefined,
-    };
-    this.confirmingCart.set(true);
-    const creation$: Observable<unknown> =
-      mode === 'order' ? this.ordersApi.create(request) : this.quotesApi.create(request);
-    creation$
-      .pipe(
-        tap(() => {
-          this.cart.clear(mode);
-          this.cart.visible.set(false);
-          this.messageService.add(
-            mode === 'order' ? ORDERS_MESSAGES.createSuccess : QUOTES_MESSAGES.createSuccess,
-          );
-        }),
-        catchError(() => {
-          this.messageService.add(
-            mode === 'order' ? ORDERS_MESSAGES.createError : QUOTES_MESSAGES.createError,
-          );
-          return EMPTY;
-        }),
-        finalize(() => this.confirmingCart.set(false)),
-      )
-      .subscribe();
+  goToProfile(): void {
+    this.userMenu?.hide();
+    void this.router.navigate(['/profile']);
   }
 }

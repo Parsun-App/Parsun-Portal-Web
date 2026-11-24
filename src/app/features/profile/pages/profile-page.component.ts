@@ -7,6 +7,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ProfileService } from '@features/profile/services/application/profile.service';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 import { PageHeaderComponent } from '@shared/components/ui';
+import { PORTAL_MODULE_COLORS } from '@shared/utils/module-colors';
 import { ChangePasswordDialogComponent } from '@features/profile/components/change-password-dialog/change-password-dialog.component';
 
 @Component({
@@ -26,6 +27,7 @@ import { ChangePasswordDialogComponent } from '@features/profile/components/chan
   templateUrl: './profile-page.component.html',
 })
 export class ProfilePageComponent {
+  readonly colors = PORTAL_MODULE_COLORS;
   private readonly profileService = inject(ProfileService);
 
   readonly loading = this.profileService.loading;

@@ -7,13 +7,14 @@ import { MessageService, ConfirmationService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { routes } from '@app/app.routes';
 import { authInterceptor } from '@features/auth/interceptors';
+import { apiUrlInterceptor } from '@core/http/api-url.interceptor';
 import { PortalPreset } from '@core/theme/presets';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZonelessChangeDetection(),
     provideRouter(routes),
-    provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
+    provideHttpClient(withFetch(), withInterceptors([apiUrlInterceptor, authInterceptor])),
     providePrimeNG({
       theme: {
         preset: PortalPreset,

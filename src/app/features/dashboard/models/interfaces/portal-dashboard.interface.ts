@@ -4,6 +4,7 @@ export interface PortalDashboard {
   pendingInvoices: number;
   pendingAmount: number;
   recentActivity: PortalRecentActivity[];
+  pendingOrders: number;
 }
 
 export interface PortalRecentActivity {

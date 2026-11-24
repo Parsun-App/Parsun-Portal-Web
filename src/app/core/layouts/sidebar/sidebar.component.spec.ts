@@ -7,6 +7,7 @@ describe('SidebarComponent', () => {
   it('exposes the portal navigation', () => {
     TestBed.configureTestingModule({ imports: [SidebarComponent], providers: [provideRouter([])] });
     const component = TestBed.createComponent(SidebarComponent).componentInstance;
-    expect(component.menuItems.length).toBe(7);
+    expect(component.menuItems.length).toBe(6);
+    expect(component.menuItems.every((item) => Boolean(item.color))).toBe(true);
   });
 });

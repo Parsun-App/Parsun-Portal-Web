@@ -3,33 +3,24 @@
     title="Pedidos"
     subtitle="Historial y seguimiento de tus pedidos de compra"
     icon="pi pi-shopping-cart"
+    [color]="colors.orders.icon"
+    [background]="colors.orders.background"
   >
-    <p-button
-      label="Nuevo pedido"
-      icon="pi pi-plus"
-      severity="contrast"
-      (click)="openCreateDialog()"
-    />
+    <p-button label="Nuevo pedido" icon="pi pi-plus" (click)="openCreateDialog()" />
   </app-page-header>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <app-metric-card
       label="Pedidos Pendientes"
       [value]="pendingOrders()"
       icon="pi pi-clock"
-      gradient="linear-gradient(135deg, #f59e0b, #d97706)"
-    />
-    <app-metric-card
-      label="Pedidos Confirmados"
-      [value]="confirmedOrders()"
-      icon="pi pi-check-circle"
-      gradient="linear-gradient(135deg, #22c55e, #16a34a)"
+      gradient="linear-gradient(135deg, #1e40af, #2563eb)"
     />
     <app-metric-card
       label="Importe Total"
       [value]="ordersTotal()"
       icon="pi pi-dollar"
-      gradient="linear-gradient(135deg, #3b82f6, #2563eb)"
+      gradient="linear-gradient(135deg, #1e3a8a, #1e40af)"
       [currency]="true"
     />
   </div>

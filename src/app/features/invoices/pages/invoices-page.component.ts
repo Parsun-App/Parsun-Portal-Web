@@ -34,6 +34,7 @@ import {
 import { PortalInvoiceList } from '@features/invoices/models';
 import { PortalPaymentList } from '@features/payments/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
+import { PORTAL_MODULE_COLORS } from '@shared/utils/module-colors';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 import { MetricCardComponent, PageHeaderComponent } from '@shared/components/ui';
 import {
@@ -80,6 +81,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
   templateUrl: './invoices-page.component.html',
 })
 export class InvoicesPageComponent implements OnInit {
+  readonly colors = PORTAL_MODULE_COLORS;
   private readonly invoicesService = inject(InvoicesService);
   private readonly invoicesApi = inject(InvoicesApiService);
   private readonly paymentsApi = inject(PaymentsApiService);
@@ -133,9 +135,14 @@ export class InvoicesPageComponent implements OnInit {
   readonly canSubmitPayAll = computed(
     () =>
       this.payAllAmount() > 0 &&
+      this.payAllAmount() <= this.payableDebt() &&
       this.payAllMethodId() !== null &&
       this.payAllDate() !== null &&
       (this.payAllReference().trim().length > 0 || this.payAllFile() !== null),
+  );
+
+  readonly payableDebt = computed(() =>
+    Math.max(0, this.totalDebt() - this.pendingApprovalAmount()),
   );
 
   readonly isPayPartial = computed(() => this.payAmount() < this.payFullAmount());
@@ -214,7 +221,7 @@ export class InvoicesPageComponent implements OnInit {
 
   openPayDialog(invoice: PortalInvoiceList): void {
     this.payInvoiceId.set(invoice.id);
-    const remaining = invoice.total - invoice.paidAmount;
+    const remaining = this.invoicePayable(invoice);
     this.payFullAmount.set(remaining);
     this.payAmount.set(remaining);
     this.payMethodId.set(null);
@@ -270,7 +277,7 @@ export class InvoicesPageComponent implements OnInit {
   }
 
   openPayAll(): void {
-    this.payAllAmount.set(this.totalDebt());
+    this.payAllAmount.set(this.payableDebt());
     this.payAllMethodId.set(null);
     this.payAllDate.set(new Date());
     this.payAllReference.set('');
@@ -289,7 +296,7 @@ export class InvoicesPageComponent implements OnInit {
   submitPayAll(): void {
     if (!this.canSubmitPayAll()) return;
     this.payingAll.set(true);
-    const useFull = this.payAllAmount() >= this.totalDebt();
+    const useFull = this.payAllAmount() >= this.payableDebt();
     const req = {
       paymentMethodId: this.payAllMethodId()!,
       referenceNumber: this.payAllReference().trim() || undefined,
@@ -359,10 +366,18 @@ export class InvoicesPageComponent implements OnInit {
       actions.push({
         label: 'Pagar',
         icon: 'pi pi-credit-card',
+        disabled: this.invoicePayable(invoice) <= 0,
         command: () => this.openPayDialog(invoice),
       });
     }
     return actions;
+  }
+
+  invoicePayable(invoice: PortalInvoiceList): number {
+    return Math.max(
+      0,
+      invoice.total - invoice.paidAmount - (invoice.pendingApprovalAmount || 0),
+    );
   }
   parseDate(dateStr: string): Date {
     return new Date(dateStr + 'T00:00:00');

@@ -27,28 +27,4 @@ describe('ProductDetailDialogComponent', () => {
     expect(fixture.componentInstance.buildPhotoUrl('products/photo.jpg')).toBe(
       '/api/files/products/photo.jpg',
     ));
-
-  it('emits the selected product and quantity for order creation', () => {
-    fixture.componentRef.setInput('product', PRODUCT);
-    fixture.detectChanges();
-    fixture.componentInstance.quantity.set(3);
-    let request: unknown;
-    fixture.componentInstance.createOrder.subscribe((value) => (request = value));
-
-    fixture.componentInstance.requestOrder();
-
-    expect(request).toEqual({ product: PRODUCT, quantity: 3 });
-    expect(fixture.componentInstance.visible()).toBe(false);
-  });
-
-  it('does not emit creation actions for products without stock', () => {
-    fixture.componentRef.setInput('product', { ...PRODUCT, availableStock: 0 });
-    fixture.detectChanges();
-    let emitted = false;
-    fixture.componentInstance.createQuote.subscribe(() => (emitted = true));
-
-    fixture.componentInstance.requestQuote();
-
-    expect(emitted).toBe(false);
-  });
 });

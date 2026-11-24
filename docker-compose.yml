@@ -15,7 +15,7 @@ services:
       - BACKEND_URL=http://parsun-api-app:8080
     profiles:
       - dev
-    restart: unless-stopped
+    restart: "no"
     networks:
       - parsun-network
     healthcheck:
@@ -38,7 +38,7 @@ services:
       - PORT=4000
     profiles:
       - prod
-    restart: unless-stopped
+    restart: "no"
 
   parsun-portal-web-test:
     build:

@@ -1,10 +1,16 @@
 <div class="flex flex-col gap-6">
-  <app-page-header title="Facturas" subtitle="Gestiona tus facturas" icon="pi pi-receipt">
+  <app-page-header
+    title="Facturas"
+    subtitle="Gestiona tus facturas"
+    icon="pi pi-file"
+    [color]="colors.invoices.icon"
+    [background]="colors.invoices.background"
+  >
     @if (pendingCount() > 0) {
       <p-button
         label="Pagar Deuda"
         icon="pi pi-dollar"
-        severity="contrast"
+        [disabled]="payableDebt() <= 0"
         (click)="openPayAll()"
       />
     }
@@ -28,20 +34,20 @@
         label="Deuda Total"
         [value]="totalDebt()"
         icon="pi pi-dollar"
-        gradient="linear-gradient(135deg, #ef4444, #dc2626)"
+        gradient="linear-gradient(135deg, #b91c2c, #dc2626)"
         [currency]="true"
       />
       <app-metric-card
         label="Facturas Pendientes"
         [value]="pendingCount()"
         icon="pi pi-file"
-        gradient="linear-gradient(135deg, #f59e0b, #d97706)"
+        gradient="linear-gradient(135deg, #dc2626, #b91c2c)"
       />
       <app-metric-card
         label="Pendiente de Aprobación"
         [value]="pendingApprovalAmount()"
         icon="pi pi-clock"
-        gradient="linear-gradient(135deg, #8b5cf6, #7c3aed)"
+        gradient="linear-gradient(135deg, #1e40af, #2563eb)"
         [currency]="true"
       />
       <app-metric-card
@@ -279,7 +285,7 @@
   [(methodId)]="payAllMethodId"
   [(paymentDate)]="payAllDate"
   [(reference)]="payAllReference"
-  [fullAmount]="totalDebt()"
+  [fullAmount]="payableDebt()"
   [paymentMethods]="paymentMethods()"
   [processing]="payingAll()"
   [valid]="canSubmitPayAll()"

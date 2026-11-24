@@ -34,6 +34,7 @@ import { PortalQuoteList } from '@features/quotes/models';
 import { ProductsApiService } from '@features/products/services/api/products-api.service';
 import { PortalProduct } from '@features/products/models';
 import { getStatusLabel } from '@shared/utils/status-labels';
+import { PORTAL_MODULE_COLORS } from '@shared/utils/module-colors';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 import { MetricCardComponent, PageHeaderComponent } from '@shared/components/ui';
 import {
@@ -91,6 +92,7 @@ interface FormLine {
 })
 export class QuotesPageComponent implements OnInit {
   private readonly destroy$ = new Subject<void>();
+  readonly colors = PORTAL_MODULE_COLORS;
   private readonly quotesService = inject(QuotesService);
   private readonly productsApi = inject(ProductsApiService);
   private readonly confirmationService = inject(ConfirmationService);
@@ -127,12 +129,6 @@ export class QuotesPageComponent implements OnInit {
 
   readonly pendingQuotes = computed(
     () => this.quotes().filter((q) => q.status === 'DRAFT' || q.status === 'CUSTOMER_DRAFT').length,
-  );
-  readonly convertedQuotes = computed(
-    () =>
-      this.quotes().filter(
-        (q) => q.status === 'CONVERTED_TO_ORDER' || q.status === 'CONVERTED_TO_INVOICE',
-      ).length,
   );
   readonly quotesTotal = computed(() => this.quotes().reduce((s, q) => s + q.subtotal, 0));
   readonly dateTo = this.quotesService.dateTo;

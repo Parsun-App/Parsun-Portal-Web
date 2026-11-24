@@ -1,183 +1,82 @@
 <header
-  class="flex items-center justify-end h-16 px-4 md:px-6 bg-surface-0 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700"
+  class="flex items-center justify-between h-16 px-4 md:px-6 bg-surface-0 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700"
 >
+  <img src="/parsun-logo.png" alt="Parsun" class="hidden md:block h-7 w-auto" />
+  <button
+    type="button"
+    aria-label="Abrir menú de navegación"
+    (click)="sidebar.open()"
+    class="md:hidden flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent transition-colors hover:bg-surface-100 dark:hover:bg-surface-800"
+  >
+    <i class="pi pi-bars text-lg text-surface-600 dark:text-surface-300"></i>
+  </button>
+
   <div class="flex items-center gap-1">
-    <button
-      type="button"
-      class="relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent transition-colors hover:bg-surface-100 dark:hover:bg-surface-800"
-      pTooltip="Ver pedido"
-      [disabled]="cart.orderCount() === 0"
-      (click)="openCart('order')"
-    >
-      <i class="pi pi-shopping-cart text-lg text-green-500"></i>
-      @if (cart.orderCount() > 0) {
-        <span
-          class="absolute right-0 top-0 min-w-4 rounded-full bg-green-500 px-1 text-[10px] font-semibold text-white"
-          >{{ cart.orderCount() }}</span
-        >
-      }
-    </button>
-    <button
-      type="button"
-      class="relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent transition-colors hover:bg-surface-100 dark:hover:bg-surface-800"
-      pTooltip="Ver presupuesto"
-      [disabled]="cart.quoteCount() === 0"
-      (click)="openCart('quote')"
-    >
-      <i class="pi pi-file-edit text-lg text-blue-500"></i>
-      @if (cart.quoteCount() > 0) {
-        <span
-          class="absolute right-0 top-0 min-w-4 rounded-full bg-blue-500 px-1 text-[10px] font-semibold text-white"
-          >{{ cart.quoteCount() }}</span
-        >
-      }
-    </button>
     <app-notification-bell />
     <button
-      (click)="toggleDarkMode()"
-      class="w-10 h-10 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 flex items-center justify-center transition-colors cursor-pointer border-0 bg-transparent"
-      pTooltip="Cambiar tema"
+      type="button"
+      aria-label="Abrir menú de perfil"
+      (click)="toggleUserMenu($event)"
+      class="ml-1 flex cursor-pointer items-center gap-2 rounded-full border-0 bg-transparent p-1 pr-2 transition-colors hover:bg-surface-100 dark:hover:bg-surface-800"
     >
-      <i
-        [class]="isDarkMode() ? 'pi pi-sun' : 'pi pi-moon'"
-        class="text-surface-600 dark:text-surface-400 text-lg"
-      ></i>
-    </button>
-    <button
-      (click)="logout()"
-      class="w-10 h-10 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 flex items-center justify-center transition-colors cursor-pointer border-0 bg-transparent"
-      pTooltip="Cerrar sesión"
-    >
-      <i class="pi pi-sign-out text-red-400 text-lg"></i>
+      <span
+        class="flex h-8 w-8 items-center justify-center rounded-full bg-[linear-gradient(135deg,#1e40af_0%,#b91c2c_100%)] text-xs font-bold text-white shadow-sm"
+      >
+        {{ initials() }}
+      </span>
+      <i class="pi pi-chevron-down text-xs text-surface-500 dark:text-surface-400"></i>
     </button>
   </div>
 </header>
 
-<p-drawer
-  [(visible)]="cart.visible"
-  position="right"
-  [styleClass]="'w-full sm:w-[28rem]'"
-  [modal]="true"
-  [dismissible]="true"
-  [blockScroll]="true"
-  [maskStyle]="{ background: 'rgba(0, 0, 0, 0.6)' }"
->
-  <ng-template pTemplate="header">
-    <div class="flex items-center gap-3 px-2">
-      <i
-        [class]="
-          cart.mode() === 'order'
-            ? 'pi pi-shopping-cart text-green-500'
-            : 'pi pi-file-edit text-blue-500'
-        "
-        class="text-xl"
-      ></i>
-      <div>
-        <h2
-          class="text-lg font-semibold"
-          [class.text-green-500]="cart.mode() === 'order'"
-          [class.text-blue-500]="cart.mode() === 'quote'"
-        >
-          {{ cart.mode() === 'order' ? 'Nuevo pedido' : 'Nuevo presupuesto' }}
-        </h2>
-        <p class="text-xs text-surface-500">Revisa los productos antes de confirmar</p>
-      </div>
-    </div>
-  </ng-template>
-
-  @if (cart.lines().length > 0) {
-    <div class="flex h-full flex-col gap-6 px-2 py-3 sm:px-3">
-      <div class="flex flex-col gap-4">
-        @for (line of cart.lines(); track line.product.id) {
-          <div
-            class="rounded-xl border border-surface-200 bg-surface-0 p-4 shadow-sm dark:border-surface-700 dark:bg-surface-800"
-          >
-            <div class="flex items-start justify-between gap-3">
-              <div class="flex min-w-0 items-start gap-3">
-                @if (buildPhotoUrl(line.product.photo); as photoUrl) {
-                  <img
-                    [src]="photoUrl"
-                    [alt]="line.product.name"
-                    class="h-16 w-16 shrink-0 rounded-lg object-cover"
-                  />
-                } @else {
-                  <div
-                    class="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-surface-100 dark:bg-surface-700"
-                  >
-                    <i class="pi pi-image text-xl text-surface-400"></i>
-                  </div>
-                }
-                <div class="min-w-0">
-                  <p class="truncate font-medium">{{ line.product.name }}</p>
-                  <p class="text-xs text-surface-500">{{ line.product.code }}</p>
-                  <p class="mt-1 text-sm font-semibold">
-                    {{ line.product.price * line.quantity | currency: 'USD' : 'symbol' }}
-                  </p>
-                </div>
-              </div>
-              <button
-                pButton
-                type="button"
-                icon="pi pi-trash"
-                severity="danger"
-                [text]="true"
-                [rounded]="true"
-                aria-label="Eliminar producto"
-                (click)="remove(line.product.id)"
-              ></button>
-            </div>
-            <div class="mt-3 flex items-center justify-between gap-3">
-              <span class="text-xs text-surface-500"
-                >{{ line.product.availableStock }} disponibles</span
-              >
-              <p-inputNumber
-                [ngModel]="line.quantity"
-                (ngModelChange)="updateQuantity(line.product.id, $event)"
-                [min]="1"
-                [max]="line.product.availableStock"
-                [showButtons]="true"
-                buttonLayout="horizontal"
-                [step]="1"
-                inputStyleClass="w-14 text-center"
-              />
-            </div>
-          </div>
-        }
-      </div>
-      <div class="mt-auto border-t border-surface-200 pt-4 dark:border-surface-700">
-        <div class="mb-4 flex flex-col gap-2">
-          <label for="cart-notes" class="text-sm font-medium">Notas</label>
-          <textarea
-            pTextarea
-            id="cart-notes"
-            rows="3"
-            class="w-full"
-            [ngModel]="cart.notes()"
-            (ngModelChange)="updateNotes($event)"
-            placeholder="Añade instrucciones o información adicional"
-          ></textarea>
-        </div>
-        <div class="mb-4 flex items-center justify-between text-lg font-semibold">
-          <span>Total</span>
-          <span>{{ cart.total() | currency: 'USD' : 'symbol' }}</span>
-        </div>
-        <p-button
-          class="w-full"
-          styleClass="w-full"
-          [label]="cart.mode() === 'order' ? 'Confirmar pedido' : 'Confirmar presupuesto'"
-          [icon]="cart.mode() === 'order' ? 'pi pi-shopping-cart' : 'pi pi-file-edit'"
-          [severity]="cart.mode() === 'order' ? 'success' : 'info'"
-          [loading]="confirmingCart()"
-          (click)="confirmCart()"
-        />
-      </div>
-    </div>
-  } @else {
+<p-popover #userMenu [appendTo]="'body'">
+  <div class="min-w-[240px] p-2">
     <div
-      class="flex h-full flex-col items-center justify-center gap-3 px-6 text-center text-surface-500"
+      class="flex items-center gap-3 border-b border-surface-200 px-2 pb-3 dark:border-surface-700"
     >
-      <i class="pi pi-shopping-cart text-4xl"></i>
-      <p>El carrito está vacío.</p>
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#1e40af_0%,#b91c2c_100%)] text-sm font-bold text-white shadow-sm"
+      >
+        {{ initials() }}
+      </span>
+      <div class="min-w-0">
+        <p class="truncate text-sm font-semibold text-surface-900 dark:text-surface-100">
+          {{ currentUser()?.legalName || 'Cliente' }}
+        </p>
+        <p class="truncate text-xs text-surface-500 dark:text-surface-400">
+          {{ currentUser()?.rif || '' }}
+        </p>
+      </div>
     </div>
-  }
-</p-drawer>
+    <div class="flex flex-col gap-1 pt-2">
+      <button
+        type="button"
+        (click)="goToProfile()"
+        class="flex w-full cursor-pointer items-center gap-3 rounded-lg border-0 bg-transparent p-3 text-left text-surface-700 transition-colors hover:bg-surface-100 dark:text-surface-200 dark:hover:bg-surface-800"
+      >
+        <i class="pi pi-user text-primary"></i>
+        <span class="font-medium">Mi perfil</span>
+      </button>
+      <div
+        class="flex items-center justify-between gap-3 rounded-lg p-3 text-surface-700 dark:text-surface-200"
+      >
+        <div class="flex items-center gap-3">
+          <i
+            [class]="isDarkMode() ? 'pi pi-moon' : 'pi pi-sun'"
+            class="text-surface-600 dark:text-surface-400"
+          ></i>
+          <span class="font-medium">Modo oscuro</span>
+        </div>
+        <p-toggleswitch [ngModel]="isDarkMode()" (ngModelChange)="setDarkMode($event)" />
+      </div>
+      <button
+        type="button"
+        (click)="logout()"
+        class="flex w-full cursor-pointer items-center gap-3 rounded-lg border-0 bg-transparent p-3 text-left text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+      >
+        <i class="pi pi-sign-out"></i>
+        <span class="font-medium">Cerrar sesión</span>
+      </button>
+    </div>
+  </div>
+</p-popover>

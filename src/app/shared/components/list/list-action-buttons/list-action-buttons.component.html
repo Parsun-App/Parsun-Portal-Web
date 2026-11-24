@@ -15,10 +15,12 @@
         [label]="action.label"
         [icon]="action.icon"
         [link]="true"
-        [severity]="action.danger ? 'danger' : 'secondary'"
+        [severity]="action.danger ? 'danger' : undefined"
         [disabled]="action.disabled"
         (onClick)="actionsPopover.hide(); action.command()"
-        styleClass="w-full justify-start text-left text-sm"
+        [styleClass]="
+          'w-full justify-start text-left text-sm' + (action.danger ? ' portal-danger-action' : '')
+        "
       />
     }
   </div>

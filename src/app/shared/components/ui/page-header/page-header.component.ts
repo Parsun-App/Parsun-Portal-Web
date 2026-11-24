@@ -10,4 +10,6 @@ export class PageHeaderComponent {
   readonly title = input.required<string>();
   readonly subtitle = input<string>();
   readonly icon = input.required<string>();
+  readonly color = input<string>();
+  readonly background = input<string>();
 }

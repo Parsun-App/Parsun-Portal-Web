@@ -33,6 +33,7 @@ import {
   PaymentMethod,
 } from '@features/payments/services/api/payments-api.service';
 import { getStatusLabel } from '@shared/utils/status-labels';
+import { PORTAL_MODULE_COLORS } from '@shared/utils/module-colors';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
 import { MetricCardComponent, PageHeaderComponent } from '@shared/components/ui';
 import {
@@ -78,6 +79,7 @@ type StatusSeverity = 'info' | 'success' | 'danger' | 'warn' | 'secondary' | 'co
   templateUrl: './payments-page.component.html',
 })
 export class PaymentsPageComponent implements OnInit {
+  readonly colors = PORTAL_MODULE_COLORS;
   private readonly paymentsService = inject(PaymentsService);
   private readonly paymentsApi = inject(PaymentsApiService);
   private readonly messageService = inject(MessageService);
@@ -99,12 +101,19 @@ export class PaymentsPageComponent implements OnInit {
 
   readonly mobileFirst = signal(0);
   readonly mobileRows = 10;
+  readonly displayedPayments = computed(() => {
+    const status = this.filterStatus();
+    if (status) {
+      return this.payments().filter((payment) => payment.status === status);
+    }
+    return this.payments().filter((payment) => payment.status === 'APPLIED');
+  });
   readonly mobilePayments = computed(() => {
     const start = this.mobileFirst();
-    return this.payments().slice(start, start + this.mobileRows);
+    return this.displayedPayments().slice(start, start + this.mobileRows);
   });
 
-  readonly totalPayments = computed(() => this.payments().length);
+  readonly totalPayments = computed(() => this.displayedPayments().length);
   readonly appliedTotal = computed(() =>
     this.payments()
       .filter((p) => p.status === 'APPLIED')

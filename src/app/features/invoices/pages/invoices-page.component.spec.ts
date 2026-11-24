@@ -90,7 +90,9 @@ describe('InvoicesPageComponent', () => {
         {
           provide: InvoicesApiService,
           useValue: {
-            getSummary: vi.fn(() => of({ totalDebt: 0, pendingCount: 0, paidThisMonth: 0 })),
+            getSummary: vi.fn(() =>
+              of({ totalDebt: 0, pendingCount: 0, paidThisMonth: 0, pendingApprovalAmount: 0 }),
+            ),
           },
         },
         { provide: PaymentsApiService, useValue: paymentsApiMock },
@@ -215,6 +217,28 @@ describe('InvoicesPageComponent', () => {
     component.openPayAll();
 
     expect(component.payAllPendingPayment()).toEqual(pending);
+  });
+
+  it('should cap the debt payment at total debt minus pending approval', () => {
+    component.totalDebt.set(200);
+    component.pendingApprovalAmount.set(50);
+
+    component.openPayAll();
+
+    expect(component.payableDebt()).toBe(150);
+    expect(component.payAllAmount()).toBe(150);
+  });
+
+  it('should cap the invoice payment at balance minus pending approval', () => {
+    component.openPayDialog({
+      ...INVOICES[0],
+      total: 200,
+      paidAmount: 50,
+      pendingApprovalAmount: 30,
+    });
+
+    expect(component.payFullAmount()).toBe(120);
+    expect(component.payAmount()).toBe(120);
   });
 
   it('should forward the selected voucher file when paying an invoice', () => {
