@@ -20,4 +20,8 @@ export class ProductDetailDialogComponent {
   buildPhotoUrl(photo: string | null): string | null {
     return photo ? `/api/files/${photo}` : null;
   }
+
+  stockLabel(stock: number): string {
+    return stock > 0 ? `${stock} unidades` : 'Agotado';
+  }
 }
