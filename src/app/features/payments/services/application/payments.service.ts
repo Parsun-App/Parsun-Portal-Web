@@ -4,8 +4,20 @@ import { catchError, of, tap } from 'rxjs';
 import { PaymentsApiService } from '@features/payments/services/api/payments-api.service';
 import { PortalPaymentList, PortalPaymentDetail } from '@features/payments/models';
 import { PAYMENTS_MESSAGES } from '@features/payments/messages/payments.messages';
+import type { PagedResponse } from '@shared/models';
 
 const SEARCH_DEBOUNCE_MS = 300;
+const DEFAULT_LIST_STATUS = 'APPLIED';
+const EMPTY_PAGE: PagedResponse<PortalPaymentList> = {
+  content: [],
+  totalElements: 0,
+  totalPages: 0,
+  size: 10,
+  number: 0,
+  first: true,
+  last: true,
+  empty: true,
+};
 
 @Injectable({ providedIn: 'root' })
 export class PaymentsService {
@@ -15,6 +27,12 @@ export class PaymentsService {
 
   readonly loading = signal(false);
   readonly payments = signal<PortalPaymentList[]>([]);
+  readonly totalElements = signal(0);
+  readonly currentPage = signal(0);
+  readonly pageSize = signal(10);
+  readonly summaryApplied = signal(0);
+  readonly summaryPending = signal(0);
+  readonly summaryTotal = signal(0);
   readonly detail = signal<PortalPaymentDetail | null>(null);
   readonly detailDialogVisible = signal(false);
   readonly searchTerm = signal('');
@@ -31,6 +49,56 @@ export class PaymentsService {
     this.detail.set(null);
     this.detailDialogVisible.set(false);
     this.loading.set(true);
+    this.api
+      .list(this.buildListParams(), this.currentPage(), this.pageSize())
+      .pipe(
+        tap((response) => {
+          this.payments.set(response.content);
+          this.totalElements.set(response.totalElements);
+          this.loading.set(false);
+        }),
+        catchError(() => {
+          this.loading.set(false);
+          this.messageService.add(PAYMENTS_MESSAGES.loadError);
+          return of(EMPTY_PAGE);
+        }),
+      )
+      .subscribe();
+    this.loadSummary();
+  }
+
+  loadSummary(): void {
+    this.api
+      .getSummary(this.buildSummaryParams())
+      .pipe(
+        tap((summary) => {
+          this.summaryApplied.set(summary.appliedTotal);
+          this.summaryPending.set(summary.pendingTotal);
+          this.summaryTotal.set(summary.totalPayments);
+        }),
+        catchError(() => of(null)),
+      )
+      .subscribe();
+  }
+
+  onPageChange(first: number, rows: number): void {
+    this.currentPage.set(Math.floor(first / rows));
+    this.pageSize.set(rows);
+    this.load();
+  }
+
+  private buildListParams(): { search?: string; dateFrom?: string; dateTo?: string; status?: string } {
+    const params = this.buildSummaryParams();
+    params.status = this.filterStatus() ?? DEFAULT_LIST_STATUS;
+    return params;
+  }
+
+  private buildSummaryParams(): {
+    search?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    status?: string;
+  } {
     const params: { search?: string; dateFrom?: string; dateTo?: string; status?: string } = {};
     const search = this.searchTerm();
     const status = this.filterStatus();
@@ -40,20 +108,7 @@ export class PaymentsService {
     if (status) params.status = status;
     if (from) params.dateFrom = from;
     if (to) params.dateTo = to;
-    this.api
-      .list(params)
-      .pipe(
-        tap((response) => {
-          this.payments.set(response);
-          this.loading.set(false);
-        }),
-        catchError(() => {
-          this.loading.set(false);
-          this.messageService.add(PAYMENTS_MESSAGES.loadError);
-          return of([] as PortalPaymentList[]);
-        }),
-      )
-      .subscribe();
+    return params;
   }
 
   scheduleLoad(): void {
@@ -63,17 +118,20 @@ export class PaymentsService {
 
   onSearch(value: string): void {
     this.searchTerm.set(value);
+    this.currentPage.set(0);
     this.scheduleLoad();
   }
 
   onStatusFilterChange(value: string | null): void {
     this.filterStatus.set(value ?? undefined);
+    this.currentPage.set(0);
     this.load();
   }
 
   onDateFilterChange(from: string, to: string): void {
     this.dateFrom.set(from);
     this.dateTo.set(to);
+    this.currentPage.set(0);
     this.load();
   }
 
@@ -82,6 +140,7 @@ export class PaymentsService {
     this.filterStatus.set(undefined);
     this.dateFrom.set('');
     this.dateTo.set('');
+    this.currentPage.set(0);
     this.load();
   }
 

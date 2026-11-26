@@ -67,10 +67,16 @@ describe('QuotesPageComponent', () => {
     dateFrom: ReturnType<typeof signal<string>>;
     dateTo: ReturnType<typeof signal<string>>;
     filterStatus: ReturnType<typeof signal<string | undefined>>;
+    totalElements: ReturnType<typeof signal<number>>;
+    currentPage: ReturnType<typeof signal<number>>;
+    pageSize: ReturnType<typeof signal<number>>;
+    summaryPending: ReturnType<typeof signal<number>>;
+    summaryTotalAmount: ReturnType<typeof signal<number>>;
     load: ReturnType<typeof vi.fn>;
     onSearch: ReturnType<typeof vi.fn>;
     onDateFilterChange: ReturnType<typeof vi.fn>;
     onStatusFilterChange: ReturnType<typeof vi.fn>;
+    onPageChange: ReturnType<typeof vi.fn>;
     clearFilters: ReturnType<typeof vi.fn>;
     openDetail: ReturnType<typeof vi.fn>;
     openCreateDialog: ReturnType<typeof vi.fn>;
@@ -94,10 +100,16 @@ describe('QuotesPageComponent', () => {
       dateFrom: signal(''),
       dateTo: signal(''),
       filterStatus: signal<string | undefined>(undefined),
+      totalElements: signal(QUOTES.length),
+      currentPage: signal(0),
+      pageSize: signal(10),
+      summaryPending: signal(1),
+      summaryTotalAmount: signal(500),
       load: vi.fn(),
       onSearch: vi.fn(),
       onDateFilterChange: vi.fn(),
       onStatusFilterChange: vi.fn(),
+      onPageChange: vi.fn(),
       clearFilters: vi.fn(),
       openDetail: vi.fn(),
       openCreateDialog: vi.fn(),

@@ -3,6 +3,12 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
 import { PortalQuoteList, PortalQuoteDetail } from '@features/quotes/models';
+import type { PagedResponse } from '@shared/models';
+
+export interface PortalQuoteSummary {
+  pendingCount: number;
+  totalAmount: number;
+}
 
 export interface CreateQuoteLineRequest {
   productId: string;
@@ -26,18 +32,36 @@ export class QuotesApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/portal/quotes`;
 
-  list(params?: {
+  list(
+    params?: {
+      search?: string;
+      dateFrom?: string;
+      dateTo?: string;
+      status?: string;
+    },
+    page: number = 0,
+    size: number = 10,
+  ): Observable<PagedResponse<PortalQuoteList>> {
+    let httpParams = new HttpParams().set('page', page).set('size', size);
+    if (params?.search) httpParams = httpParams.set('search', params.search);
+    if (params?.dateFrom) httpParams = httpParams.set('dateFrom', params.dateFrom);
+    if (params?.dateTo) httpParams = httpParams.set('dateTo', params.dateTo);
+    if (params?.status) httpParams = httpParams.set('status', params.status);
+    return this.http.get<PagedResponse<PortalQuoteList>>(this.baseUrl, { params: httpParams });
+  }
+
+  getSummary(params?: {
     search?: string;
     dateFrom?: string;
     dateTo?: string;
     status?: string;
-  }): Observable<PortalQuoteList[]> {
+  }): Observable<PortalQuoteSummary> {
     let httpParams = new HttpParams();
     if (params?.search) httpParams = httpParams.set('search', params.search);
     if (params?.dateFrom) httpParams = httpParams.set('dateFrom', params.dateFrom);
     if (params?.dateTo) httpParams = httpParams.set('dateTo', params.dateTo);
     if (params?.status) httpParams = httpParams.set('status', params.status);
-    return this.http.get<PortalQuoteList[]>(this.baseUrl, { params: httpParams });
+    return this.http.get<PortalQuoteSummary>(`${this.baseUrl}/summary`, { params: httpParams });
   }
 
   getById(id: string): Observable<PortalQuoteDetail> {

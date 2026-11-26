@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { CurrencyPipe, DatePipe, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TableModule } from 'primeng/table';
+import { TableModule, TablePageEvent } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
@@ -120,6 +120,9 @@ export class QuotesPageComponent implements OnInit {
   readonly loading = this.quotesService.loading;
   readonly creating = this.quotesService.creating;
   readonly quotes = this.quotesService.quotes;
+  readonly totalElements = this.quotesService.totalElements;
+  readonly currentPage = this.quotesService.currentPage;
+  readonly pageSize = this.quotesService.pageSize;
   readonly detail = this.quotesService.detail;
   readonly detailDialogVisible = this.quotesService.detailDialogVisible;
   readonly createDialogVisible = this.quotesService.createDialogVisible;
@@ -127,20 +130,11 @@ export class QuotesPageComponent implements OnInit {
   readonly filterStatus = this.quotesService.filterStatus;
   readonly dateFrom = this.quotesService.dateFrom;
 
-  readonly pendingQuotes = computed(
-    () => this.quotes().filter((q) => q.status === 'DRAFT' || q.status === 'CUSTOMER_DRAFT').length,
-  );
-  readonly quotesTotal = computed(() => this.quotes().reduce((s, q) => s + q.subtotal, 0));
+  readonly pendingQuotes = this.quotesService.summaryPending;
+  readonly quotesTotal = this.quotesService.summaryTotalAmount;
   readonly dateTo = this.quotesService.dateTo;
   readonly dateFromDate = signal<Date | null>(null);
   readonly dateToDate = signal<Date | null>(null);
-
-  readonly mobileFirst = signal(0);
-  readonly mobileRows = 10;
-  readonly mobileQuotes = computed(() => {
-    const start = this.mobileFirst();
-    return this.quotes().slice(start, start + this.mobileRows);
-  });
 
   readonly products = signal<PortalProduct[]>([]);
   readonly filteredSuggestions = signal<PortalProduct[]>([]);
@@ -492,7 +486,11 @@ export class QuotesPageComponent implements OnInit {
   }
 
   onMobilePageChange(event: PaginatorState): void {
-    this.mobileFirst.set(event.first ?? 0);
+    this.quotesService.onPageChange(event.first ?? 0, event.rows ?? this.pageSize());
+  }
+
+  onPageChange(event: TablePageEvent): void {
+    this.quotesService.onPageChange(event.first, event.rows);
   }
 
   parseDate(dateStr: string): Date {

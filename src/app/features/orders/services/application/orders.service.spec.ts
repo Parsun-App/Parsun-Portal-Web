@@ -6,6 +6,7 @@ import { OrdersService } from '@features/orders/services/application/orders.serv
 import { OrdersApiService } from '@features/orders/services/api/orders-api.service';
 import { PortalOrderList, PortalOrderDetail } from '@features/orders/models';
 import { ORDERS_MESSAGES } from '@features/orders/messages/orders.messages';
+import type { PagedResponse } from '@shared/models';
 
 const ORDERS: PortalOrderList[] = [
   {
@@ -20,6 +21,19 @@ const ORDERS: PortalOrderList[] = [
     createdAt: '2026-08-01',
   },
 ];
+
+const PAGED_ORDERS: PagedResponse<PortalOrderList> = {
+  content: ORDERS,
+  totalElements: ORDERS.length,
+  totalPages: 1,
+  size: 10,
+  number: 0,
+  first: true,
+  last: true,
+  empty: false,
+};
+
+const SUMMARY = { pendingCount: 1, totalAmount: 500 };
 
 const DETAIL: PortalOrderDetail = {
   id: 'o1',
@@ -49,6 +63,7 @@ const DETAIL: PortalOrderDetail = {
 describe('OrdersService', () => {
   let apiMock: {
     list: ReturnType<typeof vi.fn>;
+    getSummary: ReturnType<typeof vi.fn>;
     getById: ReturnType<typeof vi.fn>;
     confirm: ReturnType<typeof vi.fn>;
     cancel: ReturnType<typeof vi.fn>;
@@ -57,7 +72,8 @@ describe('OrdersService', () => {
 
   beforeEach(() => {
     apiMock = {
-      list: vi.fn().mockReturnValue(of([] as PortalOrderList[])),
+      list: vi.fn().mockReturnValue(of(PAGED_ORDERS)),
+      getSummary: vi.fn().mockReturnValue(of(SUMMARY)),
       getById: vi.fn(),
       confirm: vi.fn(),
       cancel: vi.fn(),
@@ -81,18 +97,19 @@ describe('OrdersService', () => {
   }
 
   it('should load orders on construction and update the loading state', () => {
-    const pending = new Subject<PortalOrderList[]>();
+    const pending = new Subject<PagedResponse<PortalOrderList>>();
     apiMock.list.mockReturnValue(pending.asObservable());
     const service = createService();
     expect(service.loading()).toBe(true);
-    pending.next(ORDERS);
+    pending.next(PAGED_ORDERS);
     pending.complete();
     expect(service.orders()).toEqual(ORDERS);
+    expect(service.totalElements()).toBe(1);
     expect(service.loading()).toBe(false);
   });
 
   it('should debounce search and reload orders after 300ms', () => {
-    apiMock.list.mockReturnValue(of(ORDERS));
+    apiMock.list.mockReturnValue(of(PAGED_ORDERS));
     const service = createService();
     vi.useFakeTimers();
     const callsBefore = apiMock.list.mock.calls.length;
@@ -102,21 +119,21 @@ describe('OrdersService', () => {
     expect(apiMock.list.mock.calls.length).toBe(callsBefore);
     vi.advanceTimersByTime(1);
     expect(apiMock.list.mock.calls.length).toBe(callsBefore + 1);
-    expect(apiMock.list).toHaveBeenLastCalledWith({ search: 'acme' });
+    expect(apiMock.list).toHaveBeenLastCalledWith({ search: 'acme' }, 0, 10);
   });
 
   it('should reload immediately when the status filter changes', () => {
-    apiMock.list.mockReturnValue(of(ORDERS));
+    apiMock.list.mockReturnValue(of(PAGED_ORDERS));
     const service = createService();
     const callsBefore = apiMock.list.mock.calls.length;
     service.onStatusFilterChange('CONFIRMED');
     expect(service.filterStatus()).toBe('CONFIRMED');
     expect(apiMock.list.mock.calls.length).toBe(callsBefore + 1);
-    expect(apiMock.list).toHaveBeenLastCalledWith({ status: 'CONFIRMED' });
+    expect(apiMock.list).toHaveBeenLastCalledWith({ status: 'CONFIRMED' }, 0, 10);
   });
 
   it('should reset search and status filters and reload', () => {
-    apiMock.list.mockReturnValue(of(ORDERS));
+    apiMock.list.mockReturnValue(of(PAGED_ORDERS));
     const service = createService();
     service.onStatusFilterChange('CONFIRMED');
     service.searchTerm.set('acme');
@@ -125,7 +142,7 @@ describe('OrdersService', () => {
     expect(service.searchTerm()).toBe('');
     expect(service.filterStatus()).toBeUndefined();
     expect(apiMock.list.mock.calls.length).toBe(callsBefore + 1);
-    expect(apiMock.list).toHaveBeenLastCalledWith({});
+    expect(apiMock.list).toHaveBeenLastCalledWith({}, 0, 10);
   });
 
   it('should load the detail and open the dialog when opening an order', () => {
@@ -145,7 +162,7 @@ describe('OrdersService', () => {
   });
 
   it('should confirm an order and reload the list on success', () => {
-    apiMock.list.mockReturnValue(of(ORDERS));
+    apiMock.list.mockReturnValue(of(PAGED_ORDERS));
     apiMock.confirm.mockReturnValue(of(void 0));
     const service = createService();
     const listCallsBefore = apiMock.list.mock.calls.length;
@@ -165,7 +182,7 @@ describe('OrdersService', () => {
   });
 
   it('should cancel an order with the customer reason and reload the list on success', () => {
-    apiMock.list.mockReturnValue(of(ORDERS));
+    apiMock.list.mockReturnValue(of(PAGED_ORDERS));
     apiMock.cancel.mockReturnValue(of(void 0));
     const service = createService();
     const listCallsBefore = apiMock.list.mock.calls.length;

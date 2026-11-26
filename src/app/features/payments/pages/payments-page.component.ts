@@ -9,7 +9,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { CurrencyPipe, DatePipe, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TableModule } from 'primeng/table';
+import { TableModule, TablePageEvent } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
@@ -90,6 +90,9 @@ export class PaymentsPageComponent implements OnInit {
 
   readonly loading = this.paymentsService.loading;
   readonly payments = this.paymentsService.payments;
+  readonly totalElements = this.paymentsService.totalElements;
+  readonly currentPage = this.paymentsService.currentPage;
+  readonly pageSize = this.paymentsService.pageSize;
   readonly detail = this.paymentsService.detail;
   readonly detailDialogVisible = this.paymentsService.detailDialogVisible;
   readonly searchTerm = this.paymentsService.searchTerm;
@@ -99,31 +102,9 @@ export class PaymentsPageComponent implements OnInit {
   readonly dateFromDate = signal<Date | null>(null);
   readonly dateToDate = signal<Date | null>(null);
 
-  readonly mobileFirst = signal(0);
-  readonly mobileRows = 10;
-  readonly displayedPayments = computed(() => {
-    const status = this.filterStatus();
-    if (status) {
-      return this.payments().filter((payment) => payment.status === status);
-    }
-    return this.payments().filter((payment) => payment.status === 'APPLIED');
-  });
-  readonly mobilePayments = computed(() => {
-    const start = this.mobileFirst();
-    return this.displayedPayments().slice(start, start + this.mobileRows);
-  });
-
-  readonly totalPayments = computed(() => this.displayedPayments().length);
-  readonly appliedTotal = computed(() =>
-    this.payments()
-      .filter((p) => p.status === 'APPLIED')
-      .reduce((s, p) => s + p.amount, 0),
-  );
-  readonly pendingTotal = computed(() =>
-    this.payments()
-      .filter((p) => p.status === 'PENDING')
-      .reduce((s, p) => s + p.amount, 0),
-  );
+  readonly totalPayments = this.paymentsService.summaryTotal;
+  readonly appliedTotal = this.paymentsService.summaryApplied;
+  readonly pendingTotal = this.paymentsService.summaryPending;
 
   readonly registerDialogVisible = signal(false);
   readonly registering = signal(false);
@@ -282,7 +263,11 @@ export class PaymentsPageComponent implements OnInit {
   }
 
   onMobilePageChange(event: PaginatorState): void {
-    this.mobileFirst.set(event.first ?? 0);
+    this.paymentsService.onPageChange(event.first ?? 0, event.rows ?? this.pageSize());
+  }
+
+  onPageChange(event: TablePageEvent): void {
+    this.paymentsService.onPageChange(event.first, event.rows);
   }
 
   openDetail(id: string): void {

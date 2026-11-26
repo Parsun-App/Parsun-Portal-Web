@@ -39,10 +39,17 @@ describe('PaymentsPageComponent', () => {
     dateFrom: ReturnType<typeof signal<string>>;
     dateTo: ReturnType<typeof signal<string>>;
     filterStatus: ReturnType<typeof signal<string | undefined>>;
+    totalElements: ReturnType<typeof signal<number>>;
+    currentPage: ReturnType<typeof signal<number>>;
+    pageSize: ReturnType<typeof signal<number>>;
+    summaryApplied: ReturnType<typeof signal<number>>;
+    summaryPending: ReturnType<typeof signal<number>>;
+    summaryTotal: ReturnType<typeof signal<number>>;
     load: ReturnType<typeof vi.fn>;
     onSearch: ReturnType<typeof vi.fn>;
     onDateFilterChange: ReturnType<typeof vi.fn>;
     onStatusFilterChange: ReturnType<typeof vi.fn>;
+    onPageChange: ReturnType<typeof vi.fn>;
     clearFilters: ReturnType<typeof vi.fn>;
     openDetail: ReturnType<typeof vi.fn>;
   };
@@ -59,10 +66,17 @@ describe('PaymentsPageComponent', () => {
       dateFrom: signal(''),
       dateTo: signal(''),
       filterStatus: signal<string | undefined>(undefined),
+      totalElements: signal(PAYMENTS.length),
+      currentPage: signal(0),
+      pageSize: signal(10),
+      summaryApplied: signal(200),
+      summaryPending: signal(0),
+      summaryTotal: signal(1),
       load: vi.fn(),
       onSearch: vi.fn(),
       onDateFilterChange: vi.fn(),
       onStatusFilterChange: vi.fn(),
+      onPageChange: vi.fn(),
       clearFilters: vi.fn(),
       openDetail: vi.fn(),
     };
