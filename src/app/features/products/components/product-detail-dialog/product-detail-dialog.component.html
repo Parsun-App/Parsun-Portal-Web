@@ -74,7 +74,7 @@
             >Stock Disponible</span
           >
           <p class="mt-1.5 text-sm text-surface-800 dark:text-surface-100">
-            {{ item.availableStock > 0 ? item.availableStock + ' unidades' : 'Agotado' }}
+            {{ stockLabel(item.availableStock) }}
           </p>
         </div>
         <div class="col-span-2">

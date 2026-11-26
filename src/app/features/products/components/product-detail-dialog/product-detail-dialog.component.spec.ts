@@ -27,4 +27,8 @@ describe('ProductDetailDialogComponent', () => {
     expect(fixture.componentInstance.buildPhotoUrl('products/photo.jpg')).toBe(
       '/api/files/products/photo.jpg',
     ));
+  it('labels available stock as units', () =>
+    expect(fixture.componentInstance.stockLabel(8)).toBe('8 unidades'));
+  it('labels zero stock as sold out', () =>
+    expect(fixture.componentInstance.stockLabel(0)).toBe('Agotado'));
 });

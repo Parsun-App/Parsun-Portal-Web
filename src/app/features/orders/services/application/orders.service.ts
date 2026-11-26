@@ -8,9 +8,20 @@ import {
 } from '@features/orders/services/api/orders-api.service';
 import { PortalOrderList, PortalOrderDetail } from '@features/orders/models';
 import { ORDERS_MESSAGES } from '@features/orders/messages/orders.messages';
+import type { PagedResponse } from '@shared/models';
 
 const SEARCH_DEBOUNCE_MS = 300;
 const CANCEL_REASON = 'Cancelado por el cliente';
+const EMPTY_PAGE: PagedResponse<PortalOrderList> = {
+  content: [],
+  totalElements: 0,
+  totalPages: 0,
+  size: 10,
+  number: 0,
+  first: true,
+  last: true,
+  empty: true,
+};
 
 @Injectable({ providedIn: 'root' })
 export class OrdersService {
@@ -21,6 +32,11 @@ export class OrdersService {
   readonly loading = signal(false);
   readonly creating = signal(false);
   readonly orders = signal<PortalOrderList[]>([]);
+  readonly totalElements = signal(0);
+  readonly currentPage = signal(0);
+  readonly pageSize = signal(10);
+  readonly summaryPending = signal(0);
+  readonly summaryTotalAmount = signal(0);
   readonly detail = signal<PortalOrderDetail | null>(null);
   readonly detailDialogVisible = signal(false);
   readonly createDialogVisible = signal(false);
@@ -40,6 +56,44 @@ export class OrdersService {
     this.detail.set(null);
     this.detailDialogVisible.set(false);
     this.loading.set(true);
+    this.api
+      .list(this.buildParams(), this.currentPage(), this.pageSize())
+      .pipe(
+        tap((response) => {
+          this.orders.set(response.content);
+          this.totalElements.set(response.totalElements);
+          this.loading.set(false);
+        }),
+        catchError(() => {
+          this.loading.set(false);
+          this.messageService.add(ORDERS_MESSAGES.loadError);
+          return of(EMPTY_PAGE);
+        }),
+      )
+      .subscribe();
+    this.loadSummary();
+  }
+
+  loadSummary(): void {
+    this.api
+      .getSummary(this.buildParams())
+      .pipe(
+        tap((summary) => {
+          this.summaryPending.set(summary.pendingCount);
+          this.summaryTotalAmount.set(summary.totalAmount);
+        }),
+        catchError(() => of(null)),
+      )
+      .subscribe();
+  }
+
+  onPageChange(first: number, rows: number): void {
+    this.currentPage.set(Math.floor(first / rows));
+    this.pageSize.set(rows);
+    this.load();
+  }
+
+  private buildParams(): { search?: string; status?: string; dateFrom?: string; dateTo?: string } {
     const params: { search?: string; status?: string; dateFrom?: string; dateTo?: string } = {};
     const search = this.searchTerm();
     const status = this.filterStatus();
@@ -49,20 +103,7 @@ export class OrdersService {
     if (status) params.status = status;
     if (from) params.dateFrom = from;
     if (to) params.dateTo = to;
-    this.api
-      .list(params)
-      .pipe(
-        tap((response) => {
-          this.orders.set(response);
-          this.loading.set(false);
-        }),
-        catchError(() => {
-          this.loading.set(false);
-          this.messageService.add(ORDERS_MESSAGES.loadError);
-          return of([] as PortalOrderList[]);
-        }),
-      )
-      .subscribe();
+    return params;
   }
 
   scheduleLoad(): void {
@@ -72,17 +113,20 @@ export class OrdersService {
 
   onSearch(value: string): void {
     this.searchTerm.set(value);
+    this.currentPage.set(0);
     this.scheduleLoad();
   }
 
   onStatusFilterChange(value: string | null): void {
     this.filterStatus.set(value ?? undefined);
+    this.currentPage.set(0);
     this.load();
   }
 
   onDateFilterChange(from: string, to: string): void {
     this.dateFrom.set(from);
     this.dateTo.set(to);
+    this.currentPage.set(0);
     this.load();
   }
 
@@ -91,6 +135,7 @@ export class OrdersService {
     this.filterStatus.set(undefined);
     this.dateFrom.set('');
     this.dateTo.set('');
+    this.currentPage.set(0);
     this.load();
   }
 

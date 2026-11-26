@@ -3,6 +3,13 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
 import { PortalPaymentList, PortalPaymentDetail } from '@features/payments/models';
+import type { PagedResponse } from '@shared/models';
+
+export interface PortalPaymentSummary {
+  appliedTotal: number;
+  pendingTotal: number;
+  totalPayments: number;
+}
 
 export interface PaymentMethod {
   id: string;
@@ -43,18 +50,38 @@ export class PaymentsApiService {
   private readonly http = inject(HttpClient);
   private readonly portalBaseUrl = `${environment.apiUrl}/portal`;
 
-  list(params?: {
+  list(
+    params?: {
+      search?: string;
+      dateFrom?: string;
+      dateTo?: string;
+      status?: string;
+    },
+    page: number = 0,
+    size: number = 10,
+  ): Observable<PagedResponse<PortalPaymentList>> {
+    let httpParams = new HttpParams().set('page', page).set('size', size);
+    if (params?.search) httpParams = httpParams.set('search', params.search);
+    if (params?.dateFrom) httpParams = httpParams.set('dateFrom', params.dateFrom);
+    if (params?.dateTo) httpParams = httpParams.set('dateTo', params.dateTo);
+    if (params?.status) httpParams = httpParams.set('status', params.status);
+    return this.http.get<PagedResponse<PortalPaymentList>>(`${this.portalBaseUrl}/payments`, {
+      params: httpParams,
+    });
+  }
+
+  getSummary(params?: {
     search?: string;
     dateFrom?: string;
     dateTo?: string;
     status?: string;
-  }): Observable<PortalPaymentList[]> {
+  }): Observable<PortalPaymentSummary> {
     let httpParams = new HttpParams();
     if (params?.search) httpParams = httpParams.set('search', params.search);
     if (params?.dateFrom) httpParams = httpParams.set('dateFrom', params.dateFrom);
     if (params?.dateTo) httpParams = httpParams.set('dateTo', params.dateTo);
     if (params?.status) httpParams = httpParams.set('status', params.status);
-    return this.http.get<PortalPaymentList[]>(`${this.portalBaseUrl}/payments`, {
+    return this.http.get<PortalPaymentSummary>(`${this.portalBaseUrl}/payments/summary`, {
       params: httpParams,
     });
   }

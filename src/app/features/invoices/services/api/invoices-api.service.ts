@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
 import { PortalInvoiceList, PortalInvoiceDetail } from '@features/invoices/models';
+import type { PagedResponse } from '@shared/models';
 
 export interface PortalInvoiceSummary {
   totalDebt: number;
@@ -16,13 +17,17 @@ export class InvoicesApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/portal/invoices`;
 
-  list(params?: {
-    search?: string;
-    dateFrom?: string;
-    dateTo?: string;
-    statuses?: string[];
-  }): Observable<PortalInvoiceList[]> {
-    let httpParams = new HttpParams();
+  list(
+    params?: {
+      search?: string;
+      dateFrom?: string;
+      dateTo?: string;
+      statuses?: string[];
+    },
+    page: number = 0,
+    size: number = 10,
+  ): Observable<PagedResponse<PortalInvoiceList>> {
+    let httpParams = new HttpParams().set('page', page).set('size', size);
     if (params?.search) httpParams = httpParams.set('search', params.search);
     if (params?.dateFrom) httpParams = httpParams.set('dateFrom', params.dateFrom);
     if (params?.dateTo) httpParams = httpParams.set('dateTo', params.dateTo);
@@ -31,7 +36,7 @@ export class InvoicesApiService {
         httpParams = httpParams.append('statuses', s);
       });
     }
-    return this.http.get<PortalInvoiceList[]>(this.baseUrl, { params: httpParams });
+    return this.http.get<PagedResponse<PortalInvoiceList>>(this.baseUrl, { params: httpParams });
   }
 
   getById(id: string): Observable<PortalInvoiceDetail> {

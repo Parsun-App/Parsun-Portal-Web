@@ -6,6 +6,7 @@ import { PaymentsService } from '@features/payments/services/application/payment
 import { PaymentsApiService } from '@features/payments/services/api/payments-api.service';
 import { PortalPaymentList, PortalPaymentDetail } from '@features/payments/models';
 import { PAYMENTS_MESSAGES } from '@features/payments/messages/payments.messages';
+import type { PagedResponse } from '@shared/models';
 
 const PAYMENTS: PortalPaymentList[] = [
   {
@@ -24,6 +25,19 @@ const PAYMENTS: PortalPaymentList[] = [
   },
 ];
 
+const PAGED_PAYMENTS: PagedResponse<PortalPaymentList> = {
+  content: PAYMENTS,
+  totalElements: PAYMENTS.length,
+  totalPages: 1,
+  size: 10,
+  number: 0,
+  first: true,
+  last: true,
+  empty: false,
+};
+
+const SUMMARY = { appliedTotal: 200, pendingTotal: 0, totalPayments: 1 };
+
 const DETAIL: PortalPaymentDetail = {
   id: 'pay1',
   paymentNumber: 'PAG-0001',
@@ -40,11 +54,19 @@ const DETAIL: PortalPaymentDetail = {
 };
 
 describe('PaymentsService', () => {
-  let apiMock: { list: ReturnType<typeof vi.fn>; getById: ReturnType<typeof vi.fn> };
+  let apiMock: {
+    list: ReturnType<typeof vi.fn>;
+    getSummary: ReturnType<typeof vi.fn>;
+    getById: ReturnType<typeof vi.fn>;
+  };
   let messageMock: { add: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
-    apiMock = { list: vi.fn().mockReturnValue(of([] as PortalPaymentList[])), getById: vi.fn() };
+    apiMock = {
+      list: vi.fn().mockReturnValue(of(PAGED_PAYMENTS)),
+      getSummary: vi.fn().mockReturnValue(of(SUMMARY)),
+      getById: vi.fn(),
+    };
     messageMock = { add: vi.fn() };
   });
 
@@ -64,18 +86,19 @@ describe('PaymentsService', () => {
   }
 
   it('should load payments on construction and update the loading state', () => {
-    const pending = new Subject<PortalPaymentList[]>();
+    const pending = new Subject<PagedResponse<PortalPaymentList>>();
     apiMock.list.mockReturnValue(pending.asObservable());
     const service = createService();
     expect(service.loading()).toBe(true);
-    pending.next(PAYMENTS);
+    pending.next(PAGED_PAYMENTS);
     pending.complete();
     expect(service.payments()).toEqual(PAYMENTS);
+    expect(service.totalElements()).toBe(1);
     expect(service.loading()).toBe(false);
   });
 
   it('should debounce search and reload payments after 300ms', () => {
-    apiMock.list.mockReturnValue(of(PAYMENTS));
+    apiMock.list.mockReturnValue(of(PAGED_PAYMENTS));
     const service = createService();
     vi.useFakeTimers();
     const callsBefore = apiMock.list.mock.calls.length;
@@ -85,18 +108,18 @@ describe('PaymentsService', () => {
     expect(apiMock.list.mock.calls.length).toBe(callsBefore);
     vi.advanceTimersByTime(1);
     expect(apiMock.list.mock.calls.length).toBe(callsBefore + 1);
-    expect(apiMock.list).toHaveBeenLastCalledWith({ search: 'PAG-0001' });
+    expect(apiMock.list).toHaveBeenLastCalledWith({ search: 'PAG-0001', status: 'APPLIED' }, 0, 10);
   });
 
   it('should reset the search term and reload', () => {
-    apiMock.list.mockReturnValue(of(PAYMENTS));
+    apiMock.list.mockReturnValue(of(PAGED_PAYMENTS));
     const service = createService();
     service.searchTerm.set('PAG-0001');
     const callsBefore = apiMock.list.mock.calls.length;
     service.clearFilters();
     expect(service.searchTerm()).toBe('');
     expect(apiMock.list.mock.calls.length).toBe(callsBefore + 1);
-    expect(apiMock.list).toHaveBeenLastCalledWith({});
+    expect(apiMock.list).toHaveBeenLastCalledWith({ status: 'APPLIED' }, 0, 10);
   });
 
   it('should load the detail and open the dialog when opening a payment', () => {

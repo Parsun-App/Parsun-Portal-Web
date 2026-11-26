@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { CurrencyPipe, DatePipe, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TableModule } from 'primeng/table';
+import { TableModule, TablePageEvent } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
@@ -119,27 +119,22 @@ export class OrdersPageComponent implements OnInit {
   readonly loading = this.ordersService.loading;
   readonly creating = this.ordersService.creating;
   readonly orders = this.ordersService.orders;
+  readonly totalElements = this.ordersService.totalElements;
+  readonly currentPage = this.ordersService.currentPage;
+  readonly pageSize = this.ordersService.pageSize;
   readonly detail = this.ordersService.detail;
   readonly detailDialogVisible = this.ordersService.detailDialogVisible;
   readonly createDialogVisible = this.ordersService.createDialogVisible;
   readonly searchTerm = this.ordersService.searchTerm;
 
-  readonly pendingOrders = computed(
-    () => this.orders().filter((o) => o.status === 'DRAFT' || o.status === 'CUSTOMER_DRAFT').length,
-  );
-  readonly ordersTotal = computed(() => this.orders().reduce((s, o) => s + o.subtotal, 0));
+  readonly pendingOrders = this.ordersService.summaryPending;
+  readonly ordersTotal = this.ordersService.summaryTotalAmount;
   readonly filterStatus = this.ordersService.filterStatus;
   readonly dateFrom = this.ordersService.dateFrom;
   readonly dateTo = this.ordersService.dateTo;
   readonly dateFromDate = signal<Date | null>(null);
   readonly dateToDate = signal<Date | null>(null);
 
-  readonly mobileFirst = signal(0);
-  readonly mobileRows = 10;
-  readonly mobileOrders = computed(() => {
-    const start = this.mobileFirst();
-    return this.orders().slice(start, start + this.mobileRows);
-  });
 
   readonly products = signal<PortalProduct[]>([]);
   readonly filteredSuggestions = signal<PortalProduct[]>([]);
@@ -489,7 +484,11 @@ export class OrdersPageComponent implements OnInit {
   }
 
   onMobilePageChange(event: PaginatorState): void {
-    this.mobileFirst.set(event.first ?? 0);
+    this.ordersService.onPageChange(event.first ?? 0, event.rows ?? this.pageSize());
+  }
+
+  onPageChange(event: TablePageEvent): void {
+    this.ordersService.onPageChange(event.first, event.rows);
   }
 
   parseDate(dateStr: string): Date {

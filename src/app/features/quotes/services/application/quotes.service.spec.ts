@@ -6,6 +6,7 @@ import { QuotesService } from '@features/quotes/services/application/quotes.serv
 import { QuotesApiService } from '@features/quotes/services/api/quotes-api.service';
 import { PortalQuoteList, PortalQuoteDetail } from '@features/quotes/models';
 import { QUOTES_MESSAGES } from '@features/quotes/messages/quotes.messages';
+import type { PagedResponse } from '@shared/models';
 
 const QUOTES: PortalQuoteList[] = [
   {
@@ -21,6 +22,19 @@ const QUOTES: PortalQuoteList[] = [
     updatedAt: '2026-08-01',
   },
 ];
+
+const PAGED_QUOTES: PagedResponse<PortalQuoteList> = {
+  content: QUOTES,
+  totalElements: QUOTES.length,
+  totalPages: 1,
+  size: 10,
+  number: 0,
+  first: true,
+  last: true,
+  empty: false,
+};
+
+const SUMMARY = { pendingCount: 1, totalAmount: 500 };
 
 const DETAIL: PortalQuoteDetail = {
   id: 'q1',
@@ -58,6 +72,7 @@ const DETAIL: PortalQuoteDetail = {
 describe('QuotesService', () => {
   let apiMock: {
     list: ReturnType<typeof vi.fn>;
+    getSummary: ReturnType<typeof vi.fn>;
     getById: ReturnType<typeof vi.fn>;
     create: ReturnType<typeof vi.fn>;
   };
@@ -65,7 +80,8 @@ describe('QuotesService', () => {
 
   beforeEach(() => {
     apiMock = {
-      list: vi.fn().mockReturnValue(of([] as PortalQuoteList[])),
+      list: vi.fn().mockReturnValue(of(PAGED_QUOTES)),
+      getSummary: vi.fn().mockReturnValue(of(SUMMARY)),
       getById: vi.fn(),
       create: vi.fn(),
     };
@@ -88,18 +104,24 @@ describe('QuotesService', () => {
   }
 
   it('should load quotes on construction and update the loading state', () => {
-    const pending = new Subject<PortalQuoteList[]>();
+    const pending = new Subject<PagedResponse<PortalQuoteList>>();
     apiMock.list.mockReturnValue(pending.asObservable());
     const service = createService();
     expect(service.loading()).toBe(true);
-    pending.next(QUOTES);
+    pending.next(PAGED_QUOTES);
     pending.complete();
     expect(service.quotes()).toEqual(QUOTES);
+    expect(service.totalElements()).toBe(1);
     expect(service.loading()).toBe(false);
   });
 
+  it('should load the summary metrics on construction', () => {
+    const service = createService();
+    expect(service.summaryPending()).toBe(1);
+    expect(service.summaryTotalAmount()).toBe(500);
+  });
+
   it('should debounce search and reload quotes after 300ms', () => {
-    apiMock.list.mockReturnValue(of(QUOTES));
     const service = createService();
     vi.useFakeTimers();
     const callsBefore = apiMock.list.mock.calls.length;
@@ -109,21 +131,19 @@ describe('QuotesService', () => {
     expect(apiMock.list.mock.calls.length).toBe(callsBefore);
     vi.advanceTimersByTime(1);
     expect(apiMock.list.mock.calls.length).toBe(callsBefore + 1);
-    expect(apiMock.list).toHaveBeenLastCalledWith({ search: 'acme' });
+    expect(apiMock.list).toHaveBeenLastCalledWith({ search: 'acme' }, 0, 10);
   });
 
   it('should reload immediately when the status filter changes', () => {
-    apiMock.list.mockReturnValue(of(QUOTES));
     const service = createService();
     const callsBefore = apiMock.list.mock.calls.length;
     service.onStatusFilterChange('DRAFT');
     expect(service.filterStatus()).toBe('DRAFT');
     expect(apiMock.list.mock.calls.length).toBe(callsBefore + 1);
-    expect(apiMock.list).toHaveBeenLastCalledWith({ status: 'DRAFT' });
+    expect(apiMock.list).toHaveBeenLastCalledWith({ status: 'DRAFT' }, 0, 10);
   });
 
   it('should reset search and status filters and reload', () => {
-    apiMock.list.mockReturnValue(of(QUOTES));
     const service = createService();
     service.onStatusFilterChange('DRAFT');
     service.searchTerm.set('acme');
@@ -132,7 +152,15 @@ describe('QuotesService', () => {
     expect(service.searchTerm()).toBe('');
     expect(service.filterStatus()).toBeUndefined();
     expect(apiMock.list.mock.calls.length).toBe(callsBefore + 1);
-    expect(apiMock.list).toHaveBeenLastCalledWith({});
+    expect(apiMock.list).toHaveBeenLastCalledWith({}, 0, 10);
+  });
+
+  it('should reload the current page when the page changes', () => {
+    const service = createService();
+    service.onPageChange(20, 20);
+    expect(service.currentPage()).toBe(1);
+    expect(service.pageSize()).toBe(20);
+    expect(apiMock.list).toHaveBeenLastCalledWith({}, 1, 20);
   });
 
   it('should load the detail and open the dialog when opening a quote', () => {
@@ -187,7 +215,6 @@ describe('QuotesService', () => {
   });
 
   it('should create a quote, show success, close the dialog and reload', () => {
-    apiMock.list.mockReturnValue(of(QUOTES));
     apiMock.create.mockReturnValue(of(DETAIL));
     const service = createService();
     service.openCreateDialog();

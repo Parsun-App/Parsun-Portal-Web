@@ -4,7 +4,6 @@ import { catchError, of, tap } from 'rxjs';
 import { InvoicesApiService } from '@features/invoices/services/api/invoices-api.service';
 import { PortalInvoiceList, PortalInvoiceDetail } from '@features/invoices/models';
 import { INVOICES_MESSAGES } from '@features/invoices/messages/invoices.messages';
-
 const SEARCH_DEBOUNCE_MS = 300;
 
 @Injectable({ providedIn: 'root' })
@@ -15,6 +14,9 @@ export class InvoicesService {
 
   readonly loading = signal(false);
   readonly invoices = signal<PortalInvoiceList[]>([]);
+  readonly totalElements = signal(0);
+  readonly currentPage = signal(0);
+  readonly pageSize = signal(10);
   readonly detail = signal<PortalInvoiceDetail | null>(null);
   readonly detailDialogVisible = signal(false);
   readonly searchTerm = signal('');
@@ -41,16 +43,17 @@ export class InvoicesService {
     if (from) params.dateFrom = from;
     if (to) params.dateTo = to;
     this.api
-      .list(params)
+      .list(params, this.currentPage(), this.pageSize())
       .pipe(
         tap((response) => {
-          this.invoices.set(response);
+          this.invoices.set(response.content);
+          this.totalElements.set(response.totalElements);
           this.loading.set(false);
         }),
         catchError(() => {
           this.loading.set(false);
           this.messageService.add(INVOICES_MESSAGES.loadError);
-          return of([] as PortalInvoiceList[]);
+          return of(null);
         }),
       )
       .subscribe();
@@ -63,17 +66,26 @@ export class InvoicesService {
 
   onSearch(value: string): void {
     this.searchTerm.set(value);
+    this.currentPage.set(0);
     this.scheduleLoad();
   }
 
   onStatusFilterChange(value: string | null): void {
     this.filterStatus.set(value ?? undefined);
+    this.currentPage.set(0);
     this.load();
   }
 
   onDateFilterChange(from: string, to: string): void {
     this.dateFrom.set(from);
     this.dateTo.set(to);
+    this.currentPage.set(0);
+    this.load();
+  }
+
+  onPageChange(first: number, rows: number): void {
+    this.currentPage.set(Math.floor(first / rows));
+    this.pageSize.set(rows);
     this.load();
   }
 
@@ -82,6 +94,7 @@ export class InvoicesService {
     this.filterStatus.set(undefined);
     this.dateFrom.set('');
     this.dateTo.set('');
+    this.currentPage.set(0);
     this.load();
   }
 

@@ -6,6 +6,7 @@ import { InvoicesService } from '@features/invoices/services/application/invoice
 import { InvoicesApiService } from '@features/invoices/services/api/invoices-api.service';
 import { PortalInvoiceList, PortalInvoiceDetail } from '@features/invoices/models';
 import { INVOICES_MESSAGES } from '@features/invoices/messages/invoices.messages';
+import type { PagedResponse } from '@shared/models';
 
 const INVOICES: PortalInvoiceList[] = [
   {
@@ -23,6 +24,17 @@ const INVOICES: PortalInvoiceList[] = [
     createdAt: '2026-08-01',
   },
 ];
+
+const PAGE: PagedResponse<PortalInvoiceList> = {
+  content: INVOICES,
+  totalElements: INVOICES.length,
+  totalPages: 1,
+  size: 10,
+  number: 0,
+  first: true,
+  last: true,
+  empty: false,
+};
 
 const DETAIL: PortalInvoiceDetail = {
   id: 'i1',
@@ -53,7 +65,10 @@ describe('InvoicesService', () => {
   let messageMock: { add: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
-    apiMock = { list: vi.fn().mockReturnValue(of([] as PortalInvoiceList[])), getById: vi.fn() };
+    apiMock = {
+      list: vi.fn().mockReturnValue(of(PAGE)),
+      getById: vi.fn(),
+    };
     messageMock = { add: vi.fn() };
   });
 
@@ -73,18 +88,19 @@ describe('InvoicesService', () => {
   }
 
   it('should load invoices on construction and update the loading state', () => {
-    const pending = new Subject<PortalInvoiceList[]>();
+    const pending = new Subject<PagedResponse<PortalInvoiceList>>();
     apiMock.list.mockReturnValue(pending.asObservable());
     const service = createService();
     expect(service.loading()).toBe(true);
-    pending.next(INVOICES);
+    pending.next(PAGE);
     pending.complete();
     expect(service.invoices()).toEqual(INVOICES);
+    expect(service.totalElements()).toBe(INVOICES.length);
     expect(service.loading()).toBe(false);
   });
 
   it('should debounce search and reload invoices after 300ms', () => {
-    apiMock.list.mockReturnValue(of(INVOICES));
+    apiMock.list.mockReturnValue(of(PAGE));
     const service = createService();
     vi.useFakeTimers();
     const callsBefore = apiMock.list.mock.calls.length;
@@ -94,21 +110,21 @@ describe('InvoicesService', () => {
     expect(apiMock.list.mock.calls.length).toBe(callsBefore);
     vi.advanceTimersByTime(1);
     expect(apiMock.list.mock.calls.length).toBe(callsBefore + 1);
-    expect(apiMock.list).toHaveBeenLastCalledWith({ search: 'acme' });
+    expect(apiMock.list).toHaveBeenLastCalledWith({ search: 'acme' }, 0, 10);
   });
 
   it('should reload immediately when the status filter changes', () => {
-    apiMock.list.mockReturnValue(of(INVOICES));
+    apiMock.list.mockReturnValue(of(PAGE));
     const service = createService();
     const callsBefore = apiMock.list.mock.calls.length;
     service.onStatusFilterChange('PAID');
     expect(service.filterStatus()).toBe('PAID');
     expect(apiMock.list.mock.calls.length).toBe(callsBefore + 1);
-    expect(apiMock.list).toHaveBeenLastCalledWith({ statuses: ['PAID'] });
+    expect(apiMock.list).toHaveBeenLastCalledWith({ statuses: ['PAID'] }, 0, 10);
   });
 
   it('should reset search and status filters and reload', () => {
-    apiMock.list.mockReturnValue(of(INVOICES));
+    apiMock.list.mockReturnValue(of(PAGE));
     const service = createService();
     service.onStatusFilterChange('PAID');
     service.searchTerm.set('acme');
@@ -117,7 +133,7 @@ describe('InvoicesService', () => {
     expect(service.searchTerm()).toBe('');
     expect(service.filterStatus()).toBeUndefined();
     expect(apiMock.list.mock.calls.length).toBe(callsBefore + 1);
-    expect(apiMock.list).toHaveBeenLastCalledWith({});
+    expect(apiMock.list).toHaveBeenLastCalledWith({}, 0, 10);
   });
 
   it('should load the detail and open the dialog when opening an invoice', () => {

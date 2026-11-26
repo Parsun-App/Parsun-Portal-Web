@@ -151,6 +151,13 @@ describe('ProductsPageComponent', () => {
     expect(component.viewMode()).toBe('grid');
   });
 
+  it('should render the available stock value for each product in the grid', () => {
+    const text: string = fixture.nativeElement.textContent;
+    expect(text).toContain('Mesa Roble');
+    expect(text).toContain('PROD-001');
+    expect(text).toContain('8');
+  });
+
   it('should toggle between table and grid views', () => {
     expect(component.viewMode()).toBe('grid');
     component.toggleView();
