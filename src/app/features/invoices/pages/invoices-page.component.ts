@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TableModule } from 'primeng/table';
+import { TableModule, TablePageEvent } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
@@ -98,12 +98,9 @@ export class InvoicesPageComponent implements OnInit {
   readonly dateFromDate = signal<Date | null>(null);
   readonly dateToDate = signal<Date | null>(null);
 
-  readonly mobileFirst = signal(0);
-  readonly mobileRows = 10;
-  readonly mobileInvoices = computed(() => {
-    const start = this.mobileFirst();
-    return this.invoices().slice(start, start + this.mobileRows);
-  });
+  readonly currentPage = this.invoicesService.currentPage;
+  readonly pageSize = this.invoicesService.pageSize;
+  readonly totalElements = this.invoicesService.totalElements;
 
   readonly summaryLoading = signal(false);
   readonly totalDebt = signal(0);
@@ -351,7 +348,11 @@ export class InvoicesPageComponent implements OnInit {
   }
 
   onMobilePageChange(event: PaginatorState): void {
-    this.mobileFirst.set(event.first ?? 0);
+    this.invoicesService.onPageChange(event.first ?? 0, event.rows ?? this.pageSize());
+  }
+
+  onPageChange(event: TablePageEvent): void {
+    this.invoicesService.onPageChange(event.first, event.rows);
   }
 
   openDetail(id: string): void {

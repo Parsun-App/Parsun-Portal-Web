@@ -47,9 +47,13 @@ describe('InvoicesPageComponent', () => {
     dateFrom: ReturnType<typeof signal<string>>;
     dateTo: ReturnType<typeof signal<string>>;
     filterStatus: ReturnType<typeof signal<string | undefined>>;
+    currentPage: ReturnType<typeof signal<number>>;
+    pageSize: ReturnType<typeof signal<number>>;
+    totalElements: ReturnType<typeof signal<number>>;
     onSearch: ReturnType<typeof vi.fn>;
     onDateFilterChange: ReturnType<typeof vi.fn>;
     onStatusFilterChange: ReturnType<typeof vi.fn>;
+    onPageChange: ReturnType<typeof vi.fn>;
     clearFilters: ReturnType<typeof vi.fn>;
     openDetail: ReturnType<typeof vi.fn>;
     load: ReturnType<typeof vi.fn>;
@@ -65,9 +69,13 @@ describe('InvoicesPageComponent', () => {
       dateFrom: signal(''),
       dateTo: signal(''),
       filterStatus: signal<string | undefined>(undefined),
+      currentPage: signal(0),
+      pageSize: signal(10),
+      totalElements: signal(INVOICES.length),
       onSearch: vi.fn(),
       onDateFilterChange: vi.fn(),
       onStatusFilterChange: vi.fn(),
+      onPageChange: vi.fn(),
       clearFilters: vi.fn(),
       openDetail: vi.fn(),
       load: vi.fn(),
